@@ -1,4 +1,4 @@
-macro(run_conan requires options)
+macro(run_conan requires options imports)
   # Download automatically, you can also just copy the conan.cmake file
   if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
     message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
@@ -21,14 +21,13 @@ macro(run_conan requires options)
     https://api.bintray.com/conan/catchorg/Catch2
   )
 
-  message(STATUS ${requires})
-  message(STATUS ${options})
-
   conan_cmake_run(
     REQUIRES
     ${requires}
     OPTIONS
     ${options}
+    IMPORTS
+    ${imports}
     BASIC_SETUP
     CMAKE_TARGETS # individual targets to link to
     BUILD

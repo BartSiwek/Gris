@@ -16,15 +16,15 @@ endif()
 add_executable(Gris.Core.Assert.Tests)
 
 target_sources(Gris.Core.Assert.Tests PRIVATE
-  "main.cpp"
-  "test_always_fast_slow.cpp"
-  "test_no_always_fast_slow.cpp"
-  "test_always_no_fast_slow.cpp"
-  "test_always_fast_no_slow.cpp"
-  "test_always_no_fast_no_slow.cpp"
-  "test_no_always_fast_no_slow.cpp"
-  "test_no_always_no_fast_slow.cpp"
-  "test_no_always_no_fast_no_slow.cpp"
+  "src/main.cpp"
+  "src/test_always_fast_slow.cpp"
+  "src/test_no_always_fast_slow.cpp"
+  "src/test_always_no_fast_slow.cpp"
+  "src/test_always_fast_no_slow.cpp"
+  "src/test_always_no_fast_no_slow.cpp"
+  "src/test_no_always_fast_no_slow.cpp"
+  "src/test_no_always_no_fast_slow.cpp"
+  "src/test_no_always_no_fast_no_slow.cpp"
 )
 
 target_link_libraries(Gris.Core.Assert.Tests PRIVATE
@@ -43,6 +43,10 @@ catch_discover_tests(
   --reporter=xml
   --out=Gris.Core.Assert.Tests.xml
 )
+
+########################################################################
+
+group_sources(Gris.Core.Assert.Tests)
 
 ###############################################################################
 

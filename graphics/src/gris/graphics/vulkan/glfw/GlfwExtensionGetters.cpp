@@ -1,0 +1,15 @@
+#include "GlfwExtensionGetters.h"
+
+#include <GLFW/glfw3.h>
+
+// -------------------------------------------------------------------------------------------------
+
+std::vector<const char*> GetVulkanInstanceExtensionsFromGLFW()
+{
+    uint32_t glfwExtensionCount = 0;
+    auto* const glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+
+    return extensions;
+}

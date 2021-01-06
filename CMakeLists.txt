@@ -8,6 +8,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 ########################################################################
 
 include(CTest)
+include(group_sources_by_folder)
 include(standard_project_settings)
 include(compiler_warnings)
 include(conan)
@@ -34,12 +35,28 @@ set_project_warnings(Gris.ProjectWarnings)
 
 set(CONAN_REQUIRES
   catch2/2.13.2
-  sdl2/2.0.12@bincrafters/stable
+  glfw/3.3.2
+  glm/0.9.9.8
+  stb/20200203
+  tinyobjloader/1.0.6
 )
 set(CONAN_OPTIONS "")
-run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}")
+set(CONAN_IMPORTS
+  "bin, *.dll -> ./bin"
+)
+run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}" "${CONAN_IMPORTS}")
+
+########################################################################
+
+# TODO: Put this behind a dependency
+find_package(Vulkan REQUIRED)
+
+########################################################################
+
+add_subdirectory(third_party/vma_hpp)
 
 ########################################################################
 
 add_subdirectory(core)
+add_subdirectory(graphics)
 add_subdirectory(demos)
