@@ -6,6 +6,9 @@
 
 #include <gris/assert.h>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanWindowMixin
 {
 public:
@@ -35,3 +38,5 @@ protected:
 private:
     vk::UniqueSurfaceKHR m_surface = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

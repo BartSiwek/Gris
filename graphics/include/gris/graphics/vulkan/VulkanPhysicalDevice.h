@@ -6,6 +6,9 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanAllocator;
 class VulkanWindowMixin;
 
@@ -33,3 +36,5 @@ private:
     vk::SampleCountFlagBits m_msaaSamples = vk::SampleCountFlagBits::e1;
     DeviceQueueFamilyIndices m_queueFamilies = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

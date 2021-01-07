@@ -6,8 +6,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface)
+[[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::QuerySwapChainSupport(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface)
 {
+    using namespace Gris::Graphics::Vulkan;
+
     auto const surfaceCapabilitiesResult = physicalDevice.getSurfaceCapabilitiesKHR(surface);
     if (surfaceCapabilitiesResult.result != vk::Result::eSuccess)
         throw VulkanEngineException("Error getting surface capabilities", surfaceCapabilitiesResult);
@@ -25,11 +27,11 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<char> ReadFile(const std::string& filename) {
+[[nodiscard]] std::vector<char> Gris::Graphics::Vulkan::ReadFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
-        throw VulkanEngineException("Failed to open file!");
+        throw Gris::Graphics::EngineException("Failed to open file!");
     }
 
     size_t fileSize = static_cast<size_t>(file.tellg());

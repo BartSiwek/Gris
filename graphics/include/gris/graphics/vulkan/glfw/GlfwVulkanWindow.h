@@ -3,7 +3,10 @@
 #include <gris/graphics/glfw/GlfwWindowMixin.h>
 #include <gris/graphics/vulkan/VulkanWindowMixin.h>
 
-class GlfwVulkanWindow : public GlfwWindowMixin, public VulkanWindowMixin
+namespace Gris::Graphics::Vulkan::Glfw
+{
+
+class GlfwVulkanWindow : public Graphics::Glfw::GlfwWindowMixin, public VulkanWindowMixin
 {
 public:
     GlfwVulkanWindow(uint32_t width, uint32_t height, const std::string& title);
@@ -16,3 +19,5 @@ public:
 
     ~GlfwVulkanWindow() override = default;
 };
+
+}  // namespace Gris::Graphics::Vulkan::Glfw

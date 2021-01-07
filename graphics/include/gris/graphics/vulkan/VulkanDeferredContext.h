@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanRenderPass;
 class VulkanTexture;
 class VulkanFramebuffer;
@@ -32,3 +35,5 @@ private:
     std::vector<vk::UniqueCommandBuffer> m_commandBuffers = {};
     uint32_t m_frameIndex = 0;
 };
+
+}  // namespace Gris::Graphics::Vulkan

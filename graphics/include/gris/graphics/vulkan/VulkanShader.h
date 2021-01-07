@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanShader : public VulkanDeviceResource
 {
 public:
@@ -14,3 +17,5 @@ public:
 private:
     vk::UniqueShaderModule m_shaderModule = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

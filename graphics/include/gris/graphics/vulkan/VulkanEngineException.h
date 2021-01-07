@@ -6,6 +6,9 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanEngineException : public EngineException {
 public:
     explicit VulkanEngineException(const std::string& message) : EngineException(message) {}
@@ -17,3 +20,5 @@ public:
     template<typename U>
     VulkanEngineException(const std::string& message, const vk::ResultValue<U>& resultValue) : VulkanEngineException(message, resultValue.result) {}
 };
+
+}  // namespace Gris::Graphics::Vulkan

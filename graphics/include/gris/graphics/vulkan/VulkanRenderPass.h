@@ -2,7 +2,10 @@
 
 #include "VulkanDeviceResource.h"
 
-class VulkanRenderPass : public VulkanDeviceResource
+namespace Gris::Graphics::Vulkan
+{
+
+class VulkanRenderPass : public Gris::Graphics::Vulkan::VulkanDeviceResource
 {
 public:
     VulkanRenderPass(VulkanDevice* device, vk::Format swapChainFormat, vk::Format depthFormat);
@@ -16,3 +19,5 @@ private:
 
     vk::UniqueRenderPass m_renderPass;
 };
+
+}  // namespace Gris::Graphics::Vulkan

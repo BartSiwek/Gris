@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanSampler : public VulkanDeviceResource
 {
 public:
@@ -14,3 +17,5 @@ public:
 private:
     vk::UniqueSampler m_sampler;
 };
+
+}  // namespace Gris::Graphics::Vulkan

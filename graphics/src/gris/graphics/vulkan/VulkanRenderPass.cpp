@@ -5,7 +5,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanRenderPass::VulkanRenderPass(VulkanDevice* device, vk::Format swapChainFormat, vk::Format depthFormat) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice* device, vk::Format swapChainFormat, vk::Format depthFormat) : VulkanDeviceResource(device)
 {
     CreateRenderPass(swapChainFormat, depthFormat);
 }
@@ -13,7 +13,7 @@ VulkanRenderPass::VulkanRenderPass(VulkanDevice* device, vk::Format swapChainFor
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::RenderPass& VulkanRenderPass::RenderPassHandle() const
+[[nodiscard]] const vk::RenderPass& Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle() const
 {
     return m_renderPass.get();
 }
@@ -21,14 +21,14 @@ VulkanRenderPass::VulkanRenderPass(VulkanDevice* device, vk::Format swapChainFor
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::RenderPass& VulkanRenderPass::RenderPassHandle()
+[[nodiscard]] vk::RenderPass& Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle()
 {
     return m_renderPass.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanRenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat) {
+void Gris::Graphics::Vulkan::VulkanRenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat) {
     auto const colorAttachment = vk::AttachmentDescription(
         {},
         swapChainFormat,

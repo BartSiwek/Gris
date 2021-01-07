@@ -3,7 +3,7 @@
 #include <gris/graphics/vulkan/VulkanAllocator.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
 
-VulkanBuffer::VulkanBuffer(VulkanDevice* device, vk::DeviceSize size, const vk::BufferUsageFlags& usage, const vk::MemoryPropertyFlags& properties) : VulkanDeviceResource(device) {
+Gris::Graphics::Vulkan::VulkanBuffer::VulkanBuffer(VulkanDevice* device, vk::DeviceSize size, const vk::BufferUsageFlags& usage, const vk::MemoryPropertyFlags& properties) : VulkanDeviceResource(device) {
     auto const bufferInfo = vk::BufferCreateInfo({}, size, usage, vk::SharingMode::eExclusive);
 
     auto createBufferResult = DeviceHandle().createBufferUnique(bufferInfo);
@@ -19,18 +19,18 @@ VulkanBuffer::VulkanBuffer(VulkanDevice* device, vk::DeviceSize size, const vk::
 }
 
 // TODO: Do this via context
-[[nodiscard]] const vk::Buffer& VulkanBuffer::BufferHandle() const
+[[nodiscard]] const vk::Buffer& Gris::Graphics::Vulkan::VulkanBuffer::BufferHandle() const
 {
     return m_buffer.get();
 }
 
 // TODO: Do this via context
-[[nodiscard]] vk::Buffer& VulkanBuffer::BufferHandle()
+[[nodiscard]] vk::Buffer& Gris::Graphics::Vulkan::VulkanBuffer::BufferHandle()
 {
     return m_buffer.get();
 }
 
-void VulkanBuffer::SetData(const void* const data, size_t size)
+void Gris::Graphics::Vulkan::VulkanBuffer::SetData(const void* const data, size_t size)
 {
     auto* const memoryPtr = Allocator().Map(m_bufferMemory);
     memcpy(memoryPtr, data, size);

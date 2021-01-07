@@ -4,7 +4,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanShader::VulkanShader(VulkanDevice* device, const std::vector<char>& code) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanShader::VulkanShader(VulkanDevice* device, const std::vector<char>& code) : VulkanDeviceResource(device)
 {
     auto const createInfo = vk::ShaderModuleCreateInfo({}, code.size(), reinterpret_cast<const uint32_t*>(code.data()));
 
@@ -18,7 +18,7 @@ VulkanShader::VulkanShader(VulkanDevice* device, const std::vector<char>& code) 
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::ShaderModule& VulkanShader::ModuleHandle() const
+[[nodiscard]] const vk::ShaderModule& Gris::Graphics::Vulkan::VulkanShader::ModuleHandle() const
 {
     return m_shaderModule.get();
 }
@@ -26,7 +26,7 @@ VulkanShader::VulkanShader(VulkanDevice* device, const std::vector<char>& code) 
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::ShaderModule& VulkanShader::ModuleHandle()
+[[nodiscard]] vk::ShaderModule& Gris::Graphics::Vulkan::VulkanShader::ModuleHandle()
 {
     return m_shaderModule.get();
 }

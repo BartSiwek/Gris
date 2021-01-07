@@ -4,6 +4,9 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanAllocator;
 class VulkanWindowMixin;
 
@@ -53,3 +56,5 @@ private:
     vk::DispatchLoaderDynamic m_dispatch = {};
     vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> m_debugMessenger = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

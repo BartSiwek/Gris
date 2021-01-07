@@ -53,7 +53,7 @@ vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, ui
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
+Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
     : VulkanDeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
 {
@@ -129,14 +129,14 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] uint32_t VulkanSwapChain::ImageCount() const
+[[nodiscard]] uint32_t Gris::Graphics::Vulkan::VulkanSwapChain::ImageCount() const
 {
     return static_cast<uint32_t>(m_swapChainImages.size());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const VulkanTextureView& VulkanSwapChain::ImageView(const size_t index) const
+[[nodiscard]] const Gris::Graphics::Vulkan::VulkanTextureView& Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index) const
 {
     GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
@@ -144,7 +144,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] VulkanTextureView& VulkanSwapChain::ImageView(const size_t index)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanTextureView& Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index)
 {
     GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
@@ -152,21 +152,21 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Format VulkanSwapChain::Format() const
+[[nodiscard]] vk::Format Gris::Graphics::Vulkan::VulkanSwapChain::Format() const
 {
     return m_swapChainImageFormat;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Extent2D VulkanSwapChain::Extent() const
+[[nodiscard]] vk::Extent2D Gris::Graphics::Vulkan::VulkanSwapChain::Extent() const
 {
     return m_swapChainExtent;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::optional<VulkanVirtualFrame> VulkanSwapChain::NextImage()
+[[nodiscard]] std::optional<Gris::Graphics::Vulkan::VulkanVirtualFrame> Gris::Graphics::Vulkan::VulkanSwapChain::NextImage()
 {
     auto const virtualFrameIndex = m_currentVirtualFrame;
     m_currentVirtualFrame = (m_currentVirtualFrame + 1) % m_virtualFrameCount;
@@ -212,7 +212,7 @@ VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool VulkanSwapChain::Present(const VulkanVirtualFrame& virtualFrame)
+[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanSwapChain::Present(const VulkanVirtualFrame& virtualFrame)
 {
     std::array swapChains = { m_swapChain.get() };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };

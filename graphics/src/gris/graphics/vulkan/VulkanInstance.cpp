@@ -66,25 +66,25 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanInstance::ExtensionGetter VulkanInstance::s_extensionGetter = nullptr;
+Gris::Graphics::Vulkan::VulkanInstance::ExtensionGetter Gris::Graphics::Vulkan::VulkanInstance::s_extensionGetter = nullptr;
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanInstance::InstallExtensionGetter(ExtensionGetter getter)
+void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGetter getter)
 {
     s_extensionGetter = getter;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Instance VulkanInstance::InstanceHandle(VulkanInstanceHandleBadge /* badge */)
+[[nodiscard]] vk::Instance Gris::Graphics::Vulkan::VulkanInstance::InstanceHandle(VulkanInstanceHandleBadge /* badge */)
 {
     return Instance().m_instance.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<vk::PhysicalDevice> VulkanInstance::EnumeratePhysicalDevices()
+[[nodiscard]] std::vector<vk::PhysicalDevice> Gris::Graphics::Vulkan::VulkanInstance::EnumeratePhysicalDevices()
 {
     auto const enumeratePhysicalDevicesResult = Instance().m_instance->enumeratePhysicalDevices();
     if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
@@ -94,7 +94,7 @@ void VulkanInstance::InstallExtensionGetter(ExtensionGetter getter)
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] VulkanAllocator VulkanInstance::CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocator Gris::Graphics::Vulkan::VulkanInstance::CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
 {
     const vma::AllocatorCreateInfo allocatorInfo(
         {},
@@ -121,7 +121,7 @@ void VulkanInstance::InstallExtensionGetter(ExtensionGetter getter)
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanInstance& VulkanInstance::Instance()
+Gris::Graphics::Vulkan::VulkanInstance& Gris::Graphics::Vulkan::VulkanInstance::Instance()
 {
     static VulkanInstance s_instance = {};
     return s_instance;
@@ -129,7 +129,7 @@ VulkanInstance& VulkanInstance::Instance()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<const char*> VulkanInstance::GetRequiredExtensions()
+[[nodiscard]] std::vector<const char*> Gris::Graphics::Vulkan::VulkanInstance::GetRequiredExtensions()
 {
     GRIS_ALAWYS_ASSERT(s_extensionGetter != nullptr, "Extension getter cannot be null");
     auto extensions = s_extensionGetter();
@@ -142,7 +142,7 @@ VulkanInstance& VulkanInstance::Instance()
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanInstance::VulkanInstance()
+Gris::Graphics::Vulkan::VulkanInstance::VulkanInstance()
 {
     CreateInstance();
     SetupDebugMessenger();
@@ -150,7 +150,7 @@ VulkanInstance::VulkanInstance()
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanInstance::CreateInstance()
+void Gris::Graphics::Vulkan::VulkanInstance::CreateInstance()
 {
     if constexpr (ENABLE_VALIDATION_LAYERS)
     {
@@ -184,7 +184,7 @@ void VulkanInstance::CreateInstance()
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanInstance::SetupDebugMessenger()
+void Gris::Graphics::Vulkan::VulkanInstance::SetupDebugMessenger()
 {
     if constexpr (!ENABLE_VALIDATION_LAYERS)
         return;
@@ -206,7 +206,7 @@ void VulkanInstance::SetupDebugMessenger()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool VulkanInstance::CheckValidationLayerSupport() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanInstance::CheckValidationLayerSupport() const
 {
     auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties();
     if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)

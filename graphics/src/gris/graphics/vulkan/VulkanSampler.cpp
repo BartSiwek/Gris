@@ -4,7 +4,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanSampler::VulkanSampler(VulkanDevice* device, float minLod, float maxLod) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanSampler::VulkanSampler(VulkanDevice* device, float minLod, float maxLod) : VulkanDeviceResource(device)
 {
     auto const samplerInfo = vk::SamplerCreateInfo(
         {},
@@ -35,7 +35,7 @@ VulkanSampler::VulkanSampler(VulkanDevice* device, float minLod, float maxLod) :
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-const vk::Sampler& VulkanSampler::SamplerHandle() const
+const vk::Sampler& Gris::Graphics::Vulkan::VulkanSampler::SamplerHandle() const
 {
     return m_sampler.get();
 }
@@ -43,7 +43,7 @@ const vk::Sampler& VulkanSampler::SamplerHandle() const
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-vk::Sampler& VulkanSampler::SamplerHandle()
+vk::Sampler& Gris::Graphics::Vulkan::VulkanSampler::SamplerHandle()
 {
     return m_sampler.get();
 }

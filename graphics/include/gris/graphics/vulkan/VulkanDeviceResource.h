@@ -4,6 +4,9 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanDevice;
 class VulkanAllocator;
 
@@ -34,5 +37,7 @@ protected:
     [[nodiscard]] vk::DescriptorPool& DescriptorPoolHandle();
 
 private:
-    VulkanDevice * m_parentDevice = nullptr;
+    VulkanDevice* m_parentDevice = nullptr;
 };
+
+}  // namespace Gris::Graphics::Vulkan

@@ -14,7 +14,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies)
+Gris::Graphics::Vulkan::VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies)
     : m_physicalDevice(physicalDevice)
     , m_msaaSamples(msaaSamples)
     , m_queueFamilies(queueFamilies)
@@ -24,21 +24,21 @@ VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const vk::SampleCountFlagBits& VulkanPhysicalDevice::MsaaSamples() const
+[[nodiscard]] const vk::SampleCountFlagBits& Gris::Graphics::Vulkan::VulkanPhysicalDevice::MsaaSamples() const
 {
     return m_msaaSamples;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const DeviceQueueFamilyIndices& VulkanPhysicalDevice::QueueFamilies() const
+[[nodiscard]] const Gris::Graphics::Vulkan::DeviceQueueFamilyIndices& Gris::Graphics::Vulkan::VulkanPhysicalDevice::QueueFamilies() const
 {
     return m_queueFamilies;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Format VulkanPhysicalDevice::FindSupportedFormat(const std::vector<vk::Format>& candidates, const vk::ImageTiling& tiling, const vk::FormatFeatureFlags& features) const
+[[nodiscard]] vk::Format Gris::Graphics::Vulkan::VulkanPhysicalDevice::FindSupportedFormat(const std::vector<vk::Format>& candidates, const vk::ImageTiling& tiling, const vk::FormatFeatureFlags& features) const
 {
     for (auto const& format : candidates) {
         const auto props = m_physicalDevice.getFormatProperties(format);
@@ -52,21 +52,21 @@ VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::FormatProperties VulkanPhysicalDevice::GetFormatProperties(vk::Format format) const
+[[nodiscard]] vk::FormatProperties Gris::Graphics::Vulkan::VulkanPhysicalDevice::GetFormatProperties(vk::Format format) const
 {
     return m_physicalDevice.getFormatProperties(format);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] SwapChainSupportDetails VulkanPhysicalDevice::SwapChainSupport(const VulkanWindowMixin& window) const
+[[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::VulkanPhysicalDevice::SwapChainSupport(const VulkanWindowMixin& window) const
 {
     return QuerySwapChainSupport(m_physicalDevice, window.SurfaceHandle());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueDevice VulkanPhysicalDevice::CreateDevice() const
+[[nodiscard]] vk::UniqueDevice Gris::Graphics::Vulkan::VulkanPhysicalDevice::CreateDevice() const
 {
     auto uniqueQueueFamilies = std::set<uint32_t>{
         m_queueFamilies.graphicsFamily.value(),
@@ -98,7 +98,7 @@ VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] VulkanAllocator VulkanPhysicalDevice::CreateVulkanAllocator(const vk::Device& device) const
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocator Gris::Graphics::Vulkan::VulkanPhysicalDevice::CreateVulkanAllocator(const vk::Device& device) const
 {
     return VulkanInstance::CreateVulkanMemoryAllocator(m_physicalDevice, device);
 }

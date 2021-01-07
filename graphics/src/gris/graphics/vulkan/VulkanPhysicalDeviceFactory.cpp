@@ -10,7 +10,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] VulkanPhysicalDevice VulkanPhysicalDeviceFactory::FindPhysicalDevice(const VulkanWindowMixin& window)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanPhysicalDevice Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::FindPhysicalDevice(const VulkanWindowMixin& window)
 {
     auto devices = VulkanInstance::EnumeratePhysicalDevices();
 
@@ -27,7 +27,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::tuple<bool, DeviceQueueFamilyIndices> VulkanPhysicalDeviceFactory::IsDeviceSuitable(const vk::PhysicalDevice& device, const vk::SurfaceKHR& surface)
+[[nodiscard]] std::tuple<bool, Gris::Graphics::Vulkan::DeviceQueueFamilyIndices> Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::IsDeviceSuitable(const vk::PhysicalDevice& device, const vk::SurfaceKHR& surface)
 {
     auto queueFamilies = FindQueueFamilies(device, surface);
     auto extensionsSupported = CheckDeviceExtensionSupport(device);
@@ -46,7 +46,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] DeviceQueueFamilyIndices VulkanPhysicalDeviceFactory::FindQueueFamilies(const vk::PhysicalDevice& device, const vk::SurfaceKHR& surface)
+[[nodiscard]] Gris::Graphics::Vulkan::DeviceQueueFamilyIndices Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::FindQueueFamilies(const vk::PhysicalDevice& device, const vk::SurfaceKHR& surface)
 {
     auto queueFamilies = device.getQueueFamilyProperties();
 
@@ -77,7 +77,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool VulkanPhysicalDeviceFactory::CheckDeviceExtensionSupport(const vk::PhysicalDevice& device)
+[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::CheckDeviceExtensionSupport(const vk::PhysicalDevice& device)
 {
     auto availableExtensionsResult = device.enumerateDeviceExtensionProperties();
     if (availableExtensionsResult.result != vk::Result::eSuccess)
@@ -93,7 +93,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::SampleCountFlagBits VulkanPhysicalDeviceFactory::GetMaxUsableSampleCount(const vk::PhysicalDevice& physicalDevice)
+[[nodiscard]] vk::SampleCountFlagBits Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::GetMaxUsableSampleCount(const vk::PhysicalDevice& physicalDevice)
 {
     auto const physicalDeviceProperties = physicalDevice.getProperties();
 

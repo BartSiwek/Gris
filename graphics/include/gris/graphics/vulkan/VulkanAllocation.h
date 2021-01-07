@@ -4,6 +4,9 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vk_mem_alloc.hpp>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanAllocator;
 
 class VulkanAllocation
@@ -29,3 +32,5 @@ private:
     vma::Allocation m_allocation = nullptr;
     VulkanAllocator * m_owner = nullptr;
 };
+
+}  // namespace Gris::Graphics::Vulkan

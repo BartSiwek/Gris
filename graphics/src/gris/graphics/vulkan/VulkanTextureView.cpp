@@ -6,13 +6,13 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanTextureView::VulkanTextureView(VulkanDevice* device, const VulkanTexture& image, vk::Format format, const vk::ImageAspectFlags& aspectFlags, uint32_t mipLevels)
+Gris::Graphics::Vulkan::VulkanTextureView::VulkanTextureView(VulkanDevice* device, const VulkanTexture& image, vk::Format format, const vk::ImageAspectFlags& aspectFlags, uint32_t mipLevels)
     : VulkanTextureView(device, image.ImageHandle(), format, aspectFlags, mipLevels)
 {}
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanTextureView::VulkanTextureView(VulkanDevice* device, const vk::Image& image, vk::Format format, const vk::ImageAspectFlags& aspectFlags, uint32_t mipLevels) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanTextureView::VulkanTextureView(VulkanDevice* device, const vk::Image& image, vk::Format format, const vk::ImageAspectFlags& aspectFlags, uint32_t mipLevels) : VulkanDeviceResource(device)
 {
     const vk::ImageViewCreateInfo viewInfo(
         {},
@@ -39,7 +39,7 @@ VulkanTextureView::VulkanTextureView(VulkanDevice* device, const vk::Image& imag
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::ImageView& VulkanTextureView::ImageViewHandle() const
+[[nodiscard]] const vk::ImageView& Gris::Graphics::Vulkan::VulkanTextureView::ImageViewHandle() const
 {
     return m_imageView.get();
 }
@@ -47,7 +47,7 @@ VulkanTextureView::VulkanTextureView(VulkanDevice* device, const vk::Image& imag
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::ImageView& VulkanTextureView::ImageViewHandle()
+[[nodiscard]] vk::ImageView& Gris::Graphics::Vulkan::VulkanTextureView::ImageViewHandle()
 {
     return m_imageView.get();
 }

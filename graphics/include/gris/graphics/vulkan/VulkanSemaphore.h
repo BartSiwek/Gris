@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanDevice;
 
 class VulkanSemaphore : public VulkanDeviceResource
@@ -16,3 +19,5 @@ public:
 private:
     vk::UniqueSemaphore m_semaphore = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

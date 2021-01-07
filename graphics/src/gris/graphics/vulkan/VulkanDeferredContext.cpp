@@ -11,7 +11,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanDeferredContext::VulkanDeferredContext(VulkanDevice* device) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanDeferredContext::VulkanDeferredContext(VulkanDevice* device) : VulkanDeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -35,14 +35,14 @@ VulkanDeferredContext::VulkanDeferredContext(VulkanDevice* device) : VulkanDevic
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::CommandBuffer& VulkanDeferredContext::CommandBufferHandle()
+[[nodiscard]] vk::CommandBuffer& Gris::Graphics::Vulkan::VulkanDeferredContext::CommandBufferHandle()
 {
     return m_commandBuffers[m_frameIndex].get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::Begin()
+void Gris::Graphics::Vulkan::VulkanDeferredContext::Begin()
 {
     auto const beginInfo = vk::CommandBufferBeginInfo();
 
@@ -53,7 +53,7 @@ void VulkanDeferredContext::Begin()
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::BeginRenderPass(const VulkanRenderPass& renderPass, const VulkanFramebuffer& framebuffer, const vk::Extent2D& extent)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BeginRenderPass(const VulkanRenderPass& renderPass, const VulkanFramebuffer& framebuffer, const vk::Extent2D& extent)
 {
     std::array<vk::ClearValue, 2> clearValues = {
     vk::ClearColorValue(std::array{ 0.0f, 0.0f, 0.0f, 1.0f }),
@@ -67,14 +67,14 @@ void VulkanDeferredContext::BeginRenderPass(const VulkanRenderPass& renderPass, 
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::BindPipeline(const VulkanPipelineStateObject& pso)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindPipeline(const VulkanPipelineStateObject& pso)
 {
     m_commandBuffers[m_frameIndex]->bindPipeline(vk::PipelineBindPoint::eGraphics, pso.GraphicsPipelineHandle());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::BindVertexBuffer(const VulkanBufferView& bufferView)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindVertexBuffer(const VulkanBufferView& bufferView)
 {
     std::array vertexBuffers = { bufferView.BufferHandle() };
     std::array offsets = { static_cast<vk::DeviceSize>(bufferView.Offset()) };
@@ -83,14 +83,14 @@ void VulkanDeferredContext::BindVertexBuffer(const VulkanBufferView& bufferView)
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::BindIndexBuffer(const VulkanBufferView& bufferView)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindIndexBuffer(const VulkanBufferView& bufferView)
 {
     m_commandBuffers[m_frameIndex]->bindIndexBuffer(bufferView.BufferHandle(), bufferView.Offset(), vk::IndexType::eUint32);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::BindDescriptorSet(const VulkanPipelineStateObject& pso, const VulkanShaderResourceBinding& srb)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindDescriptorSet(const VulkanPipelineStateObject& pso, const VulkanShaderResourceBinding& srb)
 {
     std::array descriptorSets = { srb.DescriptorSetHandle(m_frameIndex) };
     m_commandBuffers[m_frameIndex]->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {});
@@ -98,21 +98,21 @@ void VulkanDeferredContext::BindDescriptorSet(const VulkanPipelineStateObject& p
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::DrawIndexed(uint32_t indexCount)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::DrawIndexed(uint32_t indexCount)
 {
     m_commandBuffers[m_frameIndex]->drawIndexed(indexCount, 1, 0, 0, 0);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::EndRenderPass()
+void Gris::Graphics::Vulkan::VulkanDeferredContext::EndRenderPass()
 {
     m_commandBuffers[m_frameIndex]->endRenderPass();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanDeferredContext::End()
+void Gris::Graphics::Vulkan::VulkanDeferredContext::End()
 {
     auto const endResult = m_commandBuffers[m_frameIndex]->end();
     if (endResult != vk::Result::eSuccess)

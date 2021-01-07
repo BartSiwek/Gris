@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanTexture;
 
 class VulkanTextureView : public VulkanDeviceResource
@@ -18,3 +21,5 @@ public:
 private:
     vk::UniqueImageView m_imageView;
 };
+
+}  // namespace Gris::Graphics::Vulkan

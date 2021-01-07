@@ -3,6 +3,9 @@
 #include "VulkanPipelineStateObjectResource.h"
 #include "VulkanBufferView.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanSampler;
 class VulkanTextureView;
 class VulkanBuffer;
@@ -29,3 +32,5 @@ private:
 
     std::vector<vk::DescriptorSet> m_descriptorSets;
 };
+
+}  // namespace Gris::Graphics::Vulkan

@@ -4,7 +4,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanSemaphore::VulkanSemaphore(VulkanDevice* device) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanSemaphore::VulkanSemaphore(VulkanDevice* device) : VulkanDeviceResource(device)
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo();
 
@@ -17,14 +17,14 @@ VulkanSemaphore::VulkanSemaphore(VulkanDevice* device) : VulkanDeviceResource(de
 
 // -------------------------------------------------------------------------------------------------
 
-const vk::Semaphore& VulkanSemaphore::SemaphoreHandle() const
+const vk::Semaphore& Gris::Graphics::Vulkan::VulkanSemaphore::SemaphoreHandle() const
 {
     return m_semaphore.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Semaphore& VulkanSemaphore::SemaphoreHandle()
+vk::Semaphore& Gris::Graphics::Vulkan::VulkanSemaphore::SemaphoreHandle()
 {
     return m_semaphore.get();
 }

@@ -3,6 +3,9 @@
 #include "VulkanPipelineStateObject.h"
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanPipelineStateObjectResource : public VulkanDeviceResource
 {
 public:
@@ -31,3 +34,5 @@ protected:
 private:
     VulkanPipelineStateObject* m_parentPso = nullptr;
 };
+
+}  // namespace Gris::Graphics::Vulkan

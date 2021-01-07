@@ -2,6 +2,9 @@
 
 #include "VulkanAllocation.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanAllocator
 {
 public:
@@ -31,3 +34,5 @@ public:
 private:
     vma::Allocator m_allocator = nullptr;
 };
+
+}  // namespace Gris::Graphics::Vulkan

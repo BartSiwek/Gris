@@ -1,5 +1,8 @@
 #pragma once
 
+namespace Gris::Graphics::Glfw
+{
+
 class GlfwInstance
 {
 public:
@@ -19,3 +22,5 @@ private:
     GlfwInstance();
     ~GlfwInstance();
 };
+
+}  // namespace Gris::Graphics::Glfw

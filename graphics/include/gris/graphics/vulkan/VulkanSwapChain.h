@@ -8,6 +8,9 @@
 
 #include <optional>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanWindowMixin;
 
 struct VulkanVirtualFrame
@@ -54,7 +57,7 @@ public:
         return m_imageAvailableSemaphores[frame.VirtualFrameIndex];
     }
 
-    [[nodiscard]] const VulkanSemaphore& RenderingFinishedSemaphore(const VulkanVirtualFrame & frame) const
+    [[nodiscard]] const VulkanSemaphore& RenderingFinishedSemaphore(const VulkanVirtualFrame& frame) const
     {
         return m_renderFinishedSemaphores[frame.VirtualFrameIndex];
     }
@@ -82,3 +85,6 @@ private:
     uint32_t m_virtualFrameCount = 1;
     std::vector<uint32_t> m_swapChainImageToVirtualFrame = {};
 };
+
+
+}  // namespace Gris::Graphics::Vulkan

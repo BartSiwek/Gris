@@ -3,6 +3,9 @@
 #include "VulkanDeviceResource.h"
 #include "VulkanAllocation.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanBuffer : public VulkanDeviceResource
 {
 public:
@@ -25,3 +28,5 @@ private:
     vk::UniqueBuffer m_buffer = {};
     VulkanAllocation m_bufferMemory = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

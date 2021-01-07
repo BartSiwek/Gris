@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanFence : public VulkanDeviceResource
 {
 public:
@@ -14,3 +17,5 @@ public:
 private:
     vk::UniqueFence m_fence;
 };
+
+}  // namespace Gris::Graphics::Vulkan

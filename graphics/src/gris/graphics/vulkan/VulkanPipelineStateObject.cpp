@@ -18,8 +18,8 @@ const std::string FRAGMENT_SHADER_PATH = "frag.spv";
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint32_t swapChainWidth, uint32_t swapChainHeight,
-                                                     const VulkanRenderPass& renderPass, const VulkanInputLayout& inputLayout)
+Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint32_t swapChainWidth, uint32_t swapChainHeight,
+                                                                             const VulkanRenderPass& renderPass, const VulkanInputLayout& inputLayout)
     : VulkanDeviceResource(device)
 {
     CreateDescriptorSetLayout();
@@ -29,7 +29,7 @@ VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::DescriptorSetLayout& VulkanPipelineStateObject::DescriptorSetLayoutHandle() const
+[[nodiscard]] const vk::DescriptorSetLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::DescriptorSetLayoutHandle() const
 {
     return m_descriptorSetLayout.get();
 }
@@ -37,7 +37,7 @@ VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::DescriptorSetLayout& VulkanPipelineStateObject::DescriptorSetLayoutHandle()
+[[nodiscard]] vk::DescriptorSetLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::DescriptorSetLayoutHandle()
 {
     return m_descriptorSetLayout.get();
 }
@@ -45,7 +45,7 @@ VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::PipelineLayout& VulkanPipelineStateObject::PipelineLayoutHandle() const
+[[nodiscard]] const vk::PipelineLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::PipelineLayoutHandle() const
 {
     return m_pipelineLayout.get();
 }
@@ -53,7 +53,7 @@ VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::PipelineLayout& VulkanPipelineStateObject::PipelineLayoutHandle()
+[[nodiscard]] vk::PipelineLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::PipelineLayoutHandle()
 {
     return m_pipelineLayout.get();
 }
@@ -61,7 +61,7 @@ VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::Pipeline& VulkanPipelineStateObject::GraphicsPipelineHandle() const
+[[nodiscard]] const vk::Pipeline& Gris::Graphics::Vulkan::VulkanPipelineStateObject::GraphicsPipelineHandle() const
 {
     return m_graphicsPipeline.get();
 }
@@ -69,14 +69,14 @@ VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::Pipeline& VulkanPipelineStateObject::GraphicsPipelineHandle()
+[[nodiscard]] vk::Pipeline& Gris::Graphics::Vulkan::VulkanPipelineStateObject::GraphicsPipelineHandle()
 {
     return m_graphicsPipeline.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanPipelineStateObject::CreateDescriptorSetLayout()
+void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateDescriptorSetLayout()
 {
     auto const uboLayoutBinding = vk::DescriptorSetLayoutBinding(
         0,
@@ -106,7 +106,7 @@ void VulkanPipelineStateObject::CreateDescriptorSetLayout()
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanPipelineStateObject::CreateGraphicsPipeline(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass& renderPass, const VulkanInputLayout & inputLayout)
+void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass& renderPass, const VulkanInputLayout & inputLayout)
 {
     m_graphicsPipeline.reset();
     m_pipelineLayout.reset();

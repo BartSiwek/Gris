@@ -7,6 +7,9 @@
 
 struct GLFWwindow;
 
+namespace Gris::Graphics::Glfw
+{
+
 class GlfwWindowMixin
 {
 public:
@@ -18,7 +21,7 @@ public:
 
     GlfwWindowMixin(GlfwWindowMixin&& other) noexcept;
     GlfwWindowMixin& operator=(GlfwWindowMixin&& other) noexcept;
- 
+
     explicit operator bool() const;
 
     [[nodiscard]] uint32_t Width() const;
@@ -30,7 +33,7 @@ public:
     void RemoveObserver(WindowObserver* observer);
 
 protected:
-    [[nodiscard]] const GLFWwindow * const WindowHandle() const;
+    [[nodiscard]] const GLFWwindow* const WindowHandle() const;
     [[nodiscard]] GLFWwindow* WindowHandle();
 
 private:
@@ -43,3 +46,4 @@ private:
     std::vector<WindowObserver*> m_observers = {};
 };
 
+}  // namespace Gris::Graphics::Glfw

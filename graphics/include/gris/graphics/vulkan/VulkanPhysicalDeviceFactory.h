@@ -6,6 +6,9 @@
 #define VULKAN_HPP_NO_EXCEPTIONS
 #include <vulkan/vulkan.hpp>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanPhysicalDevice;
 class VulkanWindowMixin;
 
@@ -23,3 +26,5 @@ private:
 
     [[nodiscard]] static vk::SampleCountFlagBits GetMaxUsableSampleCount(const vk::PhysicalDevice& physicalDevice);
 };
+
+}  // namespace Gris::Graphics::Vulkan

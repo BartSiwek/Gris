@@ -4,14 +4,14 @@
 
 // -------------------------------------------------------------------------------------------------
 
-void GlfwInstance::Init()
+void Gris::Graphics::Glfw::GlfwInstance::Init()
 {
     Instance();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void GlfwInstance::PollEvents()
+void Gris::Graphics::Glfw::GlfwInstance::PollEvents()
 {
     Instance();
     glfwPollEvents();
@@ -19,7 +19,7 @@ void GlfwInstance::PollEvents()
 
 // -------------------------------------------------------------------------------------------------
 
-GlfwInstance& GlfwInstance::Instance()
+Gris::Graphics::Glfw::GlfwInstance& Gris::Graphics::Glfw::GlfwInstance::Instance()
 {
     static GlfwInstance s_instance = {};
     return s_instance;
@@ -27,14 +27,14 @@ GlfwInstance& GlfwInstance::Instance()
 
 // -------------------------------------------------------------------------------------------------
 
-GlfwInstance::GlfwInstance()
+Gris::Graphics::Glfw::GlfwInstance::GlfwInstance()
 {
     glfwInit();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-GlfwInstance::~GlfwInstance()
+Gris::Graphics::Glfw::GlfwInstance::~GlfwInstance()
 {
     glfwTerminate();
 }

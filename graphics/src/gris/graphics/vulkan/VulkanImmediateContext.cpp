@@ -12,7 +12,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-VulkanImmediateContext::VulkanImmediateContext(VulkanDevice* device) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanImmediateContext::VulkanImmediateContext(VulkanDevice* device) : VulkanDeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -30,7 +30,7 @@ VulkanImmediateContext::VulkanImmediateContext(VulkanDevice* device) : VulkanDev
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanImmediateContext::GenerateMipmaps(const VulkanTexture& texture, const vk::Format& imageFormat, int32_t texWidth, int32_t texHeight) {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const VulkanTexture& texture, const vk::Format& imageFormat, int32_t texWidth, int32_t texHeight) {
     auto const formatProperties = ParentDevice().GetFormatProperties(imageFormat);
 
     if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear))
@@ -113,7 +113,7 @@ void VulkanImmediateContext::GenerateMipmaps(const VulkanTexture& texture, const
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanImmediateContext::CopyBufferToImage(const VulkanBuffer& buffer, const VulkanTexture& texture, uint32_t width, uint32_t height) {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBufferToImage(const VulkanBuffer& buffer, const VulkanTexture& texture, uint32_t width, uint32_t height) {
     auto commandBuffer = BeginSingleTimeCommands();
 
     auto const region = vk::BufferImageCopy(
@@ -139,7 +139,7 @@ void VulkanImmediateContext::CopyBufferToImage(const VulkanBuffer& buffer, const
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanImmediateContext::TransitionImageLayout(const VulkanTexture& texture, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout) {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::TransitionImageLayout(const VulkanTexture& texture, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout) {
     auto commandBuffer = BeginSingleTimeCommands();
 
     vk::ImageMemoryBarrier barrier(
@@ -189,7 +189,7 @@ void VulkanImmediateContext::TransitionImageLayout(const VulkanTexture& texture,
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanImmediateContext::CopyBuffer(const VulkanBuffer& srcBuffer, const VulkanBuffer& dstBuffer, vk::DeviceSize size)
+void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBuffer(const VulkanBuffer& srcBuffer, const VulkanBuffer& dstBuffer, vk::DeviceSize size)
 {
     auto commandBuffer = BeginSingleTimeCommands();
 
@@ -201,7 +201,7 @@ void VulkanImmediateContext::CopyBuffer(const VulkanBuffer& srcBuffer, const Vul
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanImmediateContext::Submit(
+void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
     VulkanDeferredContext* context,
     const std::vector<std::reference_wrapper<VulkanSemaphore>>& waitSemaphores,
     const std::vector<std::reference_wrapper<VulkanSemaphore>>& signalSemaphores,
@@ -226,7 +226,7 @@ void VulkanImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueCommandBuffer VulkanImmediateContext::BeginSingleTimeCommands() {
+[[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::VulkanImmediateContext::BeginSingleTimeCommands() {
     auto const allocInfo = vk::CommandBufferAllocateInfo(
         m_commandPool.get(),
         vk::CommandBufferLevel::ePrimary,
@@ -250,7 +250,7 @@ void VulkanImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-void VulkanImmediateContext::EndSingleTimeCommands(vk::CommandBuffer& commandBuffer) const {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::EndSingleTimeCommands(vk::CommandBuffer& commandBuffer) const {
     auto const endResult = commandBuffer.end();
     if (endResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error ending the command buffer", endResult);

@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanInputLayout;
 class VulkanRenderPass;
 
@@ -31,3 +34,5 @@ private:
     vk::UniquePipelineLayout m_pipelineLayout;
     vk::UniquePipeline m_graphicsPipeline;
 };
+
+}  // namespace Gris::Graphics::Vulkan

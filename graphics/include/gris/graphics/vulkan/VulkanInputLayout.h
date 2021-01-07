@@ -6,6 +6,9 @@
 
 #include <cstdint>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanInputLayout
 {
 public:
@@ -22,3 +25,5 @@ private:
     std::vector<vk::VertexInputBindingDescription> m_bindings = {};
     std::vector<vk::VertexInputAttributeDescription> m_attributes = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan

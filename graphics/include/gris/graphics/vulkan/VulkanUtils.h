@@ -6,16 +6,22 @@
 
 #include <optional>
 
-struct DeviceQueueFamilyIndices {
+namespace Gris::Graphics::Vulkan
+{
+
+struct DeviceQueueFamilyIndices
+{
     std::optional<uint32_t> graphicsFamily;
     std::optional<uint32_t> presentFamily;
 
-    bool IsComplete() const {
+    bool IsComplete() const
+    {
         return graphicsFamily.has_value() && presentFamily.has_value();
     }
 };
 
-struct SwapChainSupportDetails {
+struct SwapChainSupportDetails
+{
     vk::SurfaceCapabilitiesKHR capabilities;
     std::vector<vk::SurfaceFormatKHR> formats;
     std::vector<vk::PresentModeKHR> presentModes;
@@ -24,3 +30,5 @@ struct SwapChainSupportDetails {
 [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface);
 
 [[nodiscard]] std::vector<char> ReadFile(const std::string& filename);
+
+}  // namespace Gris::Graphics::Vulkan

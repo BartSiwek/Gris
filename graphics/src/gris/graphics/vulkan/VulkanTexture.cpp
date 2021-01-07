@@ -3,7 +3,7 @@
 #include <gris/graphics/vulkan/VulkanAllocator.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
 
-VulkanTexture::VulkanTexture(VulkanDevice* device, uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties) : VulkanDeviceResource(device), m_mipLevels(mipLevels)
+Gris::Graphics::Vulkan::VulkanTexture::VulkanTexture(VulkanDevice* device, uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties) : VulkanDeviceResource(device), m_mipLevels(mipLevels)
 {
     auto const imageInfo = vk::ImageCreateInfo(
         {},
@@ -33,13 +33,13 @@ VulkanTexture::VulkanTexture(VulkanDevice* device, uint32_t width, uint32_t heig
 }
 
 // TODO: Do this better
-[[nodiscard]] const vk::Image& VulkanTexture::ImageHandle() const
+[[nodiscard]] const vk::Image& Gris::Graphics::Vulkan::VulkanTexture::ImageHandle() const
 {
     return m_image.get();
 }
 
 // TODO: Do this better
-[[nodiscard]] vk::Image& VulkanTexture::ImageHandle()
+[[nodiscard]] vk::Image& Gris::Graphics::Vulkan::VulkanTexture::ImageHandle()
 {
     return m_image.get();
 }

@@ -6,6 +6,9 @@
 
 #include <cstdint>
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanBuffer;
 
 class VulkanBufferView
@@ -26,3 +29,5 @@ private:
     uint32_t m_offset = 0;
     uint32_t m_size = 0;
 };
+
+}  // namespace Gris::Graphics::Vulkan

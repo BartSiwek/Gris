@@ -2,6 +2,9 @@
 
 #include "VulkanDeviceResource.h"
 
+namespace Gris::Graphics::Vulkan
+{
+
 class VulkanBuffer;
 class VulkanTexture;
 class VulkanDeferredContext;
@@ -18,7 +21,7 @@ public:
     void TransitionImageLayout(const VulkanTexture& texture, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout);
     void CopyBuffer(const VulkanBuffer& srcBuffer, const VulkanBuffer& dstBuffer, vk::DeviceSize size);
     void Submit(VulkanDeferredContext* context, const std::vector<std::reference_wrapper<VulkanSemaphore>>& waitSemaphores,
-                const std::vector<std::reference_wrapper<VulkanSemaphore>>& signalSemaphores, VulkanFence& fence);
+        const std::vector<std::reference_wrapper<VulkanSemaphore>>& signalSemaphores, VulkanFence& fence);
 
 private:
     [[nodiscard]] vk::UniqueCommandBuffer BeginSingleTimeCommands();
@@ -27,3 +30,5 @@ private:
     vk::Queue m_graphicsQueue = {};
     vk::UniqueCommandPool m_commandPool = {};
 };
+
+}  // namespace Gris::Graphics::Vulkan
