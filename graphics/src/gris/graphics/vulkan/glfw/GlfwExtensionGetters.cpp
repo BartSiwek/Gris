@@ -1,4 +1,4 @@
-#include "GlfwExtensionGetters.h"
+#include <gris/graphics/vulkan/glfw/GlfwExtensionGetters.h>
 
 #include <GLFW/glfw3.h>
 
