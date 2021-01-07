@@ -16,32 +16,34 @@ public:
     friend class VulkanWindowMixin;
 
 private:
-    VulkanInstanceHandleBadge() {}
+    VulkanInstanceHandleBadge()
+    {
+    }
 };
 
 class VulkanInstance
 {
 public:
-    using ExtensionGetter = std::vector<const char*>(*)();
+    using ExtensionGetter = std::vector<const char *> (*)();
 
     static void InstallExtensionGetter(ExtensionGetter getter);
 
     [[nodiscard]] static vk::Instance InstanceHandle(VulkanInstanceHandleBadge badge);
     [[nodiscard]] static std::vector<vk::PhysicalDevice> EnumeratePhysicalDevices();
-    [[nodiscard]] static VulkanAllocator CreateVulkanMemoryAllocator(const vk::PhysicalDevice& physicalDevice, const vk::Device& device);
+    [[nodiscard]] static VulkanAllocator CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device);
 
-    VulkanInstance(const VulkanInstance&) = delete;
-    VulkanInstance& operator=(const VulkanInstance&) = delete;
+    VulkanInstance(const VulkanInstance &) = delete;
+    VulkanInstance & operator=(const VulkanInstance &) = delete;
 
-    VulkanInstance(VulkanInstance&&) noexcept = delete;
-    VulkanInstance& operator=(VulkanInstance&&) noexcept = delete;
+    VulkanInstance(VulkanInstance &&) noexcept = delete;
+    VulkanInstance & operator=(VulkanInstance &&) noexcept = delete;
 
     ~VulkanInstance() = default;
 
 private:
-    [[nodiscard]] static VulkanInstance& Instance();
+    [[nodiscard]] static VulkanInstance & Instance();
 
-    [[nodiscard]] static std::vector<const char*> GetRequiredExtensions();
+    [[nodiscard]] static std::vector<const char *> GetRequiredExtensions();
 
     static ExtensionGetter s_extensionGetter;
 

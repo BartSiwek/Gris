@@ -5,7 +5,8 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice* device, vk::Format swapChainFormat, vk::Format depthFormat) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice * device, vk::Format swapChainFormat, vk::Format depthFormat)
+    : VulkanDeviceResource(device)
 {
     CreateRenderPass(swapChainFormat, depthFormat);
 }
@@ -13,7 +14,7 @@ Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice* device,
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::RenderPass& Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle() const
+[[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle() const
 {
     return m_renderPass.get();
 }
@@ -21,49 +22,44 @@ Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice* device,
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::RenderPass& Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle()
+[[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle()
 {
     return m_renderPass.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanRenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat) {
-    auto const colorAttachment = vk::AttachmentDescription(
-        {},
-        swapChainFormat,
-        ParentDevice().MsaaSamples(),
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eColorAttachmentOptimal
-    );
+void Gris::Graphics::Vulkan::VulkanRenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
+{
+    auto const colorAttachment = vk::AttachmentDescription({},
+                                                           swapChainFormat,
+                                                           ParentDevice().MsaaSamples(),
+                                                           vk::AttachmentLoadOp::eClear,
+                                                           vk::AttachmentStoreOp::eStore,
+                                                           vk::AttachmentLoadOp::eDontCare,
+                                                           vk::AttachmentStoreOp::eDontCare,
+                                                           vk::ImageLayout::eUndefined,
+                                                           vk::ImageLayout::eColorAttachmentOptimal);
 
-    auto const depthAttachment = vk::AttachmentDescription(
-        {},
-        depthFormat,
-        ParentDevice().MsaaSamples(),
-        vk::AttachmentLoadOp::eClear,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::eDepthStencilAttachmentOptimal
-    );
+    auto const depthAttachment = vk::AttachmentDescription({},
+                                                           depthFormat,
+                                                           ParentDevice().MsaaSamples(),
+                                                           vk::AttachmentLoadOp::eClear,
+                                                           vk::AttachmentStoreOp::eDontCare,
+                                                           vk::AttachmentLoadOp::eDontCare,
+                                                           vk::AttachmentStoreOp::eDontCare,
+                                                           vk::ImageLayout::eUndefined,
+                                                           vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
-    auto const colorAttachmentResolve = vk::AttachmentDescription(
-        {},
-        swapChainFormat,
-        vk::SampleCountFlagBits::e1,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eStore,
-        vk::AttachmentLoadOp::eDontCare,
-        vk::AttachmentStoreOp::eDontCare,
-        vk::ImageLayout::eUndefined,
-        vk::ImageLayout::ePresentSrcKHR
-    );
+    auto const colorAttachmentResolve = vk::AttachmentDescription({},
+                                                                  swapChainFormat,
+                                                                  vk::SampleCountFlagBits::e1,
+                                                                  vk::AttachmentLoadOp::eDontCare,
+                                                                  vk::AttachmentStoreOp::eStore,
+                                                                  vk::AttachmentLoadOp::eDontCare,
+                                                                  vk::AttachmentStoreOp::eDontCare,
+                                                                  vk::ImageLayout::eUndefined,
+                                                                  vk::ImageLayout::ePresentSrcKHR);
 
     auto const colorAttachmentRef = vk::AttachmentReference(0, vk::ImageLayout::eColorAttachmentOptimal);
     auto const depthAttachmentRef = vk::AttachmentReference(1, vk::ImageLayout::eDepthStencilAttachmentOptimal);
@@ -72,29 +68,25 @@ void Gris::Graphics::Vulkan::VulkanRenderPass::CreateRenderPass(vk::Format swapC
     auto const attachments = std::array{ colorAttachment, depthAttachment, colorAttachmentResolve };
 
     auto const subpasses = std::array{
-        vk::SubpassDescription(
-            {},
-            vk::PipelineBindPoint::eGraphics,
-            0,
-            nullptr,
-            1,
-            &colorAttachmentRef,
-            &colorAttachmentResolveRef,
-            &depthAttachmentRef,
-            0,
-            nullptr
-        )
+        vk::SubpassDescription({},
+                               vk::PipelineBindPoint::eGraphics,
+                               0,
+                               nullptr,
+                               1,
+                               &colorAttachmentRef,
+                               &colorAttachmentResolveRef,
+                               &depthAttachmentRef,
+                               0,
+                               nullptr)
     };
 
     auto const dependencies = std::array{
-        vk::SubpassDependency(
-            VK_SUBPASS_EXTERNAL,
-            0,
-            vk::PipelineStageFlagBits::eColorAttachmentOutput,
-            vk::PipelineStageFlagBits::eColorAttachmentOutput,
-            {},
-            vk::AccessFlagBits::eColorAttachmentWrite
-        )
+        vk::SubpassDependency(VK_SUBPASS_EXTERNAL,
+                              0,
+                              vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                              vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                              {},
+                              vk::AccessFlagBits::eColorAttachmentWrite)
     };
 
     auto const renderPassInfo = vk::RenderPassCreateInfo({}, attachments, subpasses, dependencies);

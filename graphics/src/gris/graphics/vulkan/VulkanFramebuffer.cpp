@@ -1,12 +1,13 @@
 ﻿#include <gris/graphics/vulkan/VulkanFramebuffer.h>
 
+#include <gris/graphics/vulkan/VulkanEngineException.h>
 #include <gris/graphics/vulkan/VulkanRenderPass.h>
 #include <gris/graphics/vulkan/VulkanTextureView.h>
-#include <gris/graphics/vulkan/VulkanEngineException.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanFramebuffer::VulkanFramebuffer(VulkanDevice* device, const VulkanTextureView& colorImageView, const VulkanTextureView& depthImageView, const VulkanTextureView& swapChainImageView, const VulkanRenderPass& renderPass, uint32_t width, uint32_t height) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanFramebuffer::VulkanFramebuffer(VulkanDevice * device, const VulkanTextureView & colorImageView, const VulkanTextureView & depthImageView, const VulkanTextureView & swapChainImageView, const VulkanRenderPass & renderPass, uint32_t width, uint32_t height)
+    : VulkanDeviceResource(device)
 {
     std::array attachments = { colorImageView.ImageViewHandle(), depthImageView.ImageViewHandle(), swapChainImageView.ImageViewHandle() };
 
@@ -22,7 +23,7 @@ Gris::Graphics::Vulkan::VulkanFramebuffer::VulkanFramebuffer(VulkanDevice* devic
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-const vk::Framebuffer& Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHandle() const
+const vk::Framebuffer & Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHandle() const
 {
     return m_framebuffer.get();
 }
@@ -30,7 +31,7 @@ const vk::Framebuffer& Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHan
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-vk::Framebuffer& Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHandle()
+vk::Framebuffer & Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHandle()
 {
     return m_framebuffer.get();
 }

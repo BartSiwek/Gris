@@ -1,10 +1,10 @@
 ﻿#include <gris/graphics/vulkan/VulkanPipelineStateObject.h>
 
-#include <gris/graphics/vulkan/VulkanRenderPass.h>
-#include <gris/graphics/vulkan/VulkanShader.h>
-#include <gris/graphics/vulkan/VulkanInputLayout.h>
 #include <gris/graphics/vulkan/VulkanDevice.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
+#include <gris/graphics/vulkan/VulkanInputLayout.h>
+#include <gris/graphics/vulkan/VulkanRenderPass.h>
+#include <gris/graphics/vulkan/VulkanShader.h>
 
 // -------------------------------------------------------------------------------------------------
 
@@ -14,12 +14,11 @@ namespace
 const std::string VERTEX_SHADER_PATH = "vert.spv";
 const std::string FRAGMENT_SHADER_PATH = "frag.spv";
 
-}  // namespace <anonymous>
+}  // namespace
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice* device, uint32_t swapChainWidth, uint32_t swapChainHeight,
-                                                                             const VulkanRenderPass& renderPass, const VulkanInputLayout& inputLayout)
+Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice * device, uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout)
     : VulkanDeviceResource(device)
 {
     CreateDescriptorSetLayout();
@@ -29,7 +28,7 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::DescriptorSetLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::DescriptorSetLayoutHandle() const
+[[nodiscard]] const vk::DescriptorSetLayout & Gris::Graphics::Vulkan::VulkanPipelineStateObject::DescriptorSetLayoutHandle() const
 {
     return m_descriptorSetLayout.get();
 }
@@ -37,7 +36,7 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::DescriptorSetLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::DescriptorSetLayoutHandle()
+[[nodiscard]] vk::DescriptorSetLayout & Gris::Graphics::Vulkan::VulkanPipelineStateObject::DescriptorSetLayoutHandle()
 {
     return m_descriptorSetLayout.get();
 }
@@ -45,7 +44,7 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::PipelineLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::PipelineLayoutHandle() const
+[[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::VulkanPipelineStateObject::PipelineLayoutHandle() const
 {
     return m_pipelineLayout.get();
 }
@@ -53,7 +52,7 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::PipelineLayout& Gris::Graphics::Vulkan::VulkanPipelineStateObject::PipelineLayoutHandle()
+[[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::VulkanPipelineStateObject::PipelineLayoutHandle()
 {
     return m_pipelineLayout.get();
 }
@@ -61,7 +60,7 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::Pipeline& Gris::Graphics::Vulkan::VulkanPipelineStateObject::GraphicsPipelineHandle() const
+[[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::VulkanPipelineStateObject::GraphicsPipelineHandle() const
 {
     return m_graphicsPipeline.get();
 }
@@ -69,7 +68,7 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::Pipeline& Gris::Graphics::Vulkan::VulkanPipelineStateObject::GraphicsPipelineHandle()
+[[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::VulkanPipelineStateObject::GraphicsPipelineHandle()
 {
     return m_graphicsPipeline.get();
 }
@@ -78,21 +77,17 @@ Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(Vul
 
 void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateDescriptorSetLayout()
 {
-    auto const uboLayoutBinding = vk::DescriptorSetLayoutBinding(
-        0,
-        vk::DescriptorType::eUniformBuffer,
-        1,
-        vk::ShaderStageFlagBits::eVertex,
-        nullptr
-    );
+    auto const uboLayoutBinding = vk::DescriptorSetLayoutBinding(0,
+                                                                 vk::DescriptorType::eUniformBuffer,
+                                                                 1,
+                                                                 vk::ShaderStageFlagBits::eVertex,
+                                                                 nullptr);
 
-    auto const samplerLayoutBinding = vk::DescriptorSetLayoutBinding(
-        1,
-        vk::DescriptorType::eCombinedImageSampler,
-        1,
-        vk::ShaderStageFlagBits::eFragment,
-        nullptr
-    );
+    auto const samplerLayoutBinding = vk::DescriptorSetLayoutBinding(1,
+                                                                     vk::DescriptorType::eCombinedImageSampler,
+                                                                     1,
+                                                                     vk::ShaderStageFlagBits::eFragment,
+                                                                     nullptr);
 
     auto const bindings = std::array{ uboLayoutBinding, samplerLayoutBinding };
     auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo({}, bindings);
@@ -106,7 +101,7 @@ void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateDescriptorSetLayou
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass& renderPass, const VulkanInputLayout & inputLayout)
+void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout)
 {
     m_graphicsPipeline.reset();
     m_pipelineLayout.reset();
@@ -115,57 +110,48 @@ void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(u
     auto fragmentShader = ParentDevice().CreateShader(ReadFile(FRAGMENT_SHADER_PATH));
 
     auto const shaderStages = std::array{
-        vk::PipelineShaderStageCreateInfo(
-            {},
-            vk::ShaderStageFlagBits::eVertex,
-            vertexShader.ModuleHandle(),
-            "main"
-        ),
-        vk::PipelineShaderStageCreateInfo(
-            {},
-            vk::ShaderStageFlagBits::eFragment,
-            fragmentShader.ModuleHandle(),
-            "main"
-        )
+        vk::PipelineShaderStageCreateInfo({},
+                                          vk::ShaderStageFlagBits::eVertex,
+                                          vertexShader.ModuleHandle(),
+                                          "main"),
+        vk::PipelineShaderStageCreateInfo({},
+                                          vk::ShaderStageFlagBits::eFragment,
+                                          fragmentShader.ModuleHandle(),
+                                          "main")
     };
 
-    auto const& bindingDescriptors = inputLayout.BindingDescription();
-    auto const& attributeDescriptors = inputLayout.AttributeDescriptions();
+    auto const & bindingDescriptors = inputLayout.BindingDescription();
+    auto const & attributeDescriptors = inputLayout.AttributeDescriptions();
     vk::PipelineVertexInputStateCreateInfo vertexInputInfo({}, bindingDescriptors, attributeDescriptors);
 
     vk::PipelineInputAssemblyStateCreateInfo inputAssembly({}, vk::PrimitiveTopology::eTriangleList, false);
 
     auto const viewports = std::array{
-        vk::Viewport(
-            0.0f,
-            0.0f,
-            static_cast<float>(swapChainWidth),
-            static_cast<float>(swapChainHeight),
-            0.0f,
-            1.0f
-        )
+        vk::Viewport(0.0f,
+                     0.0f,
+                     static_cast<float>(swapChainWidth),
+                     static_cast<float>(swapChainHeight),
+                     0.0f,
+                     1.0f)
     };
     auto const scissors = std::array{
         vk::Rect2D(
             { 0, 0 },
-            { swapChainWidth, swapChainHeight }
-        )
+            { swapChainWidth, swapChainHeight })
     };
     auto const viewportState = vk::PipelineViewportStateCreateInfo({}, viewports, scissors);
 
-    auto const rasterizer = vk::PipelineRasterizationStateCreateInfo(
-        {},
-        false,
-        false,
-        vk::PolygonMode::eFill,
-        vk::CullModeFlagBits::eBack,
-        vk::FrontFace::eCounterClockwise,
-        false,
-        0.0f,
-        0.0f,
-        0.0f,
-        1.0f
-    );
+    auto const rasterizer = vk::PipelineRasterizationStateCreateInfo({},
+                                                                     false,
+                                                                     false,
+                                                                     vk::PolygonMode::eFill,
+                                                                     vk::CullModeFlagBits::eBack,
+                                                                     vk::FrontFace::eCounterClockwise,
+                                                                     false,
+                                                                     0.0f,
+                                                                     0.0f,
+                                                                     0.0f,
+                                                                     1.0f);
 
     auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo({}, ParentDevice().MsaaSamples(), false);
 
@@ -175,29 +161,24 @@ void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(u
         true,
         vk::CompareOp::eLess,
         false,
-        false
-    );
+        false);
 
     auto const colorBlendAttachments = std::array{
-        vk::PipelineColorBlendAttachmentState(
-            false,
-            vk::BlendFactor::eZero,
-            vk::BlendFactor::eZero,
-            vk::BlendOp::eAdd,
-            vk::BlendFactor::eZero,
-            vk::BlendFactor::eZero,
-            vk::BlendOp::eAdd,
-            vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA
-        )
+        vk::PipelineColorBlendAttachmentState(false,
+                                              vk::BlendFactor::eZero,
+                                              vk::BlendFactor::eZero,
+                                              vk::BlendOp::eAdd,
+                                              vk::BlendFactor::eZero,
+                                              vk::BlendFactor::eZero,
+                                              vk::BlendOp::eAdd,
+                                              vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA)
     };
 
-    auto const colorBlending = vk::PipelineColorBlendStateCreateInfo(
-        {},
-        false,
-        vk::LogicOp::eCopy,
-        colorBlendAttachments,
-        { 0.0f, 0.0f, 0.0f, 0.0f }
-    );
+    auto const colorBlending = vk::PipelineColorBlendStateCreateInfo({},
+                                                                     false,
+                                                                     vk::LogicOp::eCopy,
+                                                                     colorBlendAttachments,
+                                                                     { 0.0f, 0.0f, 0.0f, 0.0f });
 
     auto const descriptorSetLayouts = std::array{ m_descriptorSetLayout.get() };
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo({}, descriptorSetLayouts);
@@ -208,24 +189,22 @@ void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(u
 
     m_pipelineLayout = std::move(createPipelineLayoutResult.value);
 
-    auto const pipelineInfo = vk::GraphicsPipelineCreateInfo(
-        {},
-        shaderStages,
-        &vertexInputInfo,
-        &inputAssembly,
-        {},
-        &viewportState,
-        &rasterizer,
-        &multisampleInfo,
-        &depthStencil,
-        &colorBlending,
-        {},
-        m_pipelineLayout.get(),
-        renderPass.RenderPassHandle(),
-        0,
-        {},
-        0
-    );
+    auto const pipelineInfo = vk::GraphicsPipelineCreateInfo({},
+                                                             shaderStages,
+                                                             &vertexInputInfo,
+                                                             &inputAssembly,
+                                                             {},
+                                                             &viewportState,
+                                                             &rasterizer,
+                                                             &multisampleInfo,
+                                                             &depthStencil,
+                                                             &colorBlending,
+                                                             {},
+                                                             m_pipelineLayout.get(),
+                                                             renderPass.RenderPassHandle(),
+                                                             0,
+                                                             {},
+                                                             0);
 
     auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo);
     if (createGraphicsPipelineResult.result != vk::Result::eSuccess)

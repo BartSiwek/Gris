@@ -39,41 +39,40 @@ void assert_false_slow()
     GRIS_SLOW_ASSERT(false, "False");
 }
 
-}  // namespace <anonymous>
+}  // namespace
 
 TEST_CASE("Assert with always, fast and slow disabled", "[assert rules]")
 {
-  Gris::Assert::SetLoggingCallback(&Gris::Assert::NullLoggigCallback);
-  Gris::Assert::SetFailureHandler(&Gris::Assert::ThrowHandler);
+    Gris::Assert::SetLoggingCallback(&Gris::Assert::NullLoggigCallback);
+    Gris::Assert::SetFailureHandler(&Gris::Assert::ThrowHandler);
 
-  SECTION("Always does not fire on success")
-  {
-    CHECK_NOTHROW(assert_true_always());
-  }
+    SECTION("Always does not fire on success")
+    {
+        CHECK_NOTHROW(assert_true_always());
+    }
 
-  SECTION("Always fires on failure")
-  {
-    CHECK_THROWS_AS(assert_false_always(), Gris::Assert::AssertionException);
-  }
+    SECTION("Always fires on failure")
+    {
+        CHECK_THROWS_AS(assert_false_always(), Gris::Assert::AssertionException);
+    }
 
-  SECTION("Fast does not fire on success")
-  {
-    CHECK_NOTHROW(assert_true_fast());
-  }
+    SECTION("Fast does not fire on success")
+    {
+        CHECK_NOTHROW(assert_true_fast());
+    }
 
-  SECTION("Fast fires on failure")
-  {
-    CHECK_THROWS_AS(assert_false_fast(), Gris::Assert::AssertionException);
-  }
+    SECTION("Fast fires on failure")
+    {
+        CHECK_THROWS_AS(assert_false_fast(), Gris::Assert::AssertionException);
+    }
 
-  SECTION("Slow does not fire on success")
-  {
-    CHECK_NOTHROW(assert_true_slow());
-  }
+    SECTION("Slow does not fire on success")
+    {
+        CHECK_NOTHROW(assert_true_slow());
+    }
 
-  SECTION("Slow does not fire on failure (disabled)")
-  {
-    CHECK_NOTHROW(assert_false_slow());
-  }
+    SECTION("Slow does not fire on failure (disabled)")
+    {
+        CHECK_NOTHROW(assert_false_slow());
+    }
 }
-

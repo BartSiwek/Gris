@@ -4,7 +4,8 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice* device, bool signaled) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice * device, bool signaled)
+    : VulkanDeviceResource(device)
 {
     vk::FenceCreateFlags flags;
     if (signaled)
@@ -22,7 +23,7 @@ Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice* device, bool sign
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::Fence& Gris::Graphics::Vulkan::VulkanFence::FenceHandle() const
+[[nodiscard]] const vk::Fence & Gris::Graphics::Vulkan::VulkanFence::FenceHandle() const
 {
     return m_fence.get();
 }
@@ -30,7 +31,7 @@ Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice* device, bool sign
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::Fence& Gris::Graphics::Vulkan::VulkanFence::FenceHandle()
+[[nodiscard]] vk::Fence & Gris::Graphics::Vulkan::VulkanFence::FenceHandle()
 {
     return m_fence.get();
 }

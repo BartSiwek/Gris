@@ -6,9 +6,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::QuerySwapChainSupport(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface)
+[[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::QuerySwapChainSupport(const vk::PhysicalDevice & physicalDevice,
+                                                                                                            const vk::SurfaceKHR & surface)
 {
-    using namespace Gris::Graphics::Vulkan;
+    using namespace Vulkan;
 
     auto const surfaceCapabilitiesResult = physicalDevice.getSurfaceCapabilitiesKHR(surface);
     if (surfaceCapabilitiesResult.result != vk::Result::eSuccess)
@@ -22,16 +23,20 @@
     if (surfacePresentModesResult.result != vk::Result::eSuccess)
         throw VulkanEngineException("Error getting surface present modes", surfacePresentModesResult);
 
-    return SwapChainSupportDetails{ surfaceCapabilitiesResult.value, surfaceFormatsResult.value, surfacePresentModesResult.value };
+    return SwapChainSupportDetails{ surfaceCapabilitiesResult.value,
+                                    surfaceFormatsResult.value,
+                                    surfacePresentModesResult.value };
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<char> Gris::Graphics::Vulkan::ReadFile(const std::string& filename) {
+[[nodiscard]] std::vector<char> Gris::Graphics::Vulkan::ReadFile(const std::string & filename)
+{
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
-    if (!file.is_open()) {
-        throw Gris::Graphics::EngineException("Failed to open file!");
+    if (!file.is_open())
+    {
+        throw EngineException("Failed to open file!");
     }
 
     size_t fileSize = static_cast<size_t>(file.tellg());

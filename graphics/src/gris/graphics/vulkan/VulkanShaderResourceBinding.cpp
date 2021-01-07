@@ -1,13 +1,14 @@
 ﻿#include <gris/graphics/vulkan/VulkanShaderResourceBinding.h>
 
-#include <gris/graphics/vulkan/VulkanSampler.h>
-#include <gris/graphics/vulkan/VulkanTextureView.h>
 #include <gris/graphics/vulkan/VulkanBufferView.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
+#include <gris/graphics/vulkan/VulkanSampler.h>
+#include <gris/graphics/vulkan/VulkanTextureView.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanShaderResourceBinding::VulkanShaderResourceBinding(VulkanPipelineStateObject* pso, uint32_t frameCount) : VulkanPipelineStateObjectResource(pso)
+Gris::Graphics::Vulkan::VulkanShaderResourceBinding::VulkanShaderResourceBinding(VulkanPipelineStateObject * pso, uint32_t frameCount)
+    : VulkanPipelineStateObjectResource(pso)
 {
     m_samplers.resize(frameCount);
     m_textureViews.resize(frameCount);
@@ -17,7 +18,7 @@ Gris::Graphics::Vulkan::VulkanShaderResourceBinding::VulkanShaderResourceBinding
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::DescriptorSet& Gris::Graphics::Vulkan::VulkanShaderResourceBinding::DescriptorSetHandle(uint32_t frameIndex) const
+[[nodiscard]] const vk::DescriptorSet & Gris::Graphics::Vulkan::VulkanShaderResourceBinding::DescriptorSetHandle(uint32_t frameIndex) const
 {
     return m_descriptorSets[frameIndex];
 }
@@ -25,28 +26,28 @@ Gris::Graphics::Vulkan::VulkanShaderResourceBinding::VulkanShaderResourceBinding
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::DescriptorSet& Gris::Graphics::Vulkan::VulkanShaderResourceBinding::DescriptorSetHandle(uint32_t frameIndex)
+[[nodiscard]] vk::DescriptorSet & Gris::Graphics::Vulkan::VulkanShaderResourceBinding::DescriptorSetHandle(uint32_t frameIndex)
 {
     return m_descriptorSets[frameIndex];
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetSampler(uint32_t frameIndex, const std::string& samplerName, const VulkanSampler& sampler)
+void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetSampler(uint32_t frameIndex, const std::string & samplerName, const VulkanSampler & sampler)
 {
     m_samplers[frameIndex][samplerName] = &sampler;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetImageView(uint32_t frameIndex, const std::string& imageName, const VulkanTextureView& textureView)
+void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetImageView(uint32_t frameIndex, const std::string & imageName, const VulkanTextureView & textureView)
 {
     m_textureViews[frameIndex][imageName] = &textureView;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetUniformBuffer(uint32_t frameIndex, const std::string& bufferName, const VulkanBufferView& bufferView)
+void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetUniformBuffer(uint32_t frameIndex, const std::string & bufferName, const VulkanBufferView & bufferView)
 {
     m_bufferViews[frameIndex][bufferName] = &bufferView;
 }
@@ -54,7 +55,8 @@ void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::SetUniformBuffer(uint3
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Cook descriptor pool into device
-void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::CreateDescriptorSets() {
+void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::CreateDescriptorSets()
+{
     auto const layoutCount = m_textureViews.size();
     std::vector<vk::DescriptorSetLayout> layouts(layoutCount, ParentPipelineStateObject().DescriptorSetLayoutHandle());
     auto const allocInfo = vk::DescriptorSetAllocateInfo(DescriptorPoolHandle(), layouts);
@@ -67,7 +69,7 @@ void Gris::Graphics::Vulkan::VulkanShaderResourceBinding::CreateDescriptorSets()
 
     for (size_t i = 0; i < layoutCount; i++)
     {
-        auto const& bufferView = m_bufferViews[i]["ubo"];
+        auto const & bufferView = m_bufferViews[i]["ubo"];
         std::array bufferInfo = { vk::DescriptorBufferInfo(bufferView->BufferHandle(), bufferView->Offset(), bufferView->Size()) };
         std::array imageInfo = { vk::DescriptorImageInfo(m_samplers[i]["texSampler"]->SamplerHandle(), m_textureViews[i]["texSampler"]->ImageViewHandle(), vk::ImageLayout::eShaderReadOnlyOptimal) };
 

@@ -11,7 +11,8 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanDeferredContext::VulkanDeferredContext(VulkanDevice* device) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanDeferredContext::VulkanDeferredContext(VulkanDevice * device)
+    : VulkanDeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -35,7 +36,7 @@ Gris::Graphics::Vulkan::VulkanDeferredContext::VulkanDeferredContext(VulkanDevic
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::CommandBuffer& Gris::Graphics::Vulkan::VulkanDeferredContext::CommandBufferHandle()
+[[nodiscard]] vk::CommandBuffer & Gris::Graphics::Vulkan::VulkanDeferredContext::CommandBufferHandle()
 {
     return m_commandBuffers[m_frameIndex].get();
 }
@@ -53,11 +54,11 @@ void Gris::Graphics::Vulkan::VulkanDeferredContext::Begin()
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanDeferredContext::BeginRenderPass(const VulkanRenderPass& renderPass, const VulkanFramebuffer& framebuffer, const vk::Extent2D& extent)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BeginRenderPass(const VulkanRenderPass & renderPass, const VulkanFramebuffer & framebuffer, const vk::Extent2D & extent)
 {
     std::array<vk::ClearValue, 2> clearValues = {
-    vk::ClearColorValue(std::array{ 0.0f, 0.0f, 0.0f, 1.0f }),
-    vk::ClearDepthStencilValue(1.0f, 0)
+        vk::ClearColorValue(std::array{ 0.0f, 0.0f, 0.0f, 1.0f }),
+        vk::ClearDepthStencilValue(1.0f, 0)
     };
 
     auto const renderPassInfo = vk::RenderPassBeginInfo(renderPass.RenderPassHandle(), framebuffer.FramebufferHandle(), vk::Rect2D({ 0, 0 }, extent), clearValues);
@@ -67,14 +68,14 @@ void Gris::Graphics::Vulkan::VulkanDeferredContext::BeginRenderPass(const Vulkan
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanDeferredContext::BindPipeline(const VulkanPipelineStateObject& pso)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindPipeline(const VulkanPipelineStateObject & pso)
 {
     m_commandBuffers[m_frameIndex]->bindPipeline(vk::PipelineBindPoint::eGraphics, pso.GraphicsPipelineHandle());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanDeferredContext::BindVertexBuffer(const VulkanBufferView& bufferView)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindVertexBuffer(const VulkanBufferView & bufferView)
 {
     std::array vertexBuffers = { bufferView.BufferHandle() };
     std::array offsets = { static_cast<vk::DeviceSize>(bufferView.Offset()) };
@@ -83,14 +84,14 @@ void Gris::Graphics::Vulkan::VulkanDeferredContext::BindVertexBuffer(const Vulka
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanDeferredContext::BindIndexBuffer(const VulkanBufferView& bufferView)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindIndexBuffer(const VulkanBufferView & bufferView)
 {
     m_commandBuffers[m_frameIndex]->bindIndexBuffer(bufferView.BufferHandle(), bufferView.Offset(), vk::IndexType::eUint32);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanDeferredContext::BindDescriptorSet(const VulkanPipelineStateObject& pso, const VulkanShaderResourceBinding& srb)
+void Gris::Graphics::Vulkan::VulkanDeferredContext::BindDescriptorSet(const VulkanPipelineStateObject & pso, const VulkanShaderResourceBinding & srb)
 {
     std::array descriptorSets = { srb.DescriptorSetHandle(m_frameIndex) };
     m_commandBuffers[m_frameIndex]->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {});

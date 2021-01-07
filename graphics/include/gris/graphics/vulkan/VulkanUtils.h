@@ -27,8 +27,9 @@ struct SwapChainSupportDetails
     std::vector<vk::PresentModeKHR> presentModes;
 };
 
-[[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(const vk::PhysicalDevice& physicalDevice, const vk::SurfaceKHR& surface);
+[[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(const vk::PhysicalDevice & physicalDevice,
+                                                            const vk::SurfaceKHR & surface);
 
-[[nodiscard]] std::vector<char> ReadFile(const std::string& filename);
+[[nodiscard]] std::vector<char> ReadFile(const std::string & filename);
 
 }  // namespace Gris::Graphics::Vulkan

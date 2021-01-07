@@ -2,8 +2,8 @@
 
 #include "ValidationLayers.h"
 
-#include <gris/graphics/vulkan/VulkanEngineException.h>
 #include <gris/graphics/vulkan/VulkanAllocator.h>
+#include <gris/graphics/vulkan/VulkanEngineException.h>
 
 #include <gris/assert.h>
 
@@ -17,9 +17,9 @@ namespace
 {
 
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-    const VkDebugUtilsMessageTypeFlagsEXT messageType,
-    const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-    void* /* pUserData */)
+                                             const VkDebugUtilsMessageTypeFlagsEXT messageType,
+                                             const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData,
+                                             void * /* pUserData */)
 {
 
     switch (messageSeverity)
@@ -62,7 +62,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
     return VK_FALSE;
 }
 
-}  // namespace <anonymous>
+}  // namespace
 
 // -------------------------------------------------------------------------------------------------
 
@@ -96,20 +96,18 @@ void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGet
 
 [[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocator Gris::Graphics::Vulkan::VulkanInstance::CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
 {
-    const vma::AllocatorCreateInfo allocatorInfo(
-        {},
-        physicalDevice,
-        device,
-        0,
-        nullptr,
-        nullptr,
-        0,
-        nullptr,
-        nullptr,
-        nullptr,
-        Instance().m_instance.get(),
-        VK_API_VERSION_1_0
-    );
+    const vma::AllocatorCreateInfo allocatorInfo({},
+                                                 physicalDevice,
+                                                 device,
+                                                 0,
+                                                 nullptr,
+                                                 nullptr,
+                                                 0,
+                                                 nullptr,
+                                                 nullptr,
+                                                 nullptr,
+                                                 Instance().m_instance.get(),
+                                                 VK_API_VERSION_1_0);
 
     auto const allocatorCreateResult = vma::createAllocator(allocatorInfo);
 
@@ -121,7 +119,7 @@ void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGet
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanInstance& Gris::Graphics::Vulkan::VulkanInstance::Instance()
+Gris::Graphics::Vulkan::VulkanInstance & Gris::Graphics::Vulkan::VulkanInstance::Instance()
 {
     static VulkanInstance s_instance = {};
     return s_instance;
@@ -129,7 +127,7 @@ Gris::Graphics::Vulkan::VulkanInstance& Gris::Graphics::Vulkan::VulkanInstance::
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<const char*> Gris::Graphics::Vulkan::VulkanInstance::GetRequiredExtensions()
+[[nodiscard]] std::vector<const char *> Gris::Graphics::Vulkan::VulkanInstance::GetRequiredExtensions()
 {
     GRIS_ALAWYS_ASSERT(s_extensionGetter != nullptr, "Extension getter cannot be null");
     auto extensions = s_extensionGetter();
@@ -159,15 +157,13 @@ void Gris::Graphics::Vulkan::VulkanInstance::CreateInstance()
             throw VulkanEngineException("Requested validation layers not found");
     }
 
-    vk::ApplicationInfo appInfo(
-        "Vulkan tutorial",
-        VK_MAKE_VERSION(1, 0, 0),
-        "No Engine",
-        VK_MAKE_VERSION(1, 0, 0),
-        VK_API_VERSION_1_0
-    );
+    vk::ApplicationInfo appInfo("Vulkan tutorial",
+                                VK_MAKE_VERSION(1, 0, 0),
+                                "No Engine",
+                                VK_MAKE_VERSION(1, 0, 0),
+                                VK_API_VERSION_1_0);
 
-    std::vector<const char*> enabledLayers;
+    std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)
         enabledLayers.insert(enabledLayers.begin(), VALIDATION_LAYERS.begin(), VALIDATION_LAYERS.end());
 
@@ -189,13 +185,11 @@ void Gris::Graphics::Vulkan::VulkanInstance::SetupDebugMessenger()
     if constexpr (!ENABLE_VALIDATION_LAYERS)
         return;
 
-    auto const createInfo = vk::DebugUtilsMessengerCreateInfoEXT(
-        {},
-        vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
-        vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-        &DebugCallback,
-        nullptr
-    );
+    auto const createInfo = vk::DebugUtilsMessengerCreateInfoEXT({},
+                                                                 vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
+                                                                 vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
+                                                                 &DebugCallback,
+                                                                 nullptr);
 
     auto createDebugUtilsMessengerResult = m_instance->createDebugUtilsMessengerEXTUnique(createInfo, nullptr, m_dispatch);
     if (createDebugUtilsMessengerResult.result != vk::Result::eSuccess)

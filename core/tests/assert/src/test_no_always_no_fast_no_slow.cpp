@@ -39,41 +39,40 @@ void assert_false_slow()
     GRIS_SLOW_ASSERT(1 == 2, "One is not equal to two");
 }
 
-}  // namespace <anonymous>
+}  // namespace
 
 TEST_CASE("Assert with always disabled, fast disabled and slow disabled", "[assert rules]")
 {
-  Gris::Assert::SetLoggingCallback(&Gris::Assert::NullLoggigCallback);
-  Gris::Assert::SetFailureHandler(&Gris::Assert::ThrowHandler);
+    Gris::Assert::SetLoggingCallback(&Gris::Assert::NullLoggigCallback);
+    Gris::Assert::SetFailureHandler(&Gris::Assert::ThrowHandler);
 
-  SECTION("Always does not fire on success")
-  {
-    CHECK_NOTHROW(assert_true_always());
-  }
+    SECTION("Always does not fire on success")
+    {
+        CHECK_NOTHROW(assert_true_always());
+    }
 
-  SECTION("Always does not fire on failure (disabled)")
-  {
-    CHECK_NOTHROW(assert_false_always());
-  }
+    SECTION("Always does not fire on failure (disabled)")
+    {
+        CHECK_NOTHROW(assert_false_always());
+    }
 
-  SECTION("Fast does not fire on success")
-  {
-    CHECK_NOTHROW(assert_true_fast());
-  }
+    SECTION("Fast does not fire on success")
+    {
+        CHECK_NOTHROW(assert_true_fast());
+    }
 
-  SECTION("Fast does not fire on failure (disabled)")
-  {
-    CHECK_NOTHROW(assert_false_fast());
-  }
+    SECTION("Fast does not fire on failure (disabled)")
+    {
+        CHECK_NOTHROW(assert_false_fast());
+    }
 
-  SECTION("Slow does not fire on success")
-  {
-    CHECK_NOTHROW(assert_true_slow());
-  }
+    SECTION("Slow does not fire on success")
+    {
+        CHECK_NOTHROW(assert_true_slow());
+    }
 
-  SECTION("Slow does not fire on failure (disabled)")
-  {
-    CHECK_NOTHROW(assert_false_slow());
-  }
+    SECTION("Slow does not fire on failure (disabled)")
+    {
+        CHECK_NOTHROW(assert_false_slow());
+    }
 }
-

@@ -15,17 +15,17 @@ class VulkanShaderResourceBinding;
 class VulkanDeferredContext : public VulkanDeviceResource
 {
 public:
-    VulkanDeferredContext(VulkanDevice* device);
+    VulkanDeferredContext(VulkanDevice * device);
 
     // TODO: Do this better
-    [[nodiscard]] vk::CommandBuffer& CommandBufferHandle();
+    [[nodiscard]] vk::CommandBuffer & CommandBufferHandle();
 
     void Begin();
-    void BeginRenderPass(const VulkanRenderPass& renderPass, const VulkanFramebuffer& framebuffer, const vk::Extent2D& extent);
-    void BindPipeline(const VulkanPipelineStateObject& pso);
-    void BindVertexBuffer(const VulkanBufferView& bufferView);
-    void BindIndexBuffer(const VulkanBufferView& bufferView);
-    void BindDescriptorSet(const VulkanPipelineStateObject& pso, const VulkanShaderResourceBinding& srb);
+    void BeginRenderPass(const VulkanRenderPass & renderPass, const VulkanFramebuffer & framebuffer, const vk::Extent2D & extent);
+    void BindPipeline(const VulkanPipelineStateObject & pso);
+    void BindVertexBuffer(const VulkanBufferView & bufferView);
+    void BindIndexBuffer(const VulkanBufferView & bufferView);
+    void BindDescriptorSet(const VulkanPipelineStateObject & pso, const VulkanShaderResourceBinding & srb);
     void DrawIndexed(uint32_t indexCount);
     void EndRenderPass();
     void End();

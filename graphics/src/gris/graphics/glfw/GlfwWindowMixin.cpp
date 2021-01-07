@@ -6,7 +6,9 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, const uint32_t height, const std::string& title) : m_width(width), m_height(height)
+Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, const uint32_t height, const std::string & title)
+    : m_width(width)
+    , m_height(height)
 {
     GlfwInstance::Init();
 
@@ -14,11 +16,11 @@ Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, con
 
     m_window = glfwCreateWindow(m_width, m_height, title.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(m_window, this);
-    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow* window, const int width, const int height)
-    {
-        auto* windowPtr = static_cast<GlfwWindowMixin*>(glfwGetWindowUserPointer(window));
-        windowPtr->OnSizeChanged(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
-    });
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow * window, const int width, const int height)
+                                   {
+                                       auto * windowPtr = static_cast<GlfwWindowMixin *>(glfwGetWindowUserPointer(window));
+                                       windowPtr->OnSizeChanged(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+                                   });
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -30,18 +32,20 @@ Gris::Graphics::Glfw::GlfwWindowMixin::~GlfwWindowMixin()
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(GlfwWindowMixin&& other) noexcept
+Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(GlfwWindowMixin && other) noexcept
     : m_width(std::exchange(other.m_width, 0))
     , m_height(std::exchange(other.m_height, 0))
     , m_window(std::exchange(other.m_window, nullptr))
     , m_observers(std::exchange(other.m_observers, {}))
-{}
+{
+}
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin& Gris::Graphics::Glfw::GlfwWindowMixin::operator=(GlfwWindowMixin&& other) noexcept
+Gris::Graphics::Glfw::GlfwWindowMixin & Gris::Graphics::Glfw::GlfwWindowMixin::operator=(GlfwWindowMixin && other) noexcept
 {
-    if (this != &other) {
+    if (this != &other)
+    {
         m_width = std::exchange(other.m_width, 0);
         m_height = std::exchange(other.m_height, 0);
         m_window = std::exchange(other.m_window, nullptr);
@@ -81,14 +85,14 @@ Gris::Graphics::Glfw::GlfwWindowMixin::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwWindowMixin::AddObserver(WindowObserver* observer)
+void Gris::Graphics::Glfw::GlfwWindowMixin::AddObserver(WindowObserver * observer)
 {
     m_observers.emplace_back(observer);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwWindowMixin::RemoveObserver(WindowObserver* observer)
+void Gris::Graphics::Glfw::GlfwWindowMixin::RemoveObserver(WindowObserver * observer)
 {
     auto const observerIt = std::find(std::begin(m_observers), std::end(m_observers), observer);
     if (observerIt != std::end(m_observers))
@@ -97,14 +101,14 @@ void Gris::Graphics::Glfw::GlfwWindowMixin::RemoveObserver(WindowObserver* obser
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const GLFWwindow* const Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle() const
+[[nodiscard]] const GLFWwindow * const Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle() const
 {
     return m_window;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] GLFWwindow* Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle()
+[[nodiscard]] GLFWwindow * Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle()
 {
     return m_window;
 }

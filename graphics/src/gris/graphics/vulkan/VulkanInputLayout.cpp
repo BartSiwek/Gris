@@ -17,7 +17,7 @@ void Gris::Graphics::Vulkan::VulkanInputLayout::AddAttributeDescription(uint32_t
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const std::vector<vk::VertexInputBindingDescription>& Gris::Graphics::Vulkan::VulkanInputLayout::BindingDescription() const
+[[nodiscard]] const std::vector<vk::VertexInputBindingDescription> & Gris::Graphics::Vulkan::VulkanInputLayout::BindingDescription() const
 {
     return m_bindings;
 }
@@ -25,7 +25,7 @@ void Gris::Graphics::Vulkan::VulkanInputLayout::AddAttributeDescription(uint32_t
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const std::vector<vk::VertexInputAttributeDescription>& Gris::Graphics::Vulkan::VulkanInputLayout::AttributeDescriptions() const
+[[nodiscard]] const std::vector<vk::VertexInputAttributeDescription> & Gris::Graphics::Vulkan::VulkanInputLayout::AttributeDescriptions() const
 {
     return m_attributes;
 }

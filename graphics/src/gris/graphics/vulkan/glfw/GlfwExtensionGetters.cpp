@@ -4,12 +4,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-std::vector<const char*> Gris::Graphics::Vulkan::Glfw::GetVulkanInstanceExtensionsFromGLFW()
+std::vector<const char *> Gris::Graphics::Vulkan::Glfw::GetVulkanInstanceExtensionsFromGLFW()
 {
     uint32_t glfwExtensionCount = 0;
-    auto* const glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    auto * const glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+    std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
     return extensions;
 }

@@ -13,9 +13,12 @@
 namespace
 {
 
-vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR>& availableFormats) {
-    for (auto const& availableFormat : availableFormats) {
-        if (availableFormat.format == vk::Format::eB8G8R8A8Srgb && availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear) {
+vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormatKHR> & availableFormats)
+{
+    for (auto const & availableFormat : availableFormats)
+    {
+        if (availableFormat.format == vk::Format::eB8G8R8A8Srgb && availableFormat.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
+        {
             return availableFormat;
         }
     }
@@ -25,9 +28,12 @@ vk::SurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<vk::SurfaceFormat
 
 // -------------------------------------------------------------------------------------------------
 
-vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& availablePresentModes) {
-    for (auto const& availablePresentMode : availablePresentModes) {
-        if (availablePresentMode == vk::PresentModeKHR::eMailbox) {
+vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR> & availablePresentModes)
+{
+    for (auto const & availablePresentMode : availablePresentModes)
+    {
+        if (availablePresentMode == vk::PresentModeKHR::eMailbox)
+        {
             return availablePresentMode;
         }
     }
@@ -37,8 +43,10 @@ vk::PresentModeKHR ChooseSwapPresentMode(const std::vector<vk::PresentModeKHR>& 
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, uint32_t width, uint32_t height) {
-    if (capabilities.currentExtent.width != UINT32_MAX) {
+vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities, uint32_t width, uint32_t height)
+{
+    if (capabilities.currentExtent.width != UINT32_MAX)
+    {
         return capabilities.currentExtent;
     }
 
@@ -49,50 +57,50 @@ vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR& capabilities, ui
     return actualExtent;
 }
 
-}  // namespace <anonymous>
+}  // namespace
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, const VulkanWindowMixin& window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
+Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice * device, const VulkanWindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
     : VulkanDeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
 {
-    auto const& indices = device->QueueFamilies();
+    auto const & indices = device->QueueFamilies();
     auto const swapChainSupport = device->SwapChainSupport(window);
     auto const surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
     auto const presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
     auto const extent = ChooseSwapExtent(swapChainSupport.capabilities, width, height);
 
     auto imageCount = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount)
+    {
         imageCount = swapChainSupport.capabilities.maxImageCount;
     }
 
     auto imageSharingMode = vk::SharingMode::eExclusive;
     std::vector<uint32_t> queueFamilyIndices;
-    if (indices.graphicsFamily != indices.presentFamily) {
+    if (indices.graphicsFamily != indices.presentFamily)
+    {
         imageSharingMode = vk::SharingMode::eConcurrent;
         queueFamilyIndices.push_back(indices.graphicsFamily.value());
         queueFamilyIndices.push_back(indices.presentFamily.value());
     }
 
-    auto const createInfo = vk::SwapchainCreateInfoKHR(
-        {},
-        window.SurfaceHandle(),
-        imageCount,
-        surfaceFormat.format,
-        surfaceFormat.colorSpace,
-        extent,
-        1,
-        vk::ImageUsageFlagBits::eColorAttachment,
-        imageSharingMode,
-        queueFamilyIndices,
-        swapChainSupport.capabilities.currentTransform,
-        vk::CompositeAlphaFlagBitsKHR::eOpaque,
-        presentMode,
-        true,
-        nullptr
-    );
+    auto const createInfo = vk::SwapchainCreateInfoKHR({},
+                                                       window.SurfaceHandle(),
+                                                       imageCount,
+                                                       surfaceFormat.format,
+                                                       surfaceFormat.colorSpace,
+                                                       extent,
+                                                       1,
+                                                       vk::ImageUsageFlagBits::eColorAttachment,
+                                                       imageSharingMode,
+                                                       queueFamilyIndices,
+                                                       swapChainSupport.capabilities.currentTransform,
+                                                       vk::CompositeAlphaFlagBitsKHR::eOpaque,
+                                                       presentMode,
+                                                       true,
+                                                       nullptr);
 
     auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo);
     if (createSwapChainResult.result != vk::Result::eSuccess)
@@ -111,13 +119,13 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, c
     m_swapChainExtent = extent;
 
     m_swapChainImageViews.reserve(m_swapChainImages.size());
-    for (auto const& swapChainImage : m_swapChainImages)
+    for (auto const & swapChainImage : m_swapChainImages)
         m_swapChainImageViews.emplace_back(&ParentDevice(), swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1);
 
     m_renderFinishedFences.reserve(m_swapChainImages.size());
     m_imageAvailableSemaphores.reserve(m_swapChainImages.size());
     m_renderFinishedSemaphores.reserve(m_swapChainImages.size());
-    for(uint32_t frameIndex = 0; frameIndex < m_virtualFrameCount; ++frameIndex)
+    for (uint32_t frameIndex = 0; frameIndex < m_virtualFrameCount; ++frameIndex)
     {
         m_renderFinishedFences.emplace_back(ParentDevice().CreateFence(true));
         m_imageAvailableSemaphores.emplace_back(ParentDevice().CreateSemaphore());
@@ -136,7 +144,7 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, c
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const Gris::Graphics::Vulkan::VulkanTextureView& Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index) const
+[[nodiscard]] const Gris::Graphics::Vulkan::VulkanTextureView & Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index) const
 {
     GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
@@ -144,7 +152,7 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, c
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanTextureView& Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanTextureView & Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index)
 {
     GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
@@ -180,17 +188,19 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, c
 
     uint32_t imageIndex;
     auto const acquireResult = static_cast<vk::Result>(vkAcquireNextImageKHR(static_cast<VkDevice>(DeviceHandle()), static_cast<VkSwapchainKHR>(m_swapChain.get()), std::numeric_limits<uint64_t>::max(), static_cast<VkSemaphore>(m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle()), VK_NULL_HANDLE, &imageIndex));
-    if (acquireResult == vk::Result::eErrorOutOfDateKHR) {
+    if (acquireResult == vk::Result::eErrorOutOfDateKHR)
+    {
         return {};
     }
-    if (acquireResult != vk::Result::eSuccess && acquireResult != vk::Result::eSuboptimalKHR) {
+    if (acquireResult != vk::Result::eSuccess && acquireResult != vk::Result::eSuboptimalKHR)
+    {
         throw VulkanEngineException("Failed to acquire swap chain image!", acquireResult);
     }
 
     ///
 
     auto const previousVirtualFrameIndex = m_swapChainImageToVirtualFrame[imageIndex];
-    if(previousVirtualFrameIndex != virtualFrameIndex && previousVirtualFrameIndex != std::numeric_limits<uint32_t>::max())
+    if (previousVirtualFrameIndex != virtualFrameIndex && previousVirtualFrameIndex != std::numeric_limits<uint32_t>::max())
     {
         std::array additionalFences = { m_renderFinishedFences[previousVirtualFrameIndex].FenceHandle() };
         auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, true, std::numeric_limits<uint64_t>::max());
@@ -212,17 +222,19 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice* device, c
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanSwapChain::Present(const VulkanVirtualFrame& virtualFrame)
+[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanSwapChain::Present(const VulkanVirtualFrame & virtualFrame)
 {
     std::array swapChains = { m_swapChain.get() };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };
     auto presentInfo = static_cast<VkPresentInfoKHR>(vk::PresentInfoKHR(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle(), swapChains, imageIndices));
 
     auto const presentResult = static_cast<vk::Result>(vkQueuePresentKHR(static_cast<VkQueue>(m_presentQueue), &presentInfo));
-    if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR) {
+    if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR)
+    {
         return false;
     }
-    if (presentResult != vk::Result::eSuccess) {
+    if (presentResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Failed to present swap chain image", presentResult);
     }
 

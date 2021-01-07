@@ -10,11 +10,11 @@ class WindowObserver
 public:
     WindowObserver() = default;
 
-    WindowObserver(const WindowObserver&) = default;
-    WindowObserver& operator=(const WindowObserver&) = default;
+    WindowObserver(const WindowObserver &) = default;
+    WindowObserver & operator=(const WindowObserver &) = default;
 
-    WindowObserver(WindowObserver&&) = default;
-    WindowObserver& operator=(WindowObserver&&) = default;
+    WindowObserver(WindowObserver &&) = default;
+    WindowObserver & operator=(WindowObserver &&) = default;
 
     virtual ~WindowObserver() = default;
 

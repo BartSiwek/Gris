@@ -19,7 +19,7 @@ void Gris::Graphics::Glfw::GlfwInstance::PollEvents()
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwInstance& Gris::Graphics::Glfw::GlfwInstance::Instance()
+Gris::Graphics::Glfw::GlfwInstance & Gris::Graphics::Glfw::GlfwInstance::Instance()
 {
     static GlfwInstance s_instance = {};
     return s_instance;

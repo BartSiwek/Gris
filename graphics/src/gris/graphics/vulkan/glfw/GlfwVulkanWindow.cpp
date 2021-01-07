@@ -1,13 +1,15 @@
 #include <gris/graphics/vulkan/glfw/GlfwVulkanWindow.h>
 
-#include <gris/graphics/vulkan/VulkanInstance.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
+#include <gris/graphics/vulkan/VulkanInstance.h>
 
 #include <GLFW/glfw3.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Glfw::GlfwVulkanWindow::GlfwVulkanWindow(uint32_t width, uint32_t height, const std::string& title) : GlfwWindowMixin(width, height, title), VulkanWindowMixin()
+Gris::Graphics::Vulkan::Glfw::GlfwVulkanWindow::GlfwVulkanWindow(uint32_t width, uint32_t height, const std::string & title)
+    : GlfwWindowMixin(width, height, title)
+    , VulkanWindowMixin()
 {
     VkSurfaceKHR surface;
     auto const createSurfaceResult = static_cast<vk::Result>(glfwCreateWindowSurface(VulkanInstanceHandle(), WindowHandle(), nullptr, &surface));

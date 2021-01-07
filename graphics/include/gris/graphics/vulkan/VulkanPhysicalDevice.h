@@ -21,15 +21,15 @@ public:
 
     VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies);
 
-    [[nodiscard]] const vk::SampleCountFlagBits& MsaaSamples() const;
-    [[nodiscard]] const DeviceQueueFamilyIndices& QueueFamilies() const;
+    [[nodiscard]] const vk::SampleCountFlagBits & MsaaSamples() const;
+    [[nodiscard]] const DeviceQueueFamilyIndices & QueueFamilies() const;
 
-    [[nodiscard]] vk::Format FindSupportedFormat(const std::vector<vk::Format>& candidates, const vk::ImageTiling& tiling, const vk::FormatFeatureFlags& features) const;
+    [[nodiscard]] vk::Format FindSupportedFormat(const std::vector<vk::Format> & candidates, const vk::ImageTiling & tiling, const vk::FormatFeatureFlags & features) const;
     [[nodiscard]] vk::FormatProperties GetFormatProperties(vk::Format format) const;
 
-    [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const VulkanWindowMixin& window) const;
+    [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const VulkanWindowMixin & window) const;
     [[nodiscard]] vk::UniqueDevice CreateDevice() const;
-    [[nodiscard]] VulkanAllocator CreateVulkanAllocator(const vk::Device& device) const;
+    [[nodiscard]] VulkanAllocator CreateVulkanAllocator(const vk::Device & device) const;
 
 private:
     vk::PhysicalDevice m_physicalDevice = {};

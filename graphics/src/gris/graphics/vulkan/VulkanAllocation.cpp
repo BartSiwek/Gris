@@ -8,17 +8,23 @@ Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(vma::Allocation allocation, VulkanAllocator * owner) : m_allocation(std::move(allocation)), m_owner(owner)
-{}
+Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(vma::Allocation allocation, VulkanAllocator * owner)
+    : m_allocation(std::move(allocation))
+    , m_owner(owner)
+{
+}
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VulkanAllocation&& other) noexcept : m_allocation(std::exchange(other.m_allocation, nullptr)), m_owner(std::exchange(other.m_owner, nullptr))
-{}
+Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VulkanAllocation && other) noexcept
+    : m_allocation(std::exchange(other.m_allocation, nullptr))
+    , m_owner(std::exchange(other.m_owner, nullptr))
+{
+}
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation& Gris::Graphics::Vulkan::VulkanAllocation::operator=(VulkanAllocation&& other) noexcept
+Gris::Graphics::Vulkan::VulkanAllocation & Gris::Graphics::Vulkan::VulkanAllocation::operator=(VulkanAllocation && other) noexcept
 {
     if (this != &other)
     {

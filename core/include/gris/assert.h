@@ -55,47 +55,49 @@ namespace Gris
 namespace Assert
 {
 
-class AssertionException : public std::logic_error
-{
-public:
-  AssertionException() : logic_error("Assertion failed")
-  {}
-};
+    class AssertionException : public std::logic_error
+    {
+    public:
+        AssertionException()
+            : logic_error("Assertion failed")
+        {
+        }
+    };
 
-using AssertLoggingCallback = void(*)(const char* file, uint32_t line, const char* format, va_list args);
-using AssertHandler = void(*)();
+    using AssertLoggingCallback = void (*)(const char * file, uint32_t line, const char * format, va_list args);
+    using AssertHandler = void (*)();
 
-AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback);
-AssertHandler SetFailureHandler(AssertHandler handler);
+    AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback);
+    AssertHandler SetFailureHandler(AssertHandler handler);
 
-void StdoutLoggigCallback(const char* file, uint32_t line, const char* format, va_list args);
-void StderrLoggigCallback(const char* file, uint32_t line, const char* format, va_list args);
-void NullLoggigCallback(const char* file, uint32_t line, const char* format, va_list args);
+    void StdoutLoggigCallback(const char * file, uint32_t line, const char * format, va_list args);
+    void StderrLoggigCallback(const char * file, uint32_t line, const char * format, va_list args);
+    void NullLoggigCallback(const char * file, uint32_t line, const char * format, va_list args);
 
-void AbortHandler();
-void ThrowHandler();
-void NullHandler();
+    void AbortHandler();
+    void ThrowHandler();
+    void NullHandler();
 
-namespace Detail
-{
+    namespace Detail
+    {
 
-void AssertFired(const char* file, uint32_t line, const char* format, ...);
+        void AssertFired(const char * file, uint32_t line, const char * format, ...);
 
-}  // namespace Detail
+    }  // namespace Detail
 }  // namespace Assert
 }  // namespace Gris
 
 #define GRIS_DEBUGBREAK() __debugbreak()
 
-#define GRIS_ASSERT_IMPL(condition, format, ...)                                                                         \
-  do                                                                                                                     \
-  {                                                                                                                      \
-    if(!static_cast<bool>(condition))                                                                                                        \
-    {                                                                                                                    \
-      Gris::Assert::Detail::AssertFired(__FILE__, __LINE__, "Assertion [" #condition "] failed. " format, __VA_ARGS__);  \
-      GRIS_DEBUGBREAK();                                                                                                 \
-    }                                                                                                                    \
-  } while(false)
+#define GRIS_ASSERT_IMPL(condition, format, ...)                                                                              \
+    do                                                                                                                        \
+    {                                                                                                                         \
+        if (!static_cast<bool>(condition))                                                                                    \
+        {                                                                                                                     \
+            Gris::Assert::Detail::AssertFired(__FILE__, __LINE__, "Assertion [" #condition "] failed. " format, __VA_ARGS__); \
+            GRIS_DEBUGBREAK();                                                                                                \
+        }                                                                                                                     \
+    } while (false)
 
 #ifdef GRIS_ALWAYS_ASSERT_IS_ACTIVE
 #define GRIS_ALAWYS_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)

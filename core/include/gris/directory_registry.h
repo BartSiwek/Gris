@@ -4,9 +4,8 @@
 
 #pragma once
 
-class DirectoryRegistry {
+class DirectoryRegistry
+{
 public:
-
 private:
-
 };

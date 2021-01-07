@@ -15,16 +15,16 @@ class VulkanWindowMixin;
 class VulkanPhysicalDeviceFactory
 {
 public:
-    [[nodiscard]] static VulkanPhysicalDevice FindPhysicalDevice(const VulkanWindowMixin& window);
+    [[nodiscard]] static VulkanPhysicalDevice FindPhysicalDevice(const VulkanWindowMixin & window);
 
 private:
-    [[nodiscard]] static std::tuple<bool, DeviceQueueFamilyIndices> IsDeviceSuitable(const vk::PhysicalDevice& device, const vk::SurfaceKHR& surface);
+    [[nodiscard]] static std::tuple<bool, DeviceQueueFamilyIndices> IsDeviceSuitable(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface);
 
-    [[nodiscard]] static DeviceQueueFamilyIndices FindQueueFamilies(const vk::PhysicalDevice& device, const vk::SurfaceKHR& surface);
+    [[nodiscard]] static DeviceQueueFamilyIndices FindQueueFamilies(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface);
 
-    [[nodiscard]] static bool CheckDeviceExtensionSupport(const vk::PhysicalDevice& device);
+    [[nodiscard]] static bool CheckDeviceExtensionSupport(const vk::PhysicalDevice & device);
 
-    [[nodiscard]] static vk::SampleCountFlagBits GetMaxUsableSampleCount(const vk::PhysicalDevice& physicalDevice);
+    [[nodiscard]] static vk::SampleCountFlagBits GetMaxUsableSampleCount(const vk::PhysicalDevice & physicalDevice);
 };
 
 }  // namespace Gris::Graphics::Vulkan

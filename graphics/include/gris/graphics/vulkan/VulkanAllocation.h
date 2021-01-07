@@ -16,11 +16,11 @@ public:
 
     VulkanAllocation(vma::Allocation allocation, VulkanAllocator * owner);
 
-    VulkanAllocation(const VulkanAllocation& other) = delete;
-    VulkanAllocation& operator=(const VulkanAllocation& other) = delete;
+    VulkanAllocation(const VulkanAllocation & other) = delete;
+    VulkanAllocation & operator=(const VulkanAllocation & other) = delete;
 
-    VulkanAllocation(VulkanAllocation&& other) noexcept;
-    VulkanAllocation& operator=(VulkanAllocation&& other) noexcept;
+    VulkanAllocation(VulkanAllocation && other) noexcept;
+    VulkanAllocation & operator=(VulkanAllocation && other) noexcept;
 
     ~VulkanAllocation();
 

@@ -1,18 +1,19 @@
 #include <gris/graphics/vulkan/VulkanImmediateContext.h>
 
+#include <gris/graphics/vulkan/VulkanBuffer.h>
 #include <gris/graphics/vulkan/VulkanDeferredContext.h>
 #include <gris/graphics/vulkan/VulkanDevice.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
-#include <gris/graphics/vulkan/VulkanTexture.h>
-#include <gris/graphics/vulkan/VulkanSemaphore.h>
 #include <gris/graphics/vulkan/VulkanFence.h>
-#include <gris/graphics/vulkan/VulkanBuffer.h>
+#include <gris/graphics/vulkan/VulkanSemaphore.h>
+#include <gris/graphics/vulkan/VulkanTexture.h>
 
 #include <iterator>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanImmediateContext::VulkanImmediateContext(VulkanDevice* device) : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::VulkanImmediateContext::VulkanImmediateContext(VulkanDevice * device)
+    : VulkanDeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -30,7 +31,8 @@ Gris::Graphics::Vulkan::VulkanImmediateContext::VulkanImmediateContext(VulkanDev
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const VulkanTexture& texture, const vk::Format& imageFormat, int32_t texWidth, int32_t texHeight) {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const VulkanTexture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight)
+{
     auto const formatProperties = ParentDevice().GetFormatProperties(imageFormat);
 
     if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear))
@@ -39,28 +41,26 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const Vulka
     auto commandBuffer = BeginSingleTimeCommands();
 
     std::array barriers = {
-        vk::ImageMemoryBarrier(
-            {},
-            {},
-            {},
-            {},
-            VK_QUEUE_FAMILY_IGNORED,
-            VK_QUEUE_FAMILY_IGNORED,
-            texture.ImageHandle(),
-            vk::ImageSubresourceRange(
-                vk::ImageAspectFlagBits::eColor,
-                0,
-                1,
-                0,
-                1
-            )
-        )
+        vk::ImageMemoryBarrier({},
+                               {},
+                               {},
+                               {},
+                               VK_QUEUE_FAMILY_IGNORED,
+                               VK_QUEUE_FAMILY_IGNORED,
+                               texture.ImageHandle(),
+                               vk::ImageSubresourceRange(
+                                   vk::ImageAspectFlagBits::eColor,
+                                   0,
+                                   1,
+                                   0,
+                                   1))
     };
 
     auto mipWidth = texWidth;
     auto mipHeight = texHeight;
 
-    for (uint32_t i = 1; i < texture.MipLevels(); i++) {
+    for (uint32_t i = 1; i < texture.MipLevels(); i++)
+    {
         barriers[0].subresourceRange.baseMipLevel = i - 1;
         barriers[0].oldLayout = vk::ImageLayout::eTransferDstOptimal;
         barriers[0].newLayout = vk::ImageLayout::eTransferSrcOptimal;
@@ -70,21 +70,16 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const Vulka
         commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, barriers);
 
         auto const blit = vk::ImageBlit(
-            vk::ImageSubresourceLayers(
-                vk::ImageAspectFlagBits::eColor,
-                i - 1,
-                0,
-                1
-            ),
+            vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
+                                       i - 1,
+                                       0,
+                                       1),
             std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth, mipHeight, 1) },
-            vk::ImageSubresourceLayers(
-                vk::ImageAspectFlagBits::eColor,
-                i,
-                0,
-                1
-            ),
-            std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1) }
-        );
+            vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
+                                       i,
+                                       0,
+                                       1),
+            std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1) });
 
         std::array blits = { blit };
         commandBuffer->blitImage(texture.ImageHandle(), vk::ImageLayout::eTransferSrcOptimal, texture.ImageHandle(), vk::ImageLayout::eTransferDstOptimal, blits, {});
@@ -96,8 +91,10 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const Vulka
 
         commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barriers);
 
-        if (mipWidth > 1) mipWidth /= 2;
-        if (mipHeight > 1) mipHeight /= 2;
+        if (mipWidth > 1)
+            mipWidth /= 2;
+        if (mipHeight > 1)
+            mipHeight /= 2;
     }
 
     barriers[0].subresourceRange.baseMipLevel = texture.MipLevels() - 1;
@@ -113,22 +110,20 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const Vulka
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBufferToImage(const VulkanBuffer& buffer, const VulkanTexture& texture, uint32_t width, uint32_t height) {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBufferToImage(const VulkanBuffer & buffer, const VulkanTexture & texture, uint32_t width, uint32_t height)
+{
     auto commandBuffer = BeginSingleTimeCommands();
 
-    auto const region = vk::BufferImageCopy(
-        0,
-        0,
-        0,
-        vk::ImageSubresourceLayers(
-            vk::ImageAspectFlagBits::eColor,
-            0,
-            0,
-            1
-        ),
-        vk::Offset3D(0, 0, 0),
-        vk::Extent3D(width, height, 1)
-    );
+    auto const region = vk::BufferImageCopy(0,
+                                            0,
+                                            0,
+                                            vk::ImageSubresourceLayers(
+                                                vk::ImageAspectFlagBits::eColor,
+                                                0,
+                                                0,
+                                                1),
+                                            vk::Offset3D(0, 0, 0),
+                                            vk::Extent3D(width, height, 1));
 
     std::array regions = { region };
 
@@ -139,24 +134,23 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBufferToImage(const Vul
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::TransitionImageLayout(const VulkanTexture& texture, const vk::ImageLayout& oldLayout, const vk::ImageLayout& newLayout) {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::TransitionImageLayout(const VulkanTexture & texture, const vk::ImageLayout & oldLayout, const vk::ImageLayout & newLayout)
+{
     auto commandBuffer = BeginSingleTimeCommands();
 
-    vk::ImageMemoryBarrier barrier(
-        {},
-        {},
-        oldLayout,
-        newLayout,
-        VK_QUEUE_FAMILY_IGNORED,
-        VK_QUEUE_FAMILY_IGNORED,
-        texture.ImageHandle(),
-        vk::ImageSubresourceRange(
-            vk::ImageAspectFlagBits::eColor,
-            0,
-            texture.MipLevels(),
-            0,
-            1)
-    );
+    vk::ImageMemoryBarrier barrier({},
+                                   {},
+                                   oldLayout,
+                                   newLayout,
+                                   VK_QUEUE_FAMILY_IGNORED,
+                                   VK_QUEUE_FAMILY_IGNORED,
+                                   texture.ImageHandle(),
+                                   vk::ImageSubresourceRange(
+                                       vk::ImageAspectFlagBits::eColor,
+                                       0,
+                                       texture.MipLevels(),
+                                       0,
+                                       1));
 
     vk::PipelineStageFlags sourceStage;
     vk::PipelineStageFlags destinationStage;
@@ -189,7 +183,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::TransitionImageLayout(const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBuffer(const VulkanBuffer& srcBuffer, const VulkanBuffer& dstBuffer, vk::DeviceSize size)
+void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBuffer(const VulkanBuffer & srcBuffer, const VulkanBuffer & dstBuffer, vk::DeviceSize size)
 {
     auto commandBuffer = BeginSingleTimeCommands();
 
@@ -202,18 +196,20 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBuffer(const VulkanBuff
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
-    VulkanDeferredContext* context,
-    const std::vector<std::reference_wrapper<VulkanSemaphore>>& waitSemaphores,
-    const std::vector<std::reference_wrapper<VulkanSemaphore>>& signalSemaphores,
-    VulkanFence& fence)
+    VulkanDeferredContext * context,
+    const std::vector<std::reference_wrapper<VulkanSemaphore>> & waitSemaphores,
+    const std::vector<std::reference_wrapper<VulkanSemaphore>> & signalSemaphores,
+    VulkanFence & fence)
 {
-    auto* deferredContext = static_cast<VulkanDeferredContext*>(context);
+    auto * deferredContext = static_cast<VulkanDeferredContext *>(context);
 
     std::vector<vk::Semaphore> vulkanWaitSemaphores;
-    std::transform(waitSemaphores.begin(), waitSemaphores.end(), std::back_inserter(vulkanWaitSemaphores), [](const auto& semaphore) { return semaphore.get().SemaphoreHandle(); });
+    std::transform(waitSemaphores.begin(), waitSemaphores.end(), std::back_inserter(vulkanWaitSemaphores), [](const auto & semaphore)
+                   { return semaphore.get().SemaphoreHandle(); });
 
     std::vector<vk::Semaphore> vulkanSignalSemaphores;
-    std::transform(signalSemaphores.begin(), signalSemaphores.end(), std::back_inserter(vulkanSignalSemaphores), [](const auto& semaphore) { return semaphore.get().SemaphoreHandle(); });
+    std::transform(signalSemaphores.begin(), signalSemaphores.end(), std::back_inserter(vulkanSignalSemaphores), [](const auto & semaphore)
+                   { return semaphore.get().SemaphoreHandle(); });
 
     std::array waitStages = { vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput) };
     std::array commandBuffers = { deferredContext->CommandBufferHandle() };
@@ -226,18 +222,18 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::VulkanImmediateContext::BeginSingleTimeCommands() {
+[[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::VulkanImmediateContext::BeginSingleTimeCommands()
+{
     auto const allocInfo = vk::CommandBufferAllocateInfo(
         m_commandPool.get(),
         vk::CommandBufferLevel::ePrimary,
-        1
-    );
+        1);
 
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
         throw VulkanEngineException("Error allocating command buffers", allocateCommandBuffersResult);
 
-    auto&& commandBuffer = allocateCommandBuffersResult.value.front();
+    auto && commandBuffer = allocateCommandBuffersResult.value.front();
 
     auto const beginInfo = vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
@@ -250,7 +246,8 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::EndSingleTimeCommands(vk::CommandBuffer& commandBuffer) const {
+void Gris::Graphics::Vulkan::VulkanImmediateContext::EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const
+{
     auto const endResult = commandBuffer.end();
     if (endResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error ending the command buffer", endResult);

@@ -8,17 +8,21 @@ Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(vma::Allocator allocator) : m_allocator(std::move(allocator))
-{}
+Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(vma::Allocator allocator)
+    : m_allocator(std::move(allocator))
+{
+}
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(VulkanAllocator && other) noexcept : m_allocator(std::exchange(other.m_allocator, nullptr))
-{}
+Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(VulkanAllocator && other) noexcept
+    : m_allocator(std::exchange(other.m_allocator, nullptr))
+{
+}
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocator& Gris::Graphics::Vulkan::VulkanAllocator::operator=(VulkanAllocator && other) noexcept
+Gris::Graphics::Vulkan::VulkanAllocator & Gris::Graphics::Vulkan::VulkanAllocator::operator=(VulkanAllocator && other) noexcept
 {
     if (this != &other)
         m_allocator = std::exchange(other.m_allocator, nullptr);
@@ -83,7 +87,7 @@ void Gris::Graphics::Vulkan::VulkanAllocator::Bind(const vk::Image & image, cons
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] void* Gris::Graphics::Vulkan::VulkanAllocator::Map(const VulkanAllocation & allocation) const
+[[nodiscard]] void * Gris::Graphics::Vulkan::VulkanAllocator::Map(const VulkanAllocation & allocation) const
 {
     auto const mapResult = m_allocator.mapMemory(allocation.m_allocation);
     if (mapResult.result != vk::Result::eSuccess)

@@ -15,11 +15,11 @@ public:
     VulkanWindowMixin() = default;
     virtual ~VulkanWindowMixin() = default;
 
-    VulkanWindowMixin(const VulkanWindowMixin& other) = delete;
-    VulkanWindowMixin& operator=(const VulkanWindowMixin& other) = delete;
+    VulkanWindowMixin(const VulkanWindowMixin & other) = delete;
+    VulkanWindowMixin & operator=(const VulkanWindowMixin & other) = delete;
 
-    VulkanWindowMixin(VulkanWindowMixin&&) noexcept = default;
-    VulkanWindowMixin& operator=(VulkanWindowMixin&&) noexcept = default;
+    VulkanWindowMixin(VulkanWindowMixin &&) noexcept = default;
+    VulkanWindowMixin & operator=(VulkanWindowMixin &&) noexcept = default;
 
     [[nodiscard]] vk::SurfaceKHR SurfaceHandle() const
     {

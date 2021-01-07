@@ -10,14 +10,14 @@ public:
 
     static void PollEvents();
 
-    GlfwInstance(const GlfwInstance&) = delete;
-    GlfwInstance& operator=(const GlfwInstance&) = delete;
+    GlfwInstance(const GlfwInstance &) = delete;
+    GlfwInstance & operator=(const GlfwInstance &) = delete;
 
-    GlfwInstance(GlfwInstance&&) = delete;
-    GlfwInstance& operator=(GlfwInstance&&) = delete;
+    GlfwInstance(GlfwInstance &&) = delete;
+    GlfwInstance & operator=(GlfwInstance &&) = delete;
 
 private:
-    static GlfwInstance& Instance();
+    static GlfwInstance & Instance();
 
     GlfwInstance();
     ~GlfwInstance();
