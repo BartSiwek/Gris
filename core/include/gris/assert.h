@@ -101,8 +101,7 @@ namespace Detail
         }                                                                                                                     \
     } while (false)
 
-#define GRIS_ASSERT_IGNORE_IMPL(condition, format, ...)                                                                       \
-    Gris::Assert::Detail::Ignore(condition, format, __VA_ARGS__);
+#define GRIS_ASSERT_IGNORE_IMPL(condition, format, ...) Gris::Assert::Detail::Ignore(condition, format, __VA_ARGS__);
 
 #ifdef GRIS_ALWAYS_ASSERT_IS_ACTIVE
 #define GRIS_ALAWYS_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
