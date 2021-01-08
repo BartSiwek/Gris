@@ -1,7 +1,6 @@
 #include <gris/graphics/vulkan/glfw/GlfwVulkanWindow.h>
 
 #include <gris/graphics/vulkan/VulkanEngineException.h>
-#include <gris/graphics/vulkan/VulkanInstance.h>
 
 #include <GLFW/glfw3.h>
 

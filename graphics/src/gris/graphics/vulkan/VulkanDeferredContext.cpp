@@ -1,6 +1,5 @@
 #include <gris/graphics/vulkan/VulkanDeferredContext.h>
 
-
 #include <gris/graphics/vulkan/VulkanBufferView.h>
 #include <gris/graphics/vulkan/VulkanDevice.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>

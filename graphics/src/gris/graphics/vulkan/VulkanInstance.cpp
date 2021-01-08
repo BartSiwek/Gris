@@ -4,10 +4,9 @@
 
 #include <gris/graphics/vulkan/VulkanAllocator.h>
 #include <gris/graphics/vulkan/VulkanEngineException.h>
+#include <gris/graphics/vulkan/vma_headers.h>
 
 #include <gris/assert.h>
-
-#include <vk_mem_alloc.hpp>
 
 #include <iostream>
 

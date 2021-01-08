@@ -1,11 +1,11 @@
 ﻿#pragma once
 
-#include "VulkanDeviceResource.h"
+#include <gris/graphics/vulkan/VulkanDeviceResource.h>
 
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanRenderPass : public Gris::Graphics::Vulkan::VulkanDeviceResource
+class VulkanRenderPass : public VulkanDeviceResource
 {
 public:
     VulkanRenderPass(VulkanDevice * device, vk::Format swapChainFormat, vk::Format depthFormat);

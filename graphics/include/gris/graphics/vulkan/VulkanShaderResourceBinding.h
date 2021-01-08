@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "VulkanBufferView.h"
-#include "VulkanPipelineStateObjectResource.h"
+#include <gris/graphics/vulkan/VulkanBufferView.h>
+#include <gris/graphics/vulkan/VulkanPipelineStateObjectResource.h>
 
 namespace Gris::Graphics::Vulkan
 {

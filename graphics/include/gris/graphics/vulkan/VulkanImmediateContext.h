@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VulkanDeviceResource.h"
+#include <gris/graphics/vulkan/VulkanDeviceResource.h>
 
 namespace Gris::Graphics::Vulkan
 {

@@ -2,9 +2,7 @@
 
 #include <gris/graphics/EngineException.h>
 
-#define VULKAN_HPP_TYPESAFE_CONVERSION
-#define VULKAN_HPP_NO_EXCEPTIONS
-#include <vulkan/vulkan.hpp>
+#include <gris/graphics/vulkan/vulkan_headers.h>
 
 namespace Gris::Graphics::Vulkan
 {

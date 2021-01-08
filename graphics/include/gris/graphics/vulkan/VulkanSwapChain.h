@@ -1,10 +1,10 @@
 #pragma once
 
-#include "VulkanDeviceResource.h"
+#include <gris/graphics/vulkan/VulkanDeviceResource.h>
 
-#include "VulkanFence.h"
-#include "VulkanSemaphore.h"
-#include "VulkanTextureView.h"
+#include <gris/graphics/vulkan/VulkanFence.h>
+#include <gris/graphics/vulkan/VulkanSemaphore.h>
+#include <gris/graphics/vulkan/VulkanTextureView.h>
 
 #include <optional>
 

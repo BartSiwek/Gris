@@ -19,8 +19,10 @@
 #include <gris/graphics/vulkan/glfw/GlfwExtensionGetters.h>
 #include <gris/graphics/vulkan/glfw/GlfwVulkanWindow.h>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4201)
+#endif
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -29,7 +31,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/hash.hpp>
 
-#pragma warning(pop)
+#ifdef _MSC_VER
+#pragma warning
+#endif
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>

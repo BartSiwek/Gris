@@ -1,6 +1,6 @@
 #pragma once
 
-#include "VulkanAllocation.h"
+#include <gris/graphics/vulkan/VulkanAllocation.h>
 
 namespace Gris::Graphics::Vulkan
 {

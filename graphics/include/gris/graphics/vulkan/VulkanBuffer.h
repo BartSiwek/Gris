@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VulkanAllocation.h"
-#include "VulkanDeviceResource.h"
+#include <gris/graphics/vulkan/VulkanAllocation.h>
+#include <gris/graphics/vulkan/VulkanDeviceResource.h>
 
 namespace Gris::Graphics::Vulkan
 {

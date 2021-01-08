@@ -1,7 +1,7 @@
 #pragma once
 
-#include "VulkanAllocator.h"
-#include "VulkanPhysicalDevice.h"
+#include <gris/graphics/vulkan/VulkanAllocator.h>
+#include <gris/graphics/vulkan/VulkanPhysicalDevice.h>
 
 namespace Gris::Graphics::Vulkan
 {
