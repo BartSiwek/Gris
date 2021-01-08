@@ -31,14 +31,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        
+
       - name: Install Vulkan SDK
         shell: pwsh
         run: |
           curl -LS -o vulkansdk.exe `
             https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/windows/VulkanSDK-${{ env.vulkan_version }}-Installer.exe?Human=true
-          7z x vulkansdk.exe -o"${{ env.vulkan_sdk_dir }}"        
-        
+          7z x vulkansdk.exe -o"${{ env.vulkan_sdk_dir }}"
+
       - name: Update environment
         shell: pwsh
         run: |
@@ -46,21 +46,21 @@ jobs:
           pip3 install conan
 
       - name: Create Build Directory
-        run: cmake -E make_directory ${{github.workspace}}/build      
-      
+        run: cmake -E make_directory ${{github.workspace}}/build
+
       - name: Configure CMake
         shell: pwsh
         working-directory: ${{github.workspace}}/build
-        run: |         
+        run: |
           conan profile new default --detect --force
-          ${{ matrix.config.conan_profile_update }}          
-          
+          ${{ matrix.config.conan_profile_update }}
+
           cmake .. `
             -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} `
             -DCMAKE_PREFIX_PATH=${{ env.vulkan_sdk_dir }} `
             -DGRIS_ASSERT_COMPILATION_TESTS=ON `
             ${{ matrix.config.cmake_configure_options }}
-            
+
       - name: Build
         shell: pwsh
         working-directory: ${{github.workspace}}/build
@@ -72,9 +72,14 @@ jobs:
         shell: pwsh
         run: |
           ctest . -C ${{ matrix.config.cmake_build_type }}
-          
+
       - name: Compress artifacts
         shell: pwsh
         run: |
-          7z a -tzip ${{ matrix.config.artifact }} build/*
-       
+          7z a -tzip ${{ matrix.config.artifact }} build/bin/*
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          path: ${{ matrix.config.artifact }}
+          name: ${{ matrix.config.artifact }}
