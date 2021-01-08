@@ -33,3 +33,6 @@
 
 # CMake build dirs
 cmake-build-*
+
+# Dont ignore obj files in the resoures folder
+!resources/*/*.obj
