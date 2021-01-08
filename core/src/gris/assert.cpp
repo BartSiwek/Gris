@@ -7,7 +7,7 @@
 namespace
 {
 
-void FileLoggigCallback(FILE * outputFile, const char * file, uint32_t line, const char * format, va_list args);
+void FileLoggingCallback(FILE * outputFile, const char * file, uint32_t line, const char * format, va_list args);
 
 }  // namespace
 
@@ -17,19 +17,19 @@ namespace Assert
 {
 
     //----------------------------------------------------------------------
-    void StdoutLoggigCallback(const char * file, uint32_t line, const char * format, va_list args)
+    void StdoutLoggingCallback(const char * file, uint32_t line, const char * format, va_list args)
     {
-        FileLoggigCallback(stdout, file, line, format, args);
+        FileLoggingCallback(stdout, file, line, format, args);
     }
 
     //----------------------------------------------------------------------
-    void StderrLoggigCallback(const char * file, uint32_t line, const char * format, va_list args)
+    void StderrLoggingCallback(const char * file, uint32_t line, const char * format, va_list args)
     {
-        FileLoggigCallback(stderr, file, line, format, args);
+        FileLoggingCallback(stderr, file, line, format, args);
     }
 
     //----------------------------------------------------------------------
-    void NullLoggigCallback(const char * file, uint32_t line, const char * format, va_list args)
+    void NullLoggingCallback(const char * file, uint32_t line, const char * format, va_list args)
     {
         // NO-OP
         (void)file;
@@ -60,7 +60,7 @@ namespace Assert
     {
 
         //----------------------------------------------------------------------
-        static AssertLoggingCallback sg_loggingCallback = &StderrLoggigCallback;
+        static AssertLoggingCallback sg_loggingCallback = &StderrLoggingCallback;
         static AssertHandler sg_failureHandler = &AbortHandler;
 
         //----------------------------------------------------------------------
@@ -107,7 +107,7 @@ namespace
 {
 
 //----------------------------------------------------------------------
-void FileLoggigCallback(FILE * outputFile, const char * file, uint32_t line, const char * format, va_list args)
+void FileLoggingCallback(FILE * outputFile, const char * file, uint32_t line, const char * format, va_list args)
 {
     auto const sizeWithNul = vsnprintf(nullptr, 0, format, args) + 1;
     auto buffer = std::make_unique<char[]>(sizeWithNul);

@@ -50,42 +50,44 @@
 #endif
 #endif
 
-namespace Gris
-{
-namespace Assert
+namespace Gris::Assert
 {
 
-    class AssertionException : public std::logic_error
+class AssertionException : public std::logic_error
+{
+public:
+    AssertionException()
+        : logic_error("Assertion failed")
     {
-    public:
-        AssertionException()
-            : logic_error("Assertion failed")
-        {
-        }
-    };
+    }
+};
 
-    using AssertLoggingCallback = void (*)(const char * file, uint32_t line, const char * format, va_list args);
-    using AssertHandler = void (*)();
+using AssertLoggingCallback = void (*)(const char * file, uint32_t line, const char * format, va_list args);
+using AssertHandler = void (*)();
 
-    AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback);
-    AssertHandler SetFailureHandler(AssertHandler handler);
+AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback);
+AssertHandler SetFailureHandler(AssertHandler handler);
 
-    void StdoutLoggigCallback(const char * file, uint32_t line, const char * format, va_list args);
-    void StderrLoggigCallback(const char * file, uint32_t line, const char * format, va_list args);
-    void NullLoggigCallback(const char * file, uint32_t line, const char * format, va_list args);
+void StdoutLoggingCallback(const char * file, uint32_t line, const char * format, va_list args);
+void StderrLoggingCallback(const char * file, uint32_t line, const char * format, va_list args);
+void NullLoggingCallback(const char * file, uint32_t line, const char * format, va_list args);
 
-    void AbortHandler();
-    void ThrowHandler();
-    void NullHandler();
+void AbortHandler();
+void ThrowHandler();
+void NullHandler();
 
-    namespace Detail
+namespace Detail
+{
+
+    void AssertFired(const char * file, uint32_t line, const char * format, ...);
+
+    template<typename... T>
+    void Ignore(T const &...) noexcept
     {
+    }
 
-        void AssertFired(const char * file, uint32_t line, const char * format, ...);
-
-    }  // namespace Detail
-}  // namespace Assert
-}  // namespace Gris
+}  // namespace Detail
+}  // namespace Gris::Assert
 
 #define GRIS_DEBUGBREAK() __debugbreak()
 
@@ -99,22 +101,25 @@ namespace Assert
         }                                                                                                                     \
     } while (false)
 
+#define GRIS_ASSERT_IGNORE_IMPL(condition, format, ...)                                                                       \
+    Gris::Assert::Detail::Ignore(condition, format, __VA_ARGS__);
+
 #ifdef GRIS_ALWAYS_ASSERT_IS_ACTIVE
 #define GRIS_ALAWYS_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
 #else
-#define GRIS_ALAWYS_ASSERT(condition, format, ...)
+#define GRIS_ALAWYS_ASSERT(condition, format, ...) GRIS_ASSERT_IGNORE_IMPL(condition, format, ##__VA_ARGS__);
 #endif
 
 #ifdef GRIS_FAST_ASSERT_IS_ACTIVE
 #define GRIS_FAST_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
 #else
-#define GRIS_FAST_ASSERT(condition, format, ...)
+#define GRIS_FAST_ASSERT(condition, format, ...) GRIS_ASSERT_IGNORE_IMPL(condition, format, ##__VA_ARGS__);
 #endif
 
 #ifdef GRIS_SLOW_ASSERT_IS_ACTIVE
 #define GRIS_SLOW_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
 #else
-#define GRIS_SLOW_ASSERT(condition, format, ...)
+#define GRIS_SLOW_ASSERT(condition, format, ...) GRIS_ASSERT_IGNORE_IMPL(condition, format, ##__VA_ARGS__);
 #endif
 
 #if defined(GRIS_TARGET_MODE_NONE) && defined(GRIS_TARGET_MODE_RELEASE)

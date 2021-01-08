@@ -43,7 +43,7 @@ void assert_false_slow()
 
 TEST_CASE("Assert with always disabled, fast disabled and slow disabled", "[assert rules]")
 {
-    Gris::Assert::SetLoggingCallback(&Gris::Assert::NullLoggigCallback);
+    Gris::Assert::SetLoggingCallback(&Gris::Assert::NullLoggingCallback);
     Gris::Assert::SetFailureHandler(&Gris::Assert::ThrowHandler);
 
     SECTION("Always does not fire on success")

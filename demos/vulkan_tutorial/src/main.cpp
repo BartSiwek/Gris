@@ -32,7 +32,7 @@
 #include <glm/gtx/hash.hpp>
 
 #ifdef _MSC_VER
-#pragma warning
+#pragma warning(pop)
 #endif
 
 #define STB_IMAGE_IMPLEMENTATION
