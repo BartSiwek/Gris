@@ -1,49 +1,80 @@
-name: CMake
+name: CMake Build
 
-on:
-  push:
-    branches: 
-      - master
-
-env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Debug
+on: [push, pull_request, workflow_dispatch]
 
 jobs:
-  build:
-    # The CMake configure and build commands are platform agnostic and should work equally
-    # well on Windows or Mac.  You can convert this to a matrix build if you need
-    # cross-platform coverage.
-    # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  windows:
+    name: ${{ matrix.config.name }}
     runs-on: windows-latest
+    env:
+      vulkan_version: "1.2.154.1"
+      vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              name: "Windows Release",
+              artifact: "windows-release.zip",
+              cmake_build_type: "Release",
+              cmake_configure_options: '-G "Visual Studio 16 2019" -A x64',
+              conan_profile_update: 'conan profile update settings.compiler="Visual Studio" default; conan profile update settings.compiler.version=16 default',
+            }
+          - {
+              name: "Windows Debug",
+              artifact: "windows-debug.zip",
+              cmake_build_type: "Debug",
+              cmake_configure_options: '-G "Visual Studio 16 2019" -A x64',
+              conan_profile_update: 'conan profile update settings.compiler="Visual Studio" default; conan profile update settings.compiler.version=16 default',
+            }
 
     steps:
-    - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Install Vulkan SDK
+        shell: pwsh
+        run: |
+          curl -LS -o vulkansdk.exe `
+            https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/windows/VulkanSDK-${{ env.vulkan_version }}-Installer.exe?Human=true
+          7z x vulkansdk.exe -o"${{ env.vulkan_sdk_dir }}"        
+        
+      - name: Update environment
+        shell: pwsh
+        run: |
+          pip3 install wheel setuptools
+          pip3 install conan
 
-    - name: Create Build Environment
-      # Some projects don't allow in-source building, so create a separate build directory
-      # We'll use this as our working directory for all subsequent commands
-      run: cmake -E make_directory ${{github.workspace}}/build
+      - name: Create Build Directory
+        run: cmake -E make_directory ${{github.workspace}}/build      
+      
+      - name: Configure CMake
+        shell: pwsh
+        working-directory: ${{github.workspace}}/build
+        run: |         
+          conan profile new default --detect --force
+          ${{ matrix.config.conan_profile_update }}          
+          
+          cmake .. `
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} `
+            -DCMAKE_PREFIX_PATH=${{ env.vulkan_sdk_dir }} `
+            -DGRIS_ASSERT_COMPILATION_TESTS=ON `
+            ${{ matrix.config.cmake_configure_options }}
+            
+      - name: Build
+        shell: pwsh
+        working-directory: ${{github.workspace}}/build
+        run: |
+          cmake --build . --config ${{ matrix.config.cmake_build_type }}
 
-    - name: Configure CMake
-      # Use a bash shell so we can use the same syntax for environment variable
-      # access regardless of the host operating system
-      shell: pwsh
-      working-directory: ${{github.workspace}}/build
-      # Note the current convention is to use the -S and -B options here to specify source 
-      # and build directories, but this is only available with CMake 3.13 and higher.  
-      # The CMake binaries on the Github Actions machines are (as of this writing) 3.12
-      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=$BUILD_TYPE
-
-    - name: Build
-      working-directory: ${{github.workspace}}/build
-      shell: pwsh
-      # Execute the build.  You can specify a specific target with "--target <NAME>"
-      run: cmake --build . --config $BUILD_TYPE
-
-    - name: Test
-      working-directory: ${{github.workspace}}/build
-      shell: bash
-      # Execute tests defined by the CMake configuration.  
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C $BUILD_TYPE
+      - name: Test
+        working-directory: ${{github.workspace}}/build
+        shell: pwsh
+        run: |
+          ctest . -C ${{ matrix.config.cmake_build_type }}
+          
+      - name: Compress artifacts
+        shell: pwsh
+        run: |
+          7z a -tzip ${{ matrix.config.artifact }} build/*
+       
