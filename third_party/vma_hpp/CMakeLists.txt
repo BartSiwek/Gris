@@ -10,10 +10,10 @@ target_sources(Gris.Dependencies.VmaHpp PRIVATE
   "include/vk_mem_alloc.hpp"
 )
 
-target_include_directories(Gris.Dependencies.VmaHpp PUBLIC
+target_include_directories(Gris.Dependencies.VmaHpp SYSTEM PUBLIC
   "include"
 )
 
 target_link_libraries(Gris.Dependencies.VmaHpp PUBLIC
-  Vulkan::Vulkan
+  Gris.Demos.VulkanTutorial
 )

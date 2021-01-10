@@ -33,7 +33,7 @@ public:
     void RemoveObserver(WindowObserver * observer);
 
 protected:
-    [[nodiscard]] const GLFWwindow * const WindowHandle() const;
+    [[nodiscard]] const GLFWwindow * WindowHandle() const;
     [[nodiscard]] GLFWwindow * WindowHandle();
 
 private:

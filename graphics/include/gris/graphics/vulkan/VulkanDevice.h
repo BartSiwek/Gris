@@ -2,6 +2,7 @@
 
 #include <gris/graphics/vulkan/VulkanAllocator.h>
 #include <gris/graphics/vulkan/VulkanPhysicalDevice.h>
+#include <gris/graphics/vulkan/VulkanImmediateContext.h>
 
 namespace Gris::Graphics::Vulkan
 {
@@ -10,7 +11,6 @@ class VulkanSwapChain;
 class VulkanDeviceResource;
 class VulkanBuffer;
 class VulkanTexture;
-class VulkanImmediateContext;
 class VulkanDeferredContext;
 class VulkanShader;
 class VulkanInputLayout;

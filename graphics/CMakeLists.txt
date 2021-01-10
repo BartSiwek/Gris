@@ -76,8 +76,7 @@ target_include_directories(Gris.Graphics PUBLIC
 )
 
 target_link_libraries(Gris.Graphics PUBLIC
-  # TODO: Hide this behind a Gris.Dependencies
-  Vulkan::Vulkan
+  Gris.Dependencies.Vulkan
   Gris.Dependencies.VmaHpp
   CONAN_PKG::glfw
 )

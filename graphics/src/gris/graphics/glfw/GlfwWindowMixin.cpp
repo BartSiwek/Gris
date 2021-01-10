@@ -4,6 +4,9 @@
 
 #include <GLFW/glfw3.h>
 
+#include <algorithm>
+#include <utility>
+
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, const uint32_t height, const std::string & title)
@@ -14,12 +17,12 @@ Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, con
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    m_window = glfwCreateWindow(m_width, m_height, title.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(static_cast<int>(m_width), static_cast<int>(m_height), title.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(m_window, this);
-    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow * window, const int width, const int height)
+    glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow * window, const int newWidth, const int newHeight)
                                    {
                                        auto * windowPtr = static_cast<GlfwWindowMixin *>(glfwGetWindowUserPointer(window));
-                                       windowPtr->OnSizeChanged(static_cast<uint32_t>(width), static_cast<uint32_t>(height));
+                                       windowPtr->OnSizeChanged(static_cast<uint32_t>(newWidth), static_cast<uint32_t>(newHeight));
                                    });
 }
 
@@ -101,7 +104,7 @@ void Gris::Graphics::Glfw::GlfwWindowMixin::RemoveObserver(WindowObserver * obse
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const GLFWwindow * const Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle() const
+[[nodiscard]] const GLFWwindow * Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle() const
 {
     return m_window;
 }

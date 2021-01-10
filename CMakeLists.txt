@@ -48,8 +48,7 @@ run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}" "${CONAN_IMPORTS}")
 
 ########################################################################
 
-# TODO: Put this behind a dependency
-find_package(Vulkan REQUIRED)
+add_subdirectory(extern/vulkan)
 
 ########################################################################
 

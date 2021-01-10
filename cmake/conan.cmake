@@ -23,13 +23,16 @@ macro(run_conan requires options imports)
 
   conan_cmake_run(
     REQUIRES
-    ${requires}
+      ${requires}
     OPTIONS
-    ${options}
+      ${options}
     IMPORTS
-    ${imports}
+      ${imports}
     BASIC_SETUP
     CMAKE_TARGETS # individual targets to link to
     BUILD
-    missing)
+      missing
+    ENV CC=${CMAKE_C_COMPILER}
+    ENV CXX=${CMAKE_CXX_COMPILER}
+  )
 endmacro()

@@ -295,7 +295,7 @@ private:
     {
         int texWidth, texHeight, texChannels;
         auto * pixels = stbi_load(TEXTURE_PATH, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-        vk::DeviceSize imageSize = texWidth * texHeight * 4;
+        vk::DeviceSize imageSize = static_cast<vk::DeviceSize>(texWidth) * static_cast<vk::DeviceSize>(texHeight) * 4;
         auto const mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
         if (!pixels)
@@ -304,11 +304,11 @@ private:
         }
 
         auto stagingBuffer = m_device->CreateBuffer(imageSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-        stagingBuffer.SetData(pixels, static_cast<size_t>(imageSize));
+        stagingBuffer.SetData(pixels, imageSize);
 
         stbi_image_free(pixels);
 
-        m_textureImage = std::make_unique<Gris::Graphics::Vulkan::VulkanTexture>(m_device->CreateTexture(texWidth, texHeight, mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_textureImage = std::make_unique<Gris::Graphics::Vulkan::VulkanTexture>(m_device->CreateTexture(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal));
         m_device->Context()->TransitionImageLayout(*m_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
         m_device->Context()->CopyBufferToImage(stagingBuffer, *m_textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
         // Transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
@@ -338,14 +338,14 @@ private:
                 Vertex vertex{};
 
                 vertex.pos = {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
+                    attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 0],
+                    attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 1],
+                    attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 2]
                 };
 
                 vertex.texCoord = {
-                    attrib.texcoords[2 * index.texcoord_index + 0],
-                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+                    attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 0],
+                    1.0f - attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 1]
                 };
 
                 vertex.color = { 1.0f, 1.0f, 1.0f };
