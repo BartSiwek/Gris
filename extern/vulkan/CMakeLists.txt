@@ -21,7 +21,8 @@ target_link_libraries(Gris.Dependencies.Vulkan
 # Propagate (or create) the glslc executable
 add_executable(Gris.Dependencies.glslc IMPORTED GLOBAL)
 if(TARGET Vulkan::glslc)
-  set_property(TARGET Gris.Dependencies.glslc PROPERTY IMPORTED_LOCATION "$<TARGET_FILE:Vulkan::glslc>")
+  get_property(GLSLC_LOCATION TARGET Vulkan::glslc PROPERTY IMPORTED_LOCATION)
+  set_property(TARGET Gris.Dependencies.glslc PROPERTY IMPORTED_LOCATION "${GLSLC_LOCATION}")
 else()
   find_program(GLSLC_LOCATION
     NAMES glslc

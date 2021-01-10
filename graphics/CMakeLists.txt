@@ -68,6 +68,8 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/vulkan/VulkanTextureView.h"
   "include/gris/graphics/vulkan/VulkanUtils.h"
   "include/gris/graphics/vulkan/VulkanWindowMixin.h"
+  "include/gris/graphics/vulkan/vma_headers.h"
+  "include/gris/graphics/vulkan/vulkan_headers.h"
   "include/gris/graphics/vulkan/glfw/GlfwExtensionGetters.h"
   "include/gris/graphics/vulkan/glfw/GlfwVulkanWindow.h"
 )
