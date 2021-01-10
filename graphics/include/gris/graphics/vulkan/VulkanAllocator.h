@@ -2,6 +2,8 @@
 
 #include <gris/graphics/vulkan/VulkanAllocation.h>
 
+#include <gris/graphics/vulkan/vulkan_headers.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
@@ -10,7 +12,7 @@ class VulkanAllocator
 public:
     VulkanAllocator();
 
-    explicit VulkanAllocator(vma::Allocator allocator);
+    explicit VulkanAllocator(VmaAllocator allocator);
 
     VulkanAllocator(const VulkanAllocator & other) = delete;
     VulkanAllocator & operator=(const VulkanAllocator & other) = delete;
@@ -20,10 +22,10 @@ public:
 
     ~VulkanAllocator();
 
-    [[nodiscard]] VulkanAllocation AllocateMemory(const vk::Buffer buffer, const vma::AllocationCreateInfo & allocationCreateInfo);
-    [[nodiscard]] VulkanAllocation AllocateMemory(const vk::Image buffer, const vma::AllocationCreateInfo & allocationCreateInfo);
+    [[nodiscard]] VulkanAllocation AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo);
+    [[nodiscard]] VulkanAllocation AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo);
 
-    void FreeMemory(const vma::Allocation & allocation);
+    void FreeMemory(const VmaAllocation & allocation);
 
     void Bind(const vk::Buffer & buffer, const VulkanAllocation & allocation);
     void Bind(const vk::Image & image, const VulkanAllocation & allocation);
@@ -32,7 +34,7 @@ public:
     void Unmap(const VulkanAllocation & allocation) const;
 
 private:
-    vma::Allocator m_allocator = nullptr;
+    VmaAllocator m_allocator = VK_NULL_HANDLE;
 };
 
 }  // namespace Gris::Graphics::Vulkan

@@ -8,7 +8,7 @@ Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(vma::Allocator allocator)
+Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(VmaAllocator allocator)
     : m_allocator(std::move(allocator))
 {
 }
@@ -16,7 +16,7 @@ Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(vma::Allocator allocato
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(VulkanAllocator && other) noexcept
-    : m_allocator(std::exchange(other.m_allocator, nullptr))
+    : m_allocator(std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE)))
 {
 }
 
@@ -25,7 +25,7 @@ Gris::Graphics::Vulkan::VulkanAllocator::VulkanAllocator(VulkanAllocator && othe
 Gris::Graphics::Vulkan::VulkanAllocator & Gris::Graphics::Vulkan::VulkanAllocator::operator=(VulkanAllocator && other) noexcept
 {
     if (this != &other)
-        m_allocator = std::exchange(other.m_allocator, nullptr);
+        m_allocator = std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE));
 
     return *this;
 }
@@ -35,43 +35,45 @@ Gris::Graphics::Vulkan::VulkanAllocator & Gris::Graphics::Vulkan::VulkanAllocato
 Gris::Graphics::Vulkan::VulkanAllocator::~VulkanAllocator()
 {
     if (m_allocator)
-        m_allocator.destroy();
+        vmaDestroyAllocator(m_allocator);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocation Gris::Graphics::Vulkan::VulkanAllocator::AllocateMemory(const vk::Buffer buffer, const vma::AllocationCreateInfo & allocationCreateInfo)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocation Gris::Graphics::Vulkan::VulkanAllocator::AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo)
 {
-    auto const createBufferResult = m_allocator.allocateMemoryForBuffer(buffer, allocationCreateInfo);
-    if (createBufferResult.result != vk::Result::eSuccess)
-        throw VulkanEngineException("Error allocating buffer from VMA", vk::to_string(createBufferResult.result));
+    VmaAllocation allocation;
+    auto const createBufferResult = static_cast<vk::Result>(vmaAllocateMemoryForBuffer(m_allocator, static_cast<VkBuffer>(buffer), &allocationCreateInfo, &allocation, nullptr));
+    if (createBufferResult != vk::Result::eSuccess)
+        throw VulkanEngineException("Error allocating buffer from VMA", vk::to_string(createBufferResult));
 
-    return VulkanAllocation(createBufferResult.value, this);
+    return VulkanAllocation(allocation, this);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocation Gris::Graphics::Vulkan::VulkanAllocator::AllocateMemory(const vk::Image buffer, const vma::AllocationCreateInfo & allocationCreateInfo)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocation Gris::Graphics::Vulkan::VulkanAllocator::AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo)
 {
-    auto const createBufferResult = m_allocator.allocateMemoryForImage(buffer, allocationCreateInfo);
-    if (createBufferResult.result != vk::Result::eSuccess)
-        throw VulkanEngineException("Error allocating image from VMA", vk::to_string(createBufferResult.result));
+    VmaAllocation allocation;
+    auto const createImageResult = static_cast<vk::Result>(vmaAllocateMemoryForImage(m_allocator, static_cast<VkImage>(image), &allocationCreateInfo, &allocation, nullptr));
+    if (createImageResult != vk::Result::eSuccess)
+        throw VulkanEngineException("Error allocating image from VMA", vk::to_string(createImageResult));
 
-    return VulkanAllocation(createBufferResult.value, this);
+    return VulkanAllocation(allocation, this);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanAllocator::FreeMemory(const vma::Allocation & allocation)
+void Gris::Graphics::Vulkan::VulkanAllocator::FreeMemory(const VmaAllocation & allocation)
 {
-    m_allocator.freeMemory(allocation);
+    vmaFreeMemory(m_allocator, allocation);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::VulkanAllocator::Bind(const vk::Buffer & buffer, const VulkanAllocation & allocation)
 {
-    auto const bindResult = m_allocator.bindBufferMemory(allocation.m_allocation, buffer);
+    auto const bindResult = static_cast<vk::Result>(vmaBindBufferMemory(m_allocator, allocation.m_allocation, static_cast<VkBuffer>(buffer)));
     if (bindResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error binding buffer memory", vk::to_string(bindResult));
 }
@@ -80,7 +82,7 @@ void Gris::Graphics::Vulkan::VulkanAllocator::Bind(const vk::Buffer & buffer, co
 
 void Gris::Graphics::Vulkan::VulkanAllocator::Bind(const vk::Image & image, const VulkanAllocation & allocation)
 {
-    auto const bindResult = m_allocator.bindImageMemory(allocation.m_allocation, image);
+    auto const bindResult = static_cast<vk::Result>(vmaBindImageMemory(m_allocator, allocation.m_allocation, static_cast<VkImage>(image)));
     if (bindResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error binding buffer memory", vk::to_string(bindResult));
 }
@@ -89,16 +91,17 @@ void Gris::Graphics::Vulkan::VulkanAllocator::Bind(const vk::Image & image, cons
 
 [[nodiscard]] void * Gris::Graphics::Vulkan::VulkanAllocator::Map(const VulkanAllocation & allocation) const
 {
-    auto const mapResult = m_allocator.mapMemory(allocation.m_allocation);
-    if (mapResult.result != vk::Result::eSuccess)
-        throw VulkanEngineException("Error mapping memory", vk::to_string(mapResult.result));
+    void* data;
+    auto const mapResult = static_cast<vk::Result>(vmaMapMemory(m_allocator, allocation.m_allocation, &data));
+    if (mapResult != vk::Result::eSuccess)
+        throw VulkanEngineException("Error mapping memory", vk::to_string(mapResult));
 
-    return mapResult.value;
+    return data;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::VulkanAllocator::Unmap(const VulkanAllocation & allocation) const
 {
-    m_allocator.unmapMemory(allocation.m_allocation);
+    vmaUnmapMemory(m_allocator, allocation.m_allocation);
 }

@@ -12,7 +12,7 @@ class VulkanAllocation
 public:
     VulkanAllocation();
 
-    VulkanAllocation(vma::Allocation allocation, VulkanAllocator * owner);
+    VulkanAllocation(VmaAllocation allocation, VulkanAllocator * owner);
 
     VulkanAllocation(const VulkanAllocation & other) = delete;
     VulkanAllocation & operator=(const VulkanAllocation & other) = delete;
@@ -27,7 +27,7 @@ public:
 private:
     friend class VulkanAllocator;
 
-    vma::Allocation m_allocation = nullptr;
+    VmaAllocation m_allocation = VK_NULL_HANDLE;
     VulkanAllocator * m_owner = nullptr;
 };
 
