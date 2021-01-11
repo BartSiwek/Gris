@@ -143,9 +143,18 @@ jobs:
         run: |
           apt-get update -qq
           apt-get install -y \
+            apt-transport-https
+            ca-certificates
+            gnupg
+            software-properties-common
+            wget
+          wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+          sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main'
+          sudo apt-get update -qq
+          apt-get install -y \
             clang \
-            cmake \
             curl \
+            cmake \
             libgl1-mesa-dev \
             libx11-dev \
             libx11-xcb-dev \
@@ -198,7 +207,7 @@ jobs:
 
           source ${{ env.VULKAN_SDK_DIR }}/${{ env.VULKAN_VERSION }}/setup-env.sh
 
-          conan profile new default --detect --force
+          conan profile new default --detect
           ${{ matrix.config.conan_profile_update }}
 
           # Configure cmake
