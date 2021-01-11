@@ -96,7 +96,7 @@ jobs:
     env:
       DEBIAN_FRONTEND: "noninteractive"
       vulkan_version: "1.2.154.0"
-      vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
+      vulkan_sdk_dir: "${{env.GITHUB_WORKSPACE}}/vulkan_sdk/"
     strategy:
       fail-fast: false
       matrix:
@@ -186,7 +186,7 @@ jobs:
         run: |
           pwd
           ls -al
-          cmake -E make_directory ${{github.workspace}}/build
+          cmake -E make_directory ${{env.GITHUB_WORKSPACE}}/build
           ls -al
 
       - name: Configure CMake
