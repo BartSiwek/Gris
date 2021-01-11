@@ -223,7 +223,7 @@ jobs:
         shell: bash
         working-directory: build
         run: |
-          tar cfz ${{ matrix.config.artifact }} bin
+          tar cfzv ${{ matrix.config.artifact }} bin
 
       - name: Upload
         uses: actions/upload-artifact@v1
