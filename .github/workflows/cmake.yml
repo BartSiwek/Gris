@@ -95,8 +95,8 @@ jobs:
     container: ubuntu:20.04
     env:
       DEBIAN_FRONTEND: "noninteractive"
-      vulkan_version: "1.2.154.0"
-      vulkan_sdk_dir: "$GITHUB_WORKSPACE/vulkan_sdk/"
+      VULKAN_VERSION: "1.2.154.0"
+      VULKAN_SDK_DIR: "$GITHUB_WORKSPACE/vulkan_sdk/"
     strategy:
       fail-fast: false
       matrix:
@@ -176,26 +176,26 @@ jobs:
         shell: bash
         run: |
           curl -LS -o vulkansdk.tar.gz \
-            https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/linux/vulkansdk-linux-x86_64-${{ env.vulkan_version }}.tar.gz
-          mkdir -p "${{ env.vulkan_sdk_dir }}"
-          tar xfz vulkansdk.tar.gz -C "${{ env.vulkan_sdk_dir }}"
+            https://sdk.lunarg.com/sdk/download/${{ env.VULKAN_VERSION }}/linux/vulkansdk-linux-x86_64-${{ env.VULKAN_VERSION }}.tar.gz
+          mkdir -p "${{ env.VULKAN_SDK_DIR }}"
+          tar xfz vulkansdk.tar.gz -C "${{ env.VULKAN_SDK_DIR }}"
           rm vulkansdk.tar.gz
 
       - name: Create Build Directory
         run: |
-          pwd
-          ls -al
           cmake -E make_directory $GITHUB_WORKSPACE/build
-          ls -al
 
       - name: Configure CMake
         shell: bash
+        working-directory: $GITHUB_WORKSPACE/build
         run: |
           pwd
           ls -al
+          ls -al ${{ env.VULKAN_SDK_DIR }}
+
           cd build
 
-          source ${{ env.vulkan_sdk_dir }}/setup-env.sh
+          source ${{ env.VULKAN_SDK_DIR }}setup-env.sh
 
           conan profile new default --detect --force
           ${{ matrix.config.conan_profile_update }}
@@ -204,7 +204,7 @@ jobs:
           cmake .. \
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} \
-            -DCMAKE_PREFIX_PATH=${{ env.vulkan_sdk_dir }} \
+            -DCMAKE_PREFIX_PATH=${{ env.VULKAN_SDK_DIR }} \
             -DGRIS_ASSERT_COMPILATION_TESTS=ON \
             ${{ matrix.config.cmake_configure_options }}
 
