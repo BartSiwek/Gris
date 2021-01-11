@@ -179,14 +179,13 @@ jobs:
             https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/linux/vulkansdk-linux-x86_64-${{ env.vulkan_version }}.tar.gz
           mkdir -p "${{ env.vulkan_sdk_dir }}"
           tar xfz vulkansdk.tar.gz -C "${{ env.vulkan_sdk_dir }}"
-          pwd
-          ls -al
+          rm vulkansdk.tar.gz
 
       - name: Create Build Directory
         run: |
           pwd
           ls -al
-          cmake -E make_directory ${{env.GITHUB_WORKSPACE}}/build
+          cmake -E make_directory $GITHUB_WORKSPACE/build
           ls -al
 
       - name: Configure CMake
