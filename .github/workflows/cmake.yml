@@ -88,3 +88,128 @@ jobs:
         with:
           path: ${{ matrix.config.artifact }}
           name: ${{ matrix.config.artifact }}
+
+  linux:
+    name: ${{ matrix.config.name }}
+    runs-on: ubuntu-latest
+    container: ubuntu:20.04
+    env:
+      DEBIAN_FRONTEND: "noninteractive"
+      inexor_conan_path: "$HOME/.local/bin" #############################
+      vulkan_version: "1.2.154.1"
+      vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "Ubuntu Clang Debug",
+            artifact: "linux-clang-debug.tar.gz",
+            cc: "clang", cxx: "clang++",
+            cmake_configure_options: '-DCMAKE_EXE_LINKER_FLAGS="-v -fuse-ld=lld"',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
+          - {
+            name: "Ubuntu Clang Release",
+            artifact: "linux-clang-release.tar.gz",
+            cc: "clang", cxx: "clang++",
+            cmake_configure_options: '-DCMAKE_EXE_LINKER_FLAGS="-v -fuse-ld=lld"',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
+          - {
+            name: "Ubuntu GCC Debug",
+            artifact: "linux-gcc-debug.tar.gz",
+            cc: "gcc", cxx: "g++",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
+          - {
+            name: "Ubuntu GCC Release",
+            artifact: "linux-gcc-release.tar.gz",
+            cc: "gcc", cxx: "g++",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Vulkan SDK
+        shell: bash
+        run: |
+          curl -LS -o vulkansdk.tar.gz \
+            https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/linux/vulkansdk-linux-x86_64-${{ env.vulkan_version }}.tar.gz
+          mkdir "${{ env.vulkan_sdk_dir }}"
+          tar xfz vulkansdk.tar.gz -C "${{ env.vulkan_sdk_dir }}"
+
+      - name: Update environment
+        shell: bash
+        run: |
+          apt update -qq
+          apt install -y \
+            clang \
+            cmake \
+            curl \
+            libgl1-mesa-dev \
+            libx11-dev \
+            libx11-xcb-dev \
+            libxcb-dri3-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-util-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            lld \
+            ninja-build \
+            pkg-config \
+            python3 \
+            python3-pip \
+            xkb-data \
+            xorg-dev
+          pip3 install wheel setuptools
+          pip3 install conan
+
+      - name: Create Build Directory
+        run: cmake -E make_directory ${{github.workspace}}/build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: ${{github.workspace}}/build
+        run: |
+          source ${{ env.vulkan_sdk_dir }}/setup-env.sh
+
+          conan profile new default --detect --force
+          ${{ matrix.config.conan_profile_update }}
+
+          # Configure cmake
+          cmake .. \
+            -GNinja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} \
+            -DCMAKE_PREFIX_PATH=${{ env.vulkan_sdk_dir }} \
+            -DGRIS_ASSERT_COMPILATION_TESTS=ON \
+            ${{ matrix.config.cmake_configure_options }}
+
+      - name: Build
+        shell: bash
+        working-directory: ${{github.workspace}}/build
+        run: |
+          cmake --build . --config ${{ matrix.config.cmake_build_type }}
+
+      - name: Prepare upload
+        working-directory: ${{github.workspace}}/build
+        run: |
+          tar cfz ${{ matrix.config.artifact }} bin
+
+      - name: Upload
+        uses: actions/upload-artifact@v1
+        with:
+          path: ${{ matrix.config.artifact }}
+          name: ${{ matrix.config.artifact }}
