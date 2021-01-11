@@ -8,86 +8,86 @@ on:
   workflow_dispatch:
 
 jobs:
-  windows:
-    name: ${{ matrix.config.name }}
-    runs-on: windows-latest
-    env:
-      vulkan_version: "1.2.154.1"
-      vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
-    strategy:
-      fail-fast: false
-      matrix:
-        config:
-          - {
-              name: "Windows Release",
-              artifact: "windows-release.zip",
-              cmake_build_type: "Release",
-              cmake_configure_options: '-G "Visual Studio 16 2019" -A x64',
-              conan_profile_update: 'conan profile update settings.compiler="Visual Studio" default; conan profile update settings.compiler.version=16 default',
-            }
-          - {
-              name: "Windows Debug",
-              artifact: "windows-debug.zip",
-              cmake_build_type: "Debug",
-              cmake_configure_options: '-G "Visual Studio 16 2019" -A x64',
-              conan_profile_update: 'conan profile update settings.compiler="Visual Studio" default; conan profile update settings.compiler.version=16 default',
-            }
+  # windows:
+  #   name: ${{ matrix.config.name }}
+  #   runs-on: windows-latest
+  #   env:
+  #     vulkan_version: "1.2.154.1"
+  #     vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       config:
+  #         - {
+  #             name: "Windows Release",
+  #             artifact: "windows-release.zip",
+  #             cmake_build_type: "Release",
+  #             cmake_configure_options: '-G "Visual Studio 16 2019" -A x64',
+  #             conan_profile_update: 'conan profile update settings.compiler="Visual Studio" default; conan profile update settings.compiler.version=16 default',
+  #           }
+  #         - {
+  #             name: "Windows Debug",
+  #             artifact: "windows-debug.zip",
+  #             cmake_build_type: "Debug",
+  #             cmake_configure_options: '-G "Visual Studio 16 2019" -A x64',
+  #             conan_profile_update: 'conan profile update settings.compiler="Visual Studio" default; conan profile update settings.compiler.version=16 default',
+  #           }
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Install Vulkan SDK
-        shell: pwsh
-        run: |
-          curl -LS -o vulkansdk.exe `
-            https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/windows/VulkanSDK-${{ env.vulkan_version }}-Installer.exe?Human=true
-          7z x vulkansdk.exe -o"${{ env.vulkan_sdk_dir }}"
+  #     - name: Install Vulkan SDK
+  #       shell: pwsh
+  #       run: |
+  #         curl -LS -o vulkansdk.exe `
+  #           https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/windows/VulkanSDK-${{ env.vulkan_version }}-Installer.exe?Human=true
+  #         7z x vulkansdk.exe -o"${{ env.vulkan_sdk_dir }}"
 
-      - name: Update environment
-        shell: pwsh
-        run: |
-          pip3 install wheel setuptools
-          pip3 install conan
+  #     - name: Update environment
+  #       shell: pwsh
+  #       run: |
+  #         pip3 install wheel setuptools
+  #         pip3 install conan
 
-      - name: Create Build Directory
-        run: cmake -E make_directory ${{github.workspace}}/build
+  #     - name: Create Build Directory
+  #       run: cmake -E make_directory ${{github.workspace}}/build
 
-      - name: Configure CMake
-        shell: pwsh
-        working-directory: ${{github.workspace}}/build
-        run: |
-          conan profile new default --detect --force
-          ${{ matrix.config.conan_profile_update }}
+  #     - name: Configure CMake
+  #       shell: pwsh
+  #       working-directory: ${{github.workspace}}/build
+  #       run: |
+  #         conan profile new default --detect --force
+  #         ${{ matrix.config.conan_profile_update }}
 
-          cmake .. `
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} `
-            -DCMAKE_PREFIX_PATH=${{ env.vulkan_sdk_dir }} `
-            -DGRIS_ASSERT_COMPILATION_TESTS=ON `
-            ${{ matrix.config.cmake_configure_options }}
+  #         cmake .. `
+  #           -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} `
+  #           -DCMAKE_PREFIX_PATH=${{ env.vulkan_sdk_dir }} `
+  #           -DGRIS_ASSERT_COMPILATION_TESTS=ON `
+  #           ${{ matrix.config.cmake_configure_options }}
 
-      - name: Build
-        shell: pwsh
-        working-directory: ${{github.workspace}}/build
-        run: |
-          cmake --build . --config ${{ matrix.config.cmake_build_type }}
+  #     - name: Build
+  #       shell: pwsh
+  #       working-directory: ${{github.workspace}}/build
+  #       run: |
+  #         cmake --build . --config ${{ matrix.config.cmake_build_type }}
 
-      - name: Test
-        working-directory: ${{github.workspace}}/build
-        shell: pwsh
-        run: |
-          ctest . -C ${{ matrix.config.cmake_build_type }}
+  #     - name: Test
+  #       working-directory: ${{github.workspace}}/build
+  #       shell: pwsh
+  #       run: |
+  #         ctest . -C ${{ matrix.config.cmake_build_type }}
 
-      - name: Compress artifacts
-        shell: pwsh
-        run: |
-          7z a -tzip ${{ matrix.config.artifact }} build/bin/*
+  #     - name: Compress artifacts
+  #       shell: pwsh
+  #       run: |
+  #         7z a -tzip ${{ matrix.config.artifact }} build/bin/*
 
-      - name: Archive artifacts
-        uses: actions/upload-artifact@v1
-        with:
-          path: ${{ matrix.config.artifact }}
-          name: ${{ matrix.config.artifact }}
+  #     - name: Archive artifacts
+  #       uses: actions/upload-artifact@v1
+  #       with:
+  #         path: ${{ matrix.config.artifact }}
+  #         name: ${{ matrix.config.artifact }}
 
   linux:
     name: ${{ matrix.config.name }}
@@ -135,14 +135,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Install Vulkan SDK
-        shell: bash
-        run: |
-          curl -LS -o vulkansdk.tar.gz \
-            https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/linux/vulkansdk-linux-x86_64-${{ env.vulkan_version }}.tar.gz
-          mkdir "${{ env.vulkan_sdk_dir }}"
-          tar xfz vulkansdk.tar.gz -C "${{ env.vulkan_sdk_dir }}"
-
       - name: Update environment
         shell: bash
         run: |
@@ -176,6 +168,14 @@ jobs:
             xorg-dev
           pip3 install wheel setuptools
           pip3 install conan
+
+      - name: Install Vulkan SDK
+        shell: bash
+        run: |
+          curl -LS -o vulkansdk.tar.gz \
+            https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/linux/vulkansdk-linux-x86_64-${{ env.vulkan_version }}.tar.gz
+          mkdir "${{ env.vulkan_sdk_dir }}"
+          tar xfz vulkansdk.tar.gz -C "${{ env.vulkan_sdk_dir }}"
 
       - name: Create Build Directory
         run: cmake -E make_directory ${{github.workspace}}/build
