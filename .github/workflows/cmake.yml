@@ -109,30 +109,30 @@ jobs:
             cmake_configure_options: '',
             conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
           }
-          # - {
-          #   name: "Ubuntu Clang Release",
-          #   artifact: "linux-clang-release.tar.gz",
-          #   cmake_build_type: "Release",
-          #   cc: "clang", cxx: "clang++",
-          #   cmake_configure_options: '',
-          #   conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
-          # }
-          # - {
-          #   name: "Ubuntu GCC Debug",
-          #   artifact: "linux-gcc-debug.tar.gz",
-          #   cmake_build_type: "Debug",
-          #   cc: "gcc", cxx: "g++",
-          #   cmake_configure_options: '',
-          #   conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
-          # }
-          # - {
-          #   name: "Ubuntu GCC Release",
-          #   artifact: "linux-gcc-release.tar.gz",
-          #   cmake_build_type: "Release",
-          #   cc: "gcc", cxx: "g++",
-          #   cmake_configure_options: '',
-          #   conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
-          # }
+          - {
+            name: "Ubuntu Clang Release",
+            artifact: "linux-clang-release.tar.gz",
+            cmake_build_type: "Release",
+            cc: "clang", cxx: "clang++",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
+          - {
+            name: "Ubuntu GCC Debug",
+            artifact: "linux-gcc-debug.tar.gz",
+            cmake_build_type: "Debug",
+            cc: "gcc", cxx: "g++",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
+          - {
+            name: "Ubuntu GCC Release",
+            artifact: "linux-gcc-release.tar.gz",
+            cmake_build_type: "Release",
+            cc: "gcc", cxx: "g++",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
+          }
 
     steps:
       - name: Checkout
@@ -187,7 +187,7 @@ jobs:
           curl -LS -o vulkansdk.tar.gz \
             https://sdk.lunarg.com/sdk/download/${{ env.VULKAN_VERSION }}/linux/vulkansdk-linux-x86_64-${{ env.VULKAN_VERSION }}.tar.gz
           mkdir -p "${{ env.VULKAN_SDK_DIR }}"
-          tar xfz vulkansdk.tar.gz -C "${{ env.VULKAN_SDK_DIR }}"
+          tar xfzv vulkansdk.tar.gz -C "${{ env.VULKAN_SDK_DIR }}"
           rm vulkansdk.tar.gz
 
       - name: Create Build Directory
@@ -221,9 +221,8 @@ jobs:
 
       - name: Prepare upload
         shell: bash
-        working-directory: build
         run: |
-          tar cfzv ${{ matrix.config.artifact }} bin
+          tar cfzv ${{ matrix.config.artifact }} build/bin
 
       - name: Upload
         uses: actions/upload-artifact@v1
