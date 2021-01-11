@@ -91,7 +91,7 @@ void Gris::Graphics::Vulkan::VulkanAllocator::Bind(const vk::Image & image, cons
 
 [[nodiscard]] void * Gris::Graphics::Vulkan::VulkanAllocator::Map(const VulkanAllocation & allocation) const
 {
-    void* data;
+    void * data;
     auto const mapResult = static_cast<vk::Result>(vmaMapMemory(m_allocator, allocation.m_allocation, &data));
     if (mapResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error mapping memory", vk::to_string(mapResult));

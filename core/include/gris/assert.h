@@ -92,7 +92,7 @@ namespace Detail
     }
 
     template<typename T>
-    bool MaybeCastToBool(T&& value)
+    bool MaybeCastToBool(T && value)
     {
         if constexpr (std::is_same_v<bool, T>)
             return value;
@@ -113,19 +113,18 @@ namespace Detail
 #define GRIS_ASSERT_EXPAND(arg) arg
 #define GRIS_ASSERT_FIRST(first, ...) first
 
-#define GRIS_ASSERT_IMPL(condition, ...)                                                                                                   \
-    do                                                                                                                                     \
-    {                                                                                                                                      \
-        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                                             \
-        {                                                                                                                                  \
-            Gris::Assert::Detail::AssertFired(                                                                                             \
-                __FILE__,                                                                                                                  \
-                __LINE__,                                                                                                                  \
-                "Assertion [" #condition "] failed. " GRIS_ASSERT_EXPAND(GRIS_ASSERT_FIRST(__VA_ARGS__, GRIS_ASSERT_DUMMY_ARG)),           \
-                __VA_ARGS__                                                                                                                \
-            );                                                                                                                              \
-            GRIS_DEBUGBREAK;                                                                                                               \
-        }                                                                                                                                  \
+#define GRIS_ASSERT_IMPL(condition, ...)                                                                                         \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                                   \
+        {                                                                                                                        \
+            Gris::Assert::Detail::AssertFired(                                                                                   \
+                __FILE__,                                                                                                        \
+                __LINE__,                                                                                                        \
+                "Assertion [" #condition "] failed. " GRIS_ASSERT_EXPAND(GRIS_ASSERT_FIRST(__VA_ARGS__, GRIS_ASSERT_DUMMY_ARG)), \
+                __VA_ARGS__);                                                                                                    \
+            GRIS_DEBUGBREAK;                                                                                                     \
+        }                                                                                                                        \
     } while (false)
 
 #define GRIS_ASSERT_IGNORE_IMPL(condition, ...) Gris::Assert::Detail::Ignore(condition, __VA_ARGS__);
