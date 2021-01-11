@@ -96,7 +96,7 @@ jobs:
     env:
       DEBIAN_FRONTEND: "noninteractive"
       vulkan_version: "1.2.154.0"
-      vulkan_sdk_dir: "${{env.GITHUB_WORKSPACE}}/vulkan_sdk/"
+      vulkan_sdk_dir: "$GITHUB_WORKSPACE/vulkan_sdk/"
     strategy:
       fail-fast: false
       matrix:
