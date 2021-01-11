@@ -138,8 +138,8 @@ jobs:
       - name: Update environment
         shell: bash
         run: |
-          apt update -qq
-          apt install -y \
+          apt-get update -qq
+          apt-get install -y \
             clang \
             cmake \
             curl \
@@ -174,7 +174,7 @@ jobs:
         run: |
           curl -LS -o vulkansdk.tar.gz \
             https://sdk.lunarg.com/sdk/download/${{ env.vulkan_version }}/linux/vulkansdk-linux-x86_64-${{ env.vulkan_version }}.tar.gz
-          mkdir "${{ env.vulkan_sdk_dir }}"
+          mkdir -p "${{ env.vulkan_sdk_dir }}"
           tar xfz vulkansdk.tar.gz -C "${{ env.vulkan_sdk_dir }}"
 
       - name: Create Build Directory
