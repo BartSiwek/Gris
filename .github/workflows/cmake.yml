@@ -194,8 +194,9 @@ jobs:
           echo $VULKAN_SDK_DIR
           echo ${{ env.VULKAN_SDK_DIR }}
           ls -al ${{ env.VULKAN_SDK_DIR }}
+          ls -al ${{ env.VULKAN_SDK_DIR }}/${{ env.VULKAN_VERSION }}
 
-          source $VULKAN_SDK_DIR/setup-env.sh
+          source ${{ env.VULKAN_SDK_DIR }}/${{ env.VULKAN_VERSION }}/setup-env.sh
 
           conan profile new default --detect --force
           ${{ matrix.config.conan_profile_update }}
