@@ -95,7 +95,6 @@ jobs:
     container: ubuntu:20.04
     env:
       DEBIAN_FRONTEND: "noninteractive"
-      inexor_conan_path: "$HOME/.local/bin" #############################
       vulkan_version: "1.2.154.0"
       vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
     strategy:
@@ -105,20 +104,23 @@ jobs:
           - {
             name: "Ubuntu Clang Debug",
             artifact: "linux-clang-debug.tar.gz",
+            cmake_build_type: "Debug",
             cc: "clang", cxx: "clang++",
-            cmake_configure_options: '-DCMAKE_EXE_LINKER_FLAGS="-v -fuse-ld=lld"',
+            cmake_configure_options: '',
             conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
           }
           # - {
           #   name: "Ubuntu Clang Release",
           #   artifact: "linux-clang-release.tar.gz",
+          #   cmake_build_type: "Release",
           #   cc: "clang", cxx: "clang++",
-          #   cmake_configure_options: '-DCMAKE_EXE_LINKER_FLAGS="-v -fuse-ld=lld"',
+          #   cmake_configure_options: '',
           #   conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
           # }
           # - {
           #   name: "Ubuntu GCC Debug",
           #   artifact: "linux-gcc-debug.tar.gz",
+          #   cmake_build_type: "Debug",
           #   cc: "gcc", cxx: "g++",
           #   cmake_configure_options: '',
           #   conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
@@ -126,6 +128,7 @@ jobs:
           # - {
           #   name: "Ubuntu GCC Release",
           #   artifact: "linux-gcc-release.tar.gz",
+          #   cmake_build_type: "Release",
           #   cc: "gcc", cxx: "g++",
           #   cmake_configure_options: '',
           #   conan_profile_update: "conan profile update settings.compiler.libcxx=libstdc++11 default",
