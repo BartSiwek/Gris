@@ -187,15 +187,15 @@ jobs:
 
       - name: Configure CMake
         shell: bash
-        working-directory: $GITHUB_WORKSPACE/build
+        working-directory: build
         run: |
           pwd
           ls -al
-          ls -al ${{ env.VULKAN_SDK_DIR }}
+          ls -al $VULKAN_SDK_DIR
 
           cd build
 
-          source ${{ env.VULKAN_SDK_DIR }}setup-env.sh
+          source $VULKAN_SDK_DIR/setup-env.sh
 
           conan profile new default --detect --force
           ${{ matrix.config.conan_profile_update }}
@@ -204,17 +204,20 @@ jobs:
           cmake .. \
             -GNinja \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} \
-            -DCMAKE_PREFIX_PATH=${{ env.VULKAN_SDK_DIR }} \
+            -DCMAKE_PREFIX_PATH="$VULKAN_SDK_DIR" \
             -DGRIS_ASSERT_COMPILATION_TESTS=ON \
             ${{ matrix.config.cmake_configure_options }}
 
       - name: Build
         shell: bash
+        working-directory: build
         run: |
           cd build
           cmake --build . --config ${{ matrix.config.cmake_build_type }}
 
       - name: Prepare upload
+        shell: bash
+        working-directory: build
         run: |
           cd build
           tar cfz ${{ matrix.config.artifact }} bin
