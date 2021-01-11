@@ -191,9 +191,9 @@ jobs:
         run: |
           pwd
           ls -al
-          ls -al $VULKAN_SDK_DIR
-
-          cd build
+          echo $VULKAN_SDK_DIR
+          echo ${{ env.VULKAN_SDK_DIR }}
+          ls -al ${{ env.VULKAN_SDK_DIR }}
 
           source $VULKAN_SDK_DIR/setup-env.sh
 
