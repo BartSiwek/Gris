@@ -9,6 +9,7 @@ target_sources(Gris.Core PRIVATE
   "src/gris/directory_registry.cpp"
   "include/gris/assert.h"
   "include/gris/directory_registry.h"
+  "include/gris/macros.h"
 )
 
 target_include_directories(Gris.Core PUBLIC

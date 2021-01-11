@@ -2,10 +2,6 @@ cmake_minimum_required(VERSION 3.17.0)
 
 ########################################################################
 
-include(compile_shader_to_spirv)
-
-########################################################################
-
 add_executable(Gris.Demos.VulkanTutorial)
 
 target_sources(Gris.Demos.VulkanTutorial PRIVATE

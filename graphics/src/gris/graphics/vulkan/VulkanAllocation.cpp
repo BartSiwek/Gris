@@ -8,7 +8,7 @@ Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(vma::Allocation allocation, VulkanAllocator * owner)
+Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VmaAllocation allocation, VulkanAllocator * owner)
     : m_allocation(std::move(allocation))
     , m_owner(owner)
 {
@@ -17,7 +17,7 @@ Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(vma::Allocation alloc
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VulkanAllocation && other) noexcept
-    : m_allocation(std::exchange(other.m_allocation, nullptr))
+    : m_allocation(std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE)))
     , m_owner(std::exchange(other.m_owner, nullptr))
 {
 }
@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::VulkanAllocation & Gris::Graphics::Vulkan::VulkanAllocat
 {
     if (this != &other)
     {
-        m_allocation = std::exchange(other.m_allocation, nullptr);
+        m_allocation = std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE));
         m_owner = std::exchange(other.m_owner, nullptr);
     }
 
@@ -49,7 +49,7 @@ void Gris::Graphics::Vulkan::VulkanAllocation::Reset()
     if (m_owner)
     {
         m_owner->FreeMemory(m_allocation);
-        m_allocation = nullptr;
+        m_allocation = VK_NULL_HANDLE;
         m_owner = nullptr;
     }
 }

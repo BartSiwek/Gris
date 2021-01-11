@@ -39,6 +39,7 @@ set(CONAN_REQUIRES
   glm/0.9.9.8
   stb/20200203
   tinyobjloader/1.0.6
+  vulkan-memory-allocator/2.3.0
 )
 set(CONAN_OPTIONS "")
 set(CONAN_IMPORTS
@@ -48,12 +49,7 @@ run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}" "${CONAN_IMPORTS}")
 
 ########################################################################
 
-# TODO: Put this behind a dependency
-find_package(Vulkan REQUIRED)
-
-########################################################################
-
-add_subdirectory(third_party/vma_hpp)
+add_subdirectory(extern/vulkan)
 
 ########################################################################
 

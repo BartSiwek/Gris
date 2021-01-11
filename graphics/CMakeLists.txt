@@ -34,6 +34,7 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/VulkanTextureView.cpp"
   "src/gris/graphics/vulkan/VulkanUtils.cpp"
   "src/gris/graphics/vulkan/VulkanWindowMixin.cpp"
+  "src/gris/graphics/vulkan/vma_implementation.cpp"
   "src/gris/graphics/vulkan/glfw/GlfwExtensionGetters.cpp"
   "src/gris/graphics/vulkan/glfw/GlfwVulkanWindow.cpp"
   "include/gris/graphics/EngineException.h"
@@ -67,6 +68,8 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/vulkan/VulkanTextureView.h"
   "include/gris/graphics/vulkan/VulkanUtils.h"
   "include/gris/graphics/vulkan/VulkanWindowMixin.h"
+  "include/gris/graphics/vulkan/vma_headers.h"
+  "include/gris/graphics/vulkan/vulkan_headers.h"
   "include/gris/graphics/vulkan/glfw/GlfwExtensionGetters.h"
   "include/gris/graphics/vulkan/glfw/GlfwVulkanWindow.h"
 )
@@ -76,9 +79,8 @@ target_include_directories(Gris.Graphics PUBLIC
 )
 
 target_link_libraries(Gris.Graphics PUBLIC
-  # TODO: Hide this behind a Gris.Dependencies
-  Vulkan::Vulkan
-  Gris.Dependencies.VmaHpp
+  Gris.Dependencies.Vulkan
+  CONAN_PKG::vulkan-memory-allocator
   CONAN_PKG::glfw
 )
 

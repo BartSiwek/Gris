@@ -39,8 +39,8 @@
         throw EngineException("Failed to open file!");
     }
 
-    size_t fileSize = static_cast<size_t>(file.tellg());
-    std::vector<char> buffer(fileSize);
+    auto fileSize = file.tellg();
+    std::vector<char> buffer(static_cast<size_t>(fileSize));
 
     file.seekg(0);
     file.read(buffer.data(), fileSize);

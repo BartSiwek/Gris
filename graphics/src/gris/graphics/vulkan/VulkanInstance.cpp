@@ -95,25 +95,26 @@ void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGet
 
 [[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocator Gris::Graphics::Vulkan::VulkanInstance::CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
 {
-    const vma::AllocatorCreateInfo allocatorInfo({},
-                                                 physicalDevice,
-                                                 device,
-                                                 0,
-                                                 nullptr,
-                                                 nullptr,
-                                                 0,
-                                                 nullptr,
-                                                 nullptr,
-                                                 nullptr,
-                                                 Instance().m_instance.get(),
-                                                 VK_API_VERSION_1_0);
+    auto allocatorInfo = VmaAllocatorCreateInfo{};
+    allocatorInfo.flags = {};
+    allocatorInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice);
+    allocatorInfo.device = static_cast<VkDevice>(device);
+    allocatorInfo.preferredLargeHeapBlockSize = 0;
+    allocatorInfo.pAllocationCallbacks = nullptr;
+    allocatorInfo.pDeviceMemoryCallbacks = nullptr;
+    allocatorInfo.frameInUseCount = 0;  // TODO: Easy to set this correctly
+    allocatorInfo.pHeapSizeLimit = nullptr;
+    allocatorInfo.pVulkanFunctions = nullptr;
+    allocatorInfo.pRecordSettings = nullptr;
+    allocatorInfo.instance = static_cast<VkInstance>(Instance().m_instance.get());
+    allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_0;
 
-    auto const allocatorCreateResult = vma::createAllocator(allocatorInfo);
-
-    if (allocatorCreateResult.result != vk::Result::eSuccess)
+    VmaAllocator allocator;
+    auto const allocatorCreateResult = static_cast<vk::Result>(vmaCreateAllocator(&allocatorInfo, &allocator));
+    if (allocatorCreateResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error creating Vulkan Memory Allocator", allocatorCreateResult);
 
-    return VulkanAllocator(allocatorCreateResult.value);
+    return VulkanAllocator(allocator);
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -201,8 +201,6 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
     const std::vector<std::reference_wrapper<VulkanSemaphore>> & signalSemaphores,
     VulkanFence & fence)
 {
-    auto * deferredContext = static_cast<VulkanDeferredContext *>(context);
-
     std::vector<vk::Semaphore> vulkanWaitSemaphores;
     std::transform(waitSemaphores.begin(), waitSemaphores.end(), std::back_inserter(vulkanWaitSemaphores), [](const auto & semaphore)
                    { return semaphore.get().SemaphoreHandle(); });
@@ -212,7 +210,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
                    { return semaphore.get().SemaphoreHandle(); });
 
     std::array waitStages = { vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput) };
-    std::array commandBuffers = { deferredContext->CommandBufferHandle() };
+    std::array commandBuffers = { context->CommandBufferHandle() };
     std::array submits = { vk::SubmitInfo(vulkanWaitSemaphores, waitStages, commandBuffers, vulkanSignalSemaphores) };
 
     auto const submitResult = m_graphicsQueue.submit(submits, fence.FenceHandle());

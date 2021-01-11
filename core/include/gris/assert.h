@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <gris/macros.h>
+
 #include <cstdint>
 #include <stdexcept>
 
@@ -68,8 +70,11 @@ using AssertHandler = void (*)();
 AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback);
 AssertHandler SetFailureHandler(AssertHandler handler);
 
+GRIS_PRINTF_FORMAT_ATTRIBUTE(3, 0)
 void StdoutLoggingCallback(const char * file, uint32_t line, const char * format, va_list args);
+GRIS_PRINTF_FORMAT_ATTRIBUTE(3, 0)
 void StderrLoggingCallback(const char * file, uint32_t line, const char * format, va_list args);
+GRIS_PRINTF_FORMAT_ATTRIBUTE(3, 0)
 void NullLoggingCallback(const char * file, uint32_t line, const char * format, va_list args);
 
 void AbortHandler();
@@ -86,39 +91,60 @@ namespace Detail
     {
     }
 
+    template<typename T>
+    bool MaybeCastToBool(T && value)
+    {
+        if constexpr (std::is_same_v<bool, T>)
+            return value;
+        else
+            return static_cast<bool>(std::forward<T>(value));
+    }
+
 }  // namespace Detail
 }  // namespace Gris::Assert
 
-#define GRIS_DEBUGBREAK() __debugbreak()
+#ifdef _MSC_VER
+#define GRIS_DEBUGBREAK __debugbreak()
+#else
+#include <signal.h>
+#define GRIS_DEBUGBREAK raise(SIGTRAP)
+#endif
 
-#define GRIS_ASSERT_IMPL(condition, format, ...)                                                                              \
-    do                                                                                                                        \
-    {                                                                                                                         \
-        if (!static_cast<bool>(condition))                                                                                    \
-        {                                                                                                                     \
-            Gris::Assert::Detail::AssertFired(__FILE__, __LINE__, "Assertion [" #condition "] failed. " format, __VA_ARGS__); \
-            GRIS_DEBUGBREAK();                                                                                                \
-        }                                                                                                                     \
+#define GRIS_ASSERT_EXPAND(arg) arg
+#define GRIS_ASSERT_FIRST(first, ...) first
+
+#define GRIS_ASSERT_IMPL(condition, ...)                                                                                         \
+    do                                                                                                                           \
+    {                                                                                                                            \
+        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                                   \
+        {                                                                                                                        \
+            Gris::Assert::Detail::AssertFired(                                                                                   \
+                __FILE__,                                                                                                        \
+                __LINE__,                                                                                                        \
+                "Assertion [" #condition "] failed. " GRIS_ASSERT_EXPAND(GRIS_ASSERT_FIRST(__VA_ARGS__, GRIS_ASSERT_DUMMY_ARG)), \
+                __VA_ARGS__);                                                                                                    \
+            GRIS_DEBUGBREAK;                                                                                                     \
+        }                                                                                                                        \
     } while (false)
 
-#define GRIS_ASSERT_IGNORE_IMPL(condition, format, ...) Gris::Assert::Detail::Ignore(condition, format, __VA_ARGS__);
+#define GRIS_ASSERT_IGNORE_IMPL(condition, ...) Gris::Assert::Detail::Ignore(condition, __VA_ARGS__);
 
 #ifdef GRIS_ALWAYS_ASSERT_IS_ACTIVE
-#define GRIS_ALAWYS_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
+#define GRIS_ALAWYS_ASSERT(condition, ...) GRIS_ASSERT_IMPL(condition, __VA_ARGS__)
 #else
-#define GRIS_ALAWYS_ASSERT(condition, format, ...) GRIS_ASSERT_IGNORE_IMPL(condition, format, ##__VA_ARGS__);
+#define GRIS_ALAWYS_ASSERT(condition, ...) GRIS_ASSERT_IGNORE_IMPL(condition, __VA_ARGS__);
 #endif
 
 #ifdef GRIS_FAST_ASSERT_IS_ACTIVE
-#define GRIS_FAST_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
+#define GRIS_FAST_ASSERT(condition, ...) GRIS_ASSERT_IMPL(condition, __VA_ARGS__)
 #else
-#define GRIS_FAST_ASSERT(condition, format, ...) GRIS_ASSERT_IGNORE_IMPL(condition, format, ##__VA_ARGS__);
+#define GRIS_FAST_ASSERT(condition, ...) GRIS_ASSERT_IGNORE_IMPL(condition, __VA_ARGS__);
 #endif
 
 #ifdef GRIS_SLOW_ASSERT_IS_ACTIVE
-#define GRIS_SLOW_ASSERT(condition, format, ...) GRIS_ASSERT_IMPL(condition, format, ##__VA_ARGS__)
+#define GRIS_SLOW_ASSERT(condition, ...) GRIS_ASSERT_IMPL(condition, __VA_ARGS__)
 #else
-#define GRIS_SLOW_ASSERT(condition, format, ...) GRIS_ASSERT_IGNORE_IMPL(condition, format, ##__VA_ARGS__);
+#define GRIS_SLOW_ASSERT(condition, ...) GRIS_ASSERT_IGNORE_IMPL(condition, __VA_ARGS__);
 #endif
 
 #if defined(GRIS_TARGET_MODE_NONE) && defined(GRIS_TARGET_MODE_RELEASE)

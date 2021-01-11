@@ -34,13 +34,14 @@ Gris::Graphics::Vulkan::VulkanTexture::VulkanTexture(VulkanDevice * device,
 
     m_image = std::move(createImageResult.value);
 
-    auto const allocationInfo = vma::AllocationCreateInfo(vma::AllocationCreateFlags(),
-                                                          vma::MemoryUsage::eUnknown,
-                                                          properties,
-                                                          {},
-                                                          0,
-                                                          {},
-                                                          nullptr);
+    auto allocationInfo = VmaAllocationCreateInfo{};
+    allocationInfo.flags = {};
+    allocationInfo.usage = VMA_MEMORY_USAGE_UNKNOWN;
+    allocationInfo.requiredFlags = static_cast<VkMemoryPropertyFlags>(properties);
+    allocationInfo.preferredFlags = {};
+    allocationInfo.memoryTypeBits = 0;
+    allocationInfo.pool = {};
+    allocationInfo.pUserData = nullptr;
     m_imageMemory = Allocator().AllocateMemory(m_image.get(), allocationInfo);
 
     Allocator().Bind(m_image.get(), m_imageMemory);

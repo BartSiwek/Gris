@@ -103,11 +103,11 @@ vk::Device & Gris::Graphics::Vulkan::VulkanDevice::DeviceHandle()
 void Gris::Graphics::Vulkan::VulkanDevice::CreateDescriptorPool(uint32_t imageCount)
 {
     std::array poolSizes = {
-        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, static_cast<uint32_t>(imageCount)),
-        vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, static_cast<uint32_t>(imageCount))
+        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, imageCount),
+        vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, imageCount)
     };
 
-    auto const poolInfo = vk::DescriptorPoolCreateInfo({}, static_cast<uint32_t>(imageCount), poolSizes);
+    auto const poolInfo = vk::DescriptorPoolCreateInfo({}, imageCount, poolSizes);
 
     auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo);
     if (createDescriptorPoolResult.result != vk::Result::eSuccess)

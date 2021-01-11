@@ -34,5 +34,8 @@
 # CMake build dirs
 cmake-build-*
 
+# IDEA Settings dir
+.idea
+
 # Dont ignore obj files in the resoures folder
 !resources/*/*.obj

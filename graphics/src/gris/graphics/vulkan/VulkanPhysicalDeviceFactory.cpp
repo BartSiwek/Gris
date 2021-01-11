@@ -54,7 +54,7 @@
     auto queueFamilies = device.getQueueFamilyProperties();
 
     DeviceQueueFamilyIndices indices;
-    auto i = 0;
+    auto i = 0u;
     for (auto const & queueFamily : queueFamilies)
     {
         if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)

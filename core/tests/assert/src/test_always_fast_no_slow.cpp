@@ -16,6 +16,8 @@ void assert_true_always()
 
 void assert_false_always()
 {
+    Gris::Assert::SetLoggingCallback(Gris::Assert::StdoutLoggingCallback);
+    GRIS_ALAWYS_ASSERT(false, "Test format %s", "Foof");
     GRIS_ALAWYS_ASSERT(false, "False");
 }
 
