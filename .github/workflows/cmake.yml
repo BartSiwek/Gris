@@ -185,8 +185,9 @@ jobs:
 
       - name: Configure CMake
         shell: bash
-        working-directory: ${{github.workspace}}/build
         run: |
+          cd build
+
           source ${{ env.vulkan_sdk_dir }}/setup-env.sh
 
           conan profile new default --detect --force
@@ -202,13 +203,13 @@ jobs:
 
       - name: Build
         shell: bash
-        working-directory: ${{github.workspace}}/build
         run: |
+          cd build
           cmake --build . --config ${{ matrix.config.cmake_build_type }}
 
       - name: Prepare upload
-        working-directory: ${{github.workspace}}/build
         run: |
+          cd build
           tar cfz ${{ matrix.config.artifact }} bin
 
       - name: Upload
