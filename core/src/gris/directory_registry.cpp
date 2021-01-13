@@ -4,6 +4,10 @@
 
 #ifdef _MSC_VER
 #include <windows.h>
+#else
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
 #endif
 
 namespace
@@ -95,8 +99,8 @@ Gris::DirectoryRegistry::DirectoryRegistry()
 {
 #ifdef _MSC_VER
     auto buffer = std::vector<char>(MAX_PATH, '\0');
-    auto resolved = false;
 
+    auto resolved = false;
     while (!resolved)
     {
         GetModuleFileName(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
@@ -107,6 +111,34 @@ Gris::DirectoryRegistry::DirectoryRegistry()
             throw EngineException("Error resolving executable location", ErrorToString(lastError));
         else
             resolved = true;
+    }
+
+    m_executableLocation = std::filesystem::path(std::string(buffer.data()));
+    m_executableLocation.remove_filename();
+#else
+    constexpr size_t BUFFER_STARTING_SIZE = 260;
+
+    auto currentBufferSize = BUFFER_STARTING_SIZE;
+    auto buffer = std::vector<char>(currentBufferSize + 1, '\0');
+
+    auto resolved = false;
+    while (!resolved)
+    {
+        auto readlinkResult = readlink("/proc/self/exe", buffer.data(), buffer.size());
+        if (readlinkResult == -1)
+        {
+            throw EngineException("Error resolving executable location", strerror(errno));
+        }
+        if (static_cast<size_t>(readlinkResult) == currentBufferSize)
+        {
+            currentBufferSize *= 2;
+            buffer.resize(currentBufferSize + 1, '\0');
+        }
+        else
+        {
+            buffer[static_cast<size_t>(readlinkResult)] = '\0';
+            resolved = true;
+        }
     }
 
     m_executableLocation = std::filesystem::path(std::string(buffer.data()));
