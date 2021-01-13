@@ -52,13 +52,14 @@ public:
     void CreateDescriptorPool(uint32_t imageCount);
 
     [[nodiscard]] VulkanSwapChain CreateSwapChain(const VulkanWindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+
     [[nodiscard]] VulkanDeferredContext CreateDeferredContext();
     [[nodiscard]] VulkanShader CreateShader(const std::vector<char> & code);
     [[nodiscard]] VulkanBuffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] VulkanTexture CreateTexture(uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] VulkanTextureView CreateTextureView(const VulkanTexture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] VulkanSampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] VulkanPipelineStateObject CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout);
+    [[nodiscard]] VulkanPipelineStateObject CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout, const VulkanShader & vertexShader, const VulkanShader & fragmentShader);
     [[nodiscard]] VulkanFramebuffer CreateFramebuffer(const VulkanTextureView & colorImageView, const VulkanTextureView & depthImageView, const VulkanTextureView & swapChainImageView, const VulkanRenderPass & renderPass, uint32_t width, uint32_t height);
     [[nodiscard]] VulkanFence CreateFence(bool signaled);
     [[nodiscard]] VulkanSemaphore CreateSemaphore();

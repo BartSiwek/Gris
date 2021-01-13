@@ -8,21 +8,18 @@
 
 // -------------------------------------------------------------------------------------------------
 
-namespace
-{
-
-const std::string VERTEX_SHADER_PATH = "vert.spv";
-const std::string FRAGMENT_SHADER_PATH = "frag.spv";
-
-}  // namespace
-
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(VulkanDevice * device, uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout)
+Gris::Graphics::Vulkan::VulkanPipelineStateObject::VulkanPipelineStateObject(
+    VulkanDevice * device,
+    uint32_t swapChainWidth,
+    uint32_t swapChainHeight,
+    const VulkanRenderPass & renderPass,
+    const VulkanInputLayout & inputLayout,
+    const VulkanShader & vertexShader,
+    const VulkanShader & fragmentShader)
     : VulkanDeviceResource(device)
 {
     CreateDescriptorSetLayout();
-    CreateGraphicsPipeline(swapChainWidth, swapChainHeight, renderPass, inputLayout);
+    CreateGraphicsPipeline(swapChainWidth, swapChainHeight, renderPass, inputLayout, vertexShader, fragmentShader);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -101,13 +98,16 @@ void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateDescriptorSetLayou
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout)
+void Gris::Graphics::Vulkan::VulkanPipelineStateObject::CreateGraphicsPipeline(
+    uint32_t swapChainWidth,
+    uint32_t swapChainHeight,
+    const VulkanRenderPass & renderPass,
+    const VulkanInputLayout & inputLayout,
+    const VulkanShader & vertexShader,
+    const VulkanShader & fragmentShader)
 {
     m_graphicsPipeline.reset();
     m_pipelineLayout.reset();
-
-    auto vertexShader = ParentDevice().CreateShader(ReadFile(VERTEX_SHADER_PATH));
-    auto fragmentShader = ParentDevice().CreateShader(ReadFile(FRAGMENT_SHADER_PATH));
 
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo({},

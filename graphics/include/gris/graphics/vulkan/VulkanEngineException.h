@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gris/graphics/EngineException.h>
+#include <gris/engine_exception.h>
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 

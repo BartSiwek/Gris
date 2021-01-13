@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <string>
 
-namespace Gris::Graphics
+namespace Gris
 {
 
 class EngineException : public std::runtime_error
@@ -20,4 +20,4 @@ public:
     }
 };
 
-}  // namespace Gris::Graphics
+}  // namespace Gris
