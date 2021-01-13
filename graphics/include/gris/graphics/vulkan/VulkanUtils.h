@@ -28,6 +28,4 @@ struct SwapChainSupportDetails
 [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(const vk::PhysicalDevice & physicalDevice,
                                                             const vk::SurfaceKHR & surface);
 
-[[nodiscard]] std::vector<char> ReadFile(const std::string & filename);
-
 }  // namespace Gris::Graphics::Vulkan

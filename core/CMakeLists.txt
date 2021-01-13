@@ -10,6 +10,7 @@ target_sources(Gris.Core PRIVATE
   "include/gris/assert.h"
   "include/gris/directory_registry.h"
   "include/gris/macros.h"
+  "include/gris/engine_exception.h"
 )
 
 target_include_directories(Gris.Core PUBLIC

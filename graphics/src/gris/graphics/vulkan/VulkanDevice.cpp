@@ -194,9 +194,9 @@ const Gris::Graphics::Vulkan::VulkanAllocator & Gris::Graphics::Vulkan::VulkanDe
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanPipelineStateObject Gris::Graphics::Vulkan::VulkanDevice::CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout)
+[[nodiscard]] Gris::Graphics::Vulkan::VulkanPipelineStateObject Gris::Graphics::Vulkan::VulkanDevice::CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout, const VulkanShader & vertexShader, const VulkanShader & fragmentShader)
 {
-    return VulkanPipelineStateObject(this, swapChainWidth, swapChainHeight, renderPass, inputLayout);
+    return VulkanPipelineStateObject(this, swapChainWidth, swapChainHeight, renderPass, inputLayout, vertexShader, fragmentShader);
 }
 
 // -------------------------------------------------------------------------------------------------

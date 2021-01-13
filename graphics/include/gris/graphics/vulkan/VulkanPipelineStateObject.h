@@ -7,11 +7,19 @@ namespace Gris::Graphics::Vulkan
 
 class VulkanInputLayout;
 class VulkanRenderPass;
+class VulkanShader;
 
 class VulkanPipelineStateObject : public VulkanDeviceResource
 {
 public:
-    VulkanPipelineStateObject(VulkanDevice * device, uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout);
+    VulkanPipelineStateObject(
+        VulkanDevice * device,
+        uint32_t swapChainWidth,
+        uint32_t swapChainHeight,
+        const VulkanRenderPass & renderPass,
+        const VulkanInputLayout & inputLayout,
+        const VulkanShader & vertexShader,
+        const VulkanShader & fragmentShader);
 
     // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSetLayout & DescriptorSetLayoutHandle() const;
@@ -28,7 +36,13 @@ public:
 private:
     void CreateDescriptorSetLayout();
 
-    void CreateGraphicsPipeline(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout);
+    void CreateGraphicsPipeline(
+        uint32_t swapChainWidth,
+        uint32_t swapChainHeight,
+        const VulkanRenderPass & renderPass,
+        const VulkanInputLayout & inputLayout,
+        const VulkanShader & vertexShader,
+        const VulkanShader & fragmentShader);
 
     vk::UniqueDescriptorSetLayout m_descriptorSetLayout;
     vk::UniquePipelineLayout m_pipelineLayout;

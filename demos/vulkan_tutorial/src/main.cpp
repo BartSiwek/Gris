@@ -1,4 +1,5 @@
-#include <gris/graphics/EngineException.h>
+#include <gris/directory_registry.h>
+#include <gris/engine_exception.h>
 #include <gris/graphics/glfw/GlfwInstance.h>
 #include <gris/graphics/vulkan/VulkanBuffer.h>
 #include <gris/graphics/vulkan/VulkanBufferView.h>
@@ -12,6 +13,7 @@
 #include <gris/graphics/vulkan/VulkanPipelineStateObject.h>
 #include <gris/graphics/vulkan/VulkanRenderPass.h>
 #include <gris/graphics/vulkan/VulkanSampler.h>
+#include <gris/graphics/vulkan/VulkanShader.h>
 #include <gris/graphics/vulkan/VulkanShaderResourceBinding.h>
 #include <gris/graphics/vulkan/VulkanSwapChain.h>
 #include <gris/graphics/vulkan/VulkanTexture.h>
@@ -56,6 +58,8 @@ const uint32_t HEIGHT = 600;
 
 const char * MODEL_PATH = "viking_room.obj";
 const char * TEXTURE_PATH = "viking_room.png";
+const char * VERTEX_SHADER_PATH = "vert.spv";
+const char * FRAGMENT_SHADER_PATH = "frag.spv";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -105,6 +109,25 @@ struct UniformBufferObject
     alignas(16) glm::mat4 proj;
 };
 
+[[nodiscard]] std::vector<char> ReadFile(const std::filesystem::path & path)
+{
+    std::ifstream file(path, std::ios::ate | std::ios::binary);
+
+    if (!file.is_open())
+        throw Gris::EngineException("Failed to open file!");
+
+    auto fileSize = file.tellg();
+    std::vector<char> buffer(static_cast<size_t>(fileSize));
+
+    file.seekg(0);
+    file.read(buffer.data(), fileSize);
+
+    file.close();
+
+    return buffer;
+}
+
+
 class HelloTriangleApplication : public Gris::Graphics::WindowObserver
 {
 public:
@@ -124,6 +147,8 @@ private:
     std::vector<Gris::Graphics::Vulkan::VulkanFramebuffer> m_swapChainFramebuffers = {};
 
     std::unique_ptr<Gris::Graphics::Vulkan::VulkanRenderPass> m_renderPass = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::VulkanShader> m_vertexShader = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::VulkanShader> m_fragmentShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::VulkanPipelineStateObject> m_pso = {};
     std::unique_ptr<Gris::Graphics::Vulkan::VulkanShaderResourceBinding> m_shaderResourceBinding = {};
 
@@ -184,7 +209,18 @@ private:
 
         m_swapChain = std::make_unique<Gris::Graphics::Vulkan::VulkanSwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
         m_renderPass = std::make_unique<Gris::Graphics::Vulkan::VulkanRenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::VulkanPipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout()));
+
+        auto const vertexShaderPath = Gris::DirectoryRegistry::TryResolvePath(VERTEX_SHADER_PATH);
+        if (!vertexShaderPath)
+            throw Gris::EngineException("Error resolving vertex shader path", VERTEX_SHADER_PATH);
+        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::VulkanShader>(m_device->CreateShader(ReadFile(*vertexShaderPath)));
+
+        auto const fragmentShaderPath = Gris::DirectoryRegistry::TryResolvePath(FRAGMENT_SHADER_PATH);
+        if (!fragmentShaderPath)
+            throw Gris::EngineException("Error resolving fragment shader path", FRAGMENT_SHADER_PATH);
+        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::VulkanShader>(m_device->CreateShader(ReadFile(*fragmentShaderPath)));
+
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::VulkanPipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -230,7 +266,7 @@ private:
         m_swapChain.reset();
         m_swapChain = std::make_unique<Gris::Graphics::Vulkan::VulkanSwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
         m_renderPass = std::make_unique<Gris::Graphics::Vulkan::VulkanRenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::VulkanPipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout()));
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::VulkanPipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -293,15 +329,19 @@ private:
 
     void createTextureImage()
     {
+        auto const texturePath = Gris::DirectoryRegistry::TryResolvePath(TEXTURE_PATH);
+        if (!texturePath)
+            throw Gris::EngineException("Failed to resolve texture image path", TEXTURE_PATH);
+
+        auto resolvedPath = texturePath->string();
+
         int texWidth, texHeight, texChannels;
-        auto * pixels = stbi_load(TEXTURE_PATH, &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+        auto * pixels = stbi_load(resolvedPath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         vk::DeviceSize imageSize = static_cast<vk::DeviceSize>(texWidth) * static_cast<vk::DeviceSize>(texHeight) * 4;
         auto const mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
         if (!pixels)
-        {
-            throw Gris::Graphics::EngineException("Failed to load texture image!");
-        }
+            throw Gris::EngineException("Failed to load texture image");
 
         auto stagingBuffer = m_device->CreateBuffer(imageSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(pixels, imageSize);
@@ -322,10 +362,13 @@ private:
         std::vector<tinyobj::material_t> materials;
         std::string err;
 
-        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, MODEL_PATH, nullptr, false))
-        {
-            throw Gris::Graphics::EngineException("Error loading model", err);
-        }
+        auto modelPath = Gris::DirectoryRegistry::TryResolvePath(MODEL_PATH);
+        if (!modelPath)
+            throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
+
+        auto resolvedPath = modelPath->string();
+        if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, resolvedPath.c_str(), nullptr, false))
+            throw Gris::EngineException("Error loading model", err);
 
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 

@@ -37,7 +37,6 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/vma_implementation.cpp"
   "src/gris/graphics/vulkan/glfw/GlfwExtensionGetters.cpp"
   "src/gris/graphics/vulkan/glfw/GlfwVulkanWindow.cpp"
-  "include/gris/graphics/EngineException.h"
   "include/gris/graphics/WindowObserver.h"
   "include/gris/graphics/glfw/GlfwInstance.h"
   "include/gris/graphics/glfw/GlfwWindowMixin.h"
