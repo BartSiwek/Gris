@@ -7,10 +7,10 @@
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
-                                                             const Texture & image,
-                                                             vk::Format format,
-                                                             const vk::ImageAspectFlags & aspectFlags,
-                                                             uint32_t mipLevels)
+                                                 const Texture & image,
+                                                 vk::Format format,
+                                                 const vk::ImageAspectFlags & aspectFlags,
+                                                 uint32_t mipLevels)
     : TextureView(device, image.ImageHandle(), format, aspectFlags, mipLevels)
 {
 }
@@ -18,10 +18,10 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
-                                                             const vk::Image & image,
-                                                             vk::Format format,
-                                                             const vk::ImageAspectFlags & aspectFlags,
-                                                             uint32_t mipLevels)
+                                                 const vk::Image & image,
+                                                 vk::Format format,
+                                                 const vk::ImageAspectFlags & aspectFlags,
+                                                 uint32_t mipLevels)
     : DeviceResource(device)
 {
     const vk::ImageViewCreateInfo viewInfo(

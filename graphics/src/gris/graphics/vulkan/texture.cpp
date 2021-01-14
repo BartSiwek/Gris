@@ -4,14 +4,14 @@
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 Gris::Graphics::Vulkan::Texture::Texture(Device * device,
-                                                     uint32_t width,
-                                                     uint32_t height,
-                                                     uint32_t mipLevels,
-                                                     vk::SampleCountFlagBits numSamples,
-                                                     vk::Format format,
-                                                     vk::ImageTiling tiling,
-                                                     const vk::ImageUsageFlags & usage,
-                                                     const vk::MemoryPropertyFlags & properties)
+                                         uint32_t width,
+                                         uint32_t height,
+                                         uint32_t mipLevels,
+                                         vk::SampleCountFlagBits numSamples,
+                                         vk::Format format,
+                                         vk::ImageTiling tiling,
+                                         const vk::ImageUsageFlags & usage,
+                                         const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
     , m_mipLevels(mipLevels)
 {
