@@ -6,6 +6,8 @@
 #include <gris/graphics/vulkan/deferred_context.h>
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/framebuffer.h>
+#include <gris/graphics/vulkan/glfw/extension_getters.h>
+#include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/input_layout.h>
 #include <gris/graphics/vulkan/instance.h>
@@ -18,8 +20,6 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
-#include <gris/graphics/vulkan/glfw/extension_getters.h>
-#include <gris/graphics/vulkan/glfw/window.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
