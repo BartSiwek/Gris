@@ -1,0 +1,20 @@
+#include <gris/graphics/vulkan/glfw/window.h>
+
+#include <gris/graphics/vulkan/engine_exception.h>
+
+#include <GLFW/glfw3.h>
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Glfw::GlfwVulkanWindow::GlfwVulkanWindow(uint32_t width, uint32_t height, const std::string & title)
+    : GlfwWindowMixin(width, height, title)
+    , VulkanWindowMixin()
+{
+    VkSurfaceKHR surface;
+    auto const createSurfaceResult = static_cast<vk::Result>(glfwCreateWindowSurface(VulkanInstanceHandle(), WindowHandle(), nullptr, &surface));
+    if (createSurfaceResult != vk::Result::eSuccess)
+        throw VulkanEngineException("Failed to create GLFW window surface", createSurfaceResult);
+
+    const vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(VulkanInstanceHandle());
+    SetSurfaceHandle(vk::UniqueSurfaceKHR(vk::SurfaceKHR(surface), deleter));
+}
