@@ -1,11 +1,11 @@
 ﻿#include <gris/graphics/vulkan/fence.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice * device, bool signaled)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
+    : DeviceResource(device)
 {
     vk::FenceCreateFlags flags;
     if (signaled)
@@ -23,7 +23,7 @@ Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice * device, bool sig
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::Fence & Gris::Graphics::Vulkan::VulkanFence::FenceHandle() const
+[[nodiscard]] const vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle() const
 {
     return m_fence.get();
 }
@@ -31,7 +31,7 @@ Gris::Graphics::Vulkan::VulkanFence::VulkanFence(VulkanDevice * device, bool sig
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::Fence & Gris::Graphics::Vulkan::VulkanFence::FenceHandle()
+[[nodiscard]] vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle()
 {
     return m_fence.get();
 }

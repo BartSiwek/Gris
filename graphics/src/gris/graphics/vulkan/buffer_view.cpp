@@ -4,7 +4,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanBufferView::VulkanBufferView(VulkanBuffer * buffer, uint32_t offset, uint32_t size)
+Gris::Graphics::Vulkan::BufferView::BufferView(Buffer * buffer, uint32_t offset, uint32_t size)
     : m_buffer(buffer)
     , m_offset(offset)
     , m_size(size)
@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::VulkanBufferView::VulkanBufferView(VulkanBuffer * buffer
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::VulkanBufferView::BufferHandle() const
+[[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::BufferView::BufferHandle() const
 {
     return m_buffer->BufferHandle();
 }
@@ -22,21 +22,21 @@ Gris::Graphics::Vulkan::VulkanBufferView::VulkanBufferView(VulkanBuffer * buffer
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::Buffer & Gris::Graphics::Vulkan::VulkanBufferView::BufferHandle()
+[[nodiscard]] vk::Buffer & Gris::Graphics::Vulkan::BufferView::BufferHandle()
 {
     return m_buffer->BufferHandle();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-uint32_t Gris::Graphics::Vulkan::VulkanBufferView::Offset() const
+uint32_t Gris::Graphics::Vulkan::BufferView::Offset() const
 {
     return m_offset;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-uint32_t Gris::Graphics::Vulkan::VulkanBufferView::Size() const
+uint32_t Gris::Graphics::Vulkan::BufferView::Size() const
 {
     return m_size;
 }

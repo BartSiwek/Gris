@@ -4,7 +4,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Instance Gris::Graphics::Vulkan::VulkanWindowMixin::VulkanInstanceHandle()
+vk::Instance Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
 {
-    return VulkanInstance::InstanceHandle({});
+    return Instance::InstanceHandle({});
 }

@@ -1,12 +1,12 @@
 ﻿#include <gris/graphics/vulkan/render_pass.h>
 
 #include <gris/graphics/vulkan/device.h>
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice * device, vk::Format swapChainFormat, vk::Format depthFormat)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapChainFormat, vk::Format depthFormat)
+    : DeviceResource(device)
 {
     CreateRenderPass(swapChainFormat, depthFormat);
 }
@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice * device
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle() const
+[[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle() const
 {
     return m_renderPass.get();
 }
@@ -22,14 +22,14 @@ Gris::Graphics::Vulkan::VulkanRenderPass::VulkanRenderPass(VulkanDevice * device
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::VulkanRenderPass::RenderPassHandle()
+[[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle()
 {
     return m_renderPass.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanRenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
+void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
 {
     auto const colorAttachment = vk::AttachmentDescription({},
                                                            swapChainFormat,

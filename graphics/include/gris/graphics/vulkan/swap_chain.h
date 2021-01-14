@@ -11,58 +11,58 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanWindowMixin;
+class WindowMixin;
 
-struct VulkanVirtualFrame
+struct VirtualFrame
 {
     uint32_t VirtualFrameIndex;
     uint32_t SwapChainImageIndex;
 };
 
-class VulkanSwapChain : public VulkanDeviceResource
+class SwapChain : public DeviceResource
 {
 public:
-    VulkanSwapChain(VulkanDevice * device, const VulkanWindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+    SwapChain(Device * device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
 
     [[nodiscard]] uint32_t ImageCount() const;
 
-    [[nodiscard]] const VulkanTextureView & ImageView(size_t index) const;
-    [[nodiscard]] VulkanTextureView & ImageView(size_t index);
+    [[nodiscard]] const TextureView & ImageView(size_t index) const;
+    [[nodiscard]] TextureView & ImageView(size_t index);
 
     [[nodiscard]] vk::Format Format() const;
 
     [[nodiscard]] vk::Extent2D Extent() const;
 
-    [[nodiscard]] std::optional<VulkanVirtualFrame> NextImage();
+    [[nodiscard]] std::optional<VirtualFrame> NextImage();
 
-    [[nodiscard]] bool Present(const VulkanVirtualFrame & virtualFrame);
+    [[nodiscard]] bool Present(const VirtualFrame & virtualFrame);
 
-    [[nodiscard]] const VulkanFence & RenderingFinishedFence(const VulkanVirtualFrame & frame) const
+    [[nodiscard]] const Fence & RenderingFinishedFence(const VirtualFrame & frame) const
     {
         return m_renderFinishedFences[frame.VirtualFrameIndex];
     }
 
-    [[nodiscard]] VulkanFence & RenderingFinishedFence(const VulkanVirtualFrame & frame)
+    [[nodiscard]] Fence & RenderingFinishedFence(const VirtualFrame & frame)
     {
         return m_renderFinishedFences[frame.VirtualFrameIndex];
     }
 
-    [[nodiscard]] const VulkanSemaphore & ImageAvailableSemaphore(const VulkanVirtualFrame & frame) const
+    [[nodiscard]] const Semaphore & ImageAvailableSemaphore(const VirtualFrame & frame) const
     {
         return m_imageAvailableSemaphores[frame.VirtualFrameIndex];
     }
 
-    [[nodiscard]] VulkanSemaphore & ImageAvailableSemaphore(const VulkanVirtualFrame & frame)
+    [[nodiscard]] Semaphore & ImageAvailableSemaphore(const VirtualFrame & frame)
     {
         return m_imageAvailableSemaphores[frame.VirtualFrameIndex];
     }
 
-    [[nodiscard]] const VulkanSemaphore & RenderingFinishedSemaphore(const VulkanVirtualFrame & frame) const
+    [[nodiscard]] const Semaphore & RenderingFinishedSemaphore(const VirtualFrame & frame) const
     {
         return m_renderFinishedSemaphores[frame.VirtualFrameIndex];
     }
 
-    [[nodiscard]] VulkanSemaphore & RenderingFinishedSemaphore(const VulkanVirtualFrame & frame)
+    [[nodiscard]] Semaphore & RenderingFinishedSemaphore(const VirtualFrame & frame)
     {
         return m_renderFinishedSemaphores[frame.VirtualFrameIndex];
     }
@@ -75,11 +75,11 @@ private:
     vk::Format m_swapChainImageFormat = {};
     vk::Extent2D m_swapChainExtent = {};
 
-    std::vector<VulkanTextureView> m_swapChainImageViews = {};
+    std::vector<TextureView> m_swapChainImageViews = {};
 
-    std::vector<VulkanFence> m_renderFinishedFences = {};
-    std::vector<VulkanSemaphore> m_imageAvailableSemaphores = {};
-    std::vector<VulkanSemaphore> m_renderFinishedSemaphores = {};
+    std::vector<Fence> m_renderFinishedFences = {};
+    std::vector<Semaphore> m_imageAvailableSemaphores = {};
+    std::vector<Semaphore> m_renderFinishedSemaphores = {};
 
     uint32_t m_currentVirtualFrame = 0;
     uint32_t m_virtualFrameCount = 1;

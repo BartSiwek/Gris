@@ -7,12 +7,12 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanBuffer;
+class Buffer;
 
-class VulkanBufferView
+class BufferView
 {
 public:
-    VulkanBufferView(VulkanBuffer * buffer, uint32_t offset, uint32_t size);
+    BufferView(Buffer * buffer, uint32_t offset, uint32_t size);
 
     // TODO: Do this better
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
@@ -23,7 +23,7 @@ public:
     uint32_t Size() const;
 
 private:
-    VulkanBuffer * m_buffer = nullptr;
+    Buffer * m_buffer = nullptr;
     uint32_t m_offset = 0;
     uint32_t m_size = 0;
 };

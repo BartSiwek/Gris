@@ -1,13 +1,13 @@
 ﻿#include <gris/graphics/vulkan/framebuffer.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/texture_view.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanFramebuffer::VulkanFramebuffer(VulkanDevice * device, const VulkanTextureView & colorImageView, const VulkanTextureView & depthImageView, const VulkanTextureView & swapChainImageView, const VulkanRenderPass & renderPass, uint32_t width, uint32_t height)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
+    : DeviceResource(device)
 {
     std::array attachments = { colorImageView.ImageViewHandle(), depthImageView.ImageViewHandle(), swapChainImageView.ImageViewHandle() };
 
@@ -23,7 +23,7 @@ Gris::Graphics::Vulkan::VulkanFramebuffer::VulkanFramebuffer(VulkanDevice * devi
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-const vk::Framebuffer & Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHandle() const
+const vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle() const
 {
     return m_framebuffer.get();
 }
@@ -31,7 +31,7 @@ const vk::Framebuffer & Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHa
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-vk::Framebuffer & Gris::Graphics::Vulkan::VulkanFramebuffer::FramebufferHandle()
+vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle()
 {
     return m_framebuffer.get();
 }

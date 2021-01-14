@@ -3,9 +3,9 @@
 #include "validation_layers.h"
 
 #include <gris/graphics/vulkan/allocator.h>
-#include <gris/graphics/vulkan/engine_exception.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/utils.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 #include <gris/graphics/vulkan/window_mixin.h>
 
 #include <gris/assert.h>
@@ -14,7 +14,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies)
+Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies)
     : m_physicalDevice(physicalDevice)
     , m_msaaSamples(msaaSamples)
     , m_queueFamilies(queueFamilies)
@@ -24,21 +24,21 @@ Gris::Graphics::Vulkan::VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalD
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const vk::SampleCountFlagBits & Gris::Graphics::Vulkan::VulkanPhysicalDevice::MsaaSamples() const
+[[nodiscard]] const vk::SampleCountFlagBits & Gris::Graphics::Vulkan::PhysicalDevice::MsaaSamples() const
 {
     return m_msaaSamples;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const Gris::Graphics::Vulkan::DeviceQueueFamilyIndices & Gris::Graphics::Vulkan::VulkanPhysicalDevice::QueueFamilies() const
+[[nodiscard]] const Gris::Graphics::Vulkan::DeviceQueueFamilyIndices & Gris::Graphics::Vulkan::PhysicalDevice::QueueFamilies() const
 {
     return m_queueFamilies;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Format Gris::Graphics::Vulkan::VulkanPhysicalDevice::FindSupportedFormat(const std::vector<vk::Format> & candidates, const vk::ImageTiling & tiling, const vk::FormatFeatureFlags & features) const
+[[nodiscard]] vk::Format Gris::Graphics::Vulkan::PhysicalDevice::FindSupportedFormat(const std::vector<vk::Format> & candidates, const vk::ImageTiling & tiling, const vk::FormatFeatureFlags & features) const
 {
     for (auto const & format : candidates)
     {
@@ -53,21 +53,21 @@ Gris::Graphics::Vulkan::VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalD
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::FormatProperties Gris::Graphics::Vulkan::VulkanPhysicalDevice::GetFormatProperties(vk::Format format) const
+[[nodiscard]] vk::FormatProperties Gris::Graphics::Vulkan::PhysicalDevice::GetFormatProperties(vk::Format format) const
 {
     return m_physicalDevice.getFormatProperties(format);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::VulkanPhysicalDevice::SwapChainSupport(const VulkanWindowMixin & window) const
+[[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::PhysicalDevice::SwapChainSupport(const WindowMixin & window) const
 {
     return QuerySwapChainSupport(m_physicalDevice, window.SurfaceHandle());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueDevice Gris::Graphics::Vulkan::VulkanPhysicalDevice::CreateDevice() const
+[[nodiscard]] vk::UniqueDevice Gris::Graphics::Vulkan::PhysicalDevice::CreateDevice() const
 {
     auto uniqueQueueFamilies = std::set<uint32_t>{
         m_queueFamilies.graphicsFamily.value(),
@@ -101,7 +101,7 @@ Gris::Graphics::Vulkan::VulkanPhysicalDevice::VulkanPhysicalDevice(vk::PhysicalD
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocator Gris::Graphics::Vulkan::VulkanPhysicalDevice::CreateVulkanAllocator(const vk::Device & device) const
+[[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::PhysicalDevice::CreateAllocator(const vk::Device & device) const
 {
-    return VulkanInstance::CreateVulkanMemoryAllocator(m_physicalDevice, device);
+    return Instance::CreateAllocator(m_physicalDevice, device);
 }

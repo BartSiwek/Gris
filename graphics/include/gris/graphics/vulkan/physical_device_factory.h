@@ -7,13 +7,13 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanPhysicalDevice;
-class VulkanWindowMixin;
+class PhysicalDevice;
+class WindowMixin;
 
-class VulkanPhysicalDeviceFactory
+class PhysicalDeviceFactory
 {
 public:
-    [[nodiscard]] static VulkanPhysicalDevice FindPhysicalDevice(const VulkanWindowMixin & window);
+    [[nodiscard]] static PhysicalDevice FindPhysicalDevice(const WindowMixin & window);
 
 private:
     [[nodiscard]] static std::tuple<bool, DeviceQueueFamilyIndices> IsDeviceSuitable(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface);

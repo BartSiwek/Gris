@@ -5,10 +5,10 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanShader : public VulkanDeviceResource
+class Shader : public DeviceResource
 {
 public:
-    VulkanShader(VulkanDevice * device, const std::vector<char> & code);
+    Shader(Device * device, const std::vector<char> & code);
 
     // TODO: Do this better
     [[nodiscard]] const vk::ShaderModule & ModuleHandle() const;

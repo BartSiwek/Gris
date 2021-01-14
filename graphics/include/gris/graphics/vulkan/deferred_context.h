@@ -5,27 +5,27 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanRenderPass;
-class VulkanTexture;
-class VulkanFramebuffer;
-class VulkanPipelineStateObject;
-class VulkanBufferView;
-class VulkanShaderResourceBinding;
+class RenderPass;
+class Texture;
+class Framebuffer;
+class PipelineStateObject;
+class BufferView;
+class ShaderResourceBinding;
 
-class VulkanDeferredContext : public VulkanDeviceResource
+class DeferredContext : public DeviceResource
 {
 public:
-    VulkanDeferredContext(VulkanDevice * device);
+    DeferredContext(Device * device);
 
     // TODO: Do this better
     [[nodiscard]] vk::CommandBuffer & CommandBufferHandle();
 
     void Begin();
-    void BeginRenderPass(const VulkanRenderPass & renderPass, const VulkanFramebuffer & framebuffer, const vk::Extent2D & extent);
-    void BindPipeline(const VulkanPipelineStateObject & pso);
-    void BindVertexBuffer(const VulkanBufferView & bufferView);
-    void BindIndexBuffer(const VulkanBufferView & bufferView);
-    void BindDescriptorSet(const VulkanPipelineStateObject & pso, const VulkanShaderResourceBinding & srb);
+    void BeginRenderPass(const RenderPass & renderPass, const Framebuffer & framebuffer, const vk::Extent2D & extent);
+    void BindPipeline(const PipelineStateObject & pso);
+    void BindVertexBuffer(const BufferView & bufferView);
+    void BindIndexBuffer(const BufferView & bufferView);
+    void BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBinding & srb);
     void DrawIndexed(uint32_t indexCount);
     void EndRenderPass();
     void End();

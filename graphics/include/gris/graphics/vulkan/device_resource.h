@@ -5,37 +5,37 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanDevice;
-class VulkanAllocator;
+class Device;
+class Allocator;
 
-class VulkanDeviceResource
+class DeviceResource
 {
 public:
-    virtual ~VulkanDeviceResource() = default;
+    virtual ~DeviceResource() = default;
 
 protected:
-    explicit VulkanDeviceResource(VulkanDevice * device);
+    explicit DeviceResource(Device * device);
 
-    VulkanDeviceResource(const VulkanDeviceResource & other) = default;
-    VulkanDeviceResource & operator=(const VulkanDeviceResource & other) = default;
+    DeviceResource(const DeviceResource & other) = default;
+    DeviceResource & operator=(const DeviceResource & other) = default;
 
-    VulkanDeviceResource(VulkanDeviceResource && other) = default;
-    VulkanDeviceResource & operator=(VulkanDeviceResource && other) = default;
+    DeviceResource(DeviceResource && other) = default;
+    DeviceResource & operator=(DeviceResource && other) = default;
 
-    [[nodiscard]] const VulkanDevice & ParentDevice() const;
-    [[nodiscard]] VulkanDevice & ParentDevice();
+    [[nodiscard]] const Device & ParentDevice() const;
+    [[nodiscard]] Device & ParentDevice();
 
     [[nodiscard]] const vk::Device & DeviceHandle() const;
     [[nodiscard]] vk::Device & DeviceHandle();
 
-    [[nodiscard]] const VulkanAllocator & Allocator() const;
-    [[nodiscard]] VulkanAllocator & Allocator();
+    [[nodiscard]] const Allocator & AllocatorHandle() const;
+    [[nodiscard]] Allocator & AllocatorHandle();
 
     [[nodiscard]] const vk::DescriptorPool & DescriptorPoolHandle() const;
     [[nodiscard]] vk::DescriptorPool & DescriptorPoolHandle();
 
 private:
-    VulkanDevice * m_parentDevice = nullptr;
+    Device * m_parentDevice = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

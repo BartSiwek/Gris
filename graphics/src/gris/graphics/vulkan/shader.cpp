@@ -1,11 +1,11 @@
 ﻿#include <gris/graphics/vulkan/shader.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanShader::VulkanShader(VulkanDevice * device, const std::vector<char> & code)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<char> & code)
+    : DeviceResource(device)
 {
     auto const createInfo = vk::ShaderModuleCreateInfo({}, code.size(), reinterpret_cast<const uint32_t *>(code.data()));
 
@@ -19,7 +19,7 @@ Gris::Graphics::Vulkan::VulkanShader::VulkanShader(VulkanDevice * device, const 
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::ShaderModule & Gris::Graphics::Vulkan::VulkanShader::ModuleHandle() const
+[[nodiscard]] const vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle() const
 {
     return m_shaderModule.get();
 }
@@ -27,7 +27,7 @@ Gris::Graphics::Vulkan::VulkanShader::VulkanShader(VulkanDevice * device, const 
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::ShaderModule & Gris::Graphics::Vulkan::VulkanShader::ModuleHandle()
+[[nodiscard]] vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle()
 {
     return m_shaderModule.get();
 }

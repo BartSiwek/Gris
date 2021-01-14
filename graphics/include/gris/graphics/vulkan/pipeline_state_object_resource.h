@@ -6,36 +6,36 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanPipelineStateObjectResource : public VulkanDeviceResource
+class PipelineStateObjectResource : public DeviceResource
 {
 public:
-    ~VulkanPipelineStateObjectResource() override = default;
+    ~PipelineStateObjectResource() override = default;
 
 protected:
-    VulkanPipelineStateObjectResource(VulkanPipelineStateObject * pso)
-        : VulkanDeviceResource(*pso)
+    PipelineStateObjectResource(PipelineStateObject * pso)
+        : DeviceResource(*pso)
         , m_parentPso(pso)
     {
     }
 
-    VulkanPipelineStateObjectResource(const VulkanPipelineStateObjectResource & other) = default;
-    VulkanPipelineStateObjectResource & operator=(const VulkanPipelineStateObjectResource & other) = default;
+    PipelineStateObjectResource(const PipelineStateObjectResource & other) = default;
+    PipelineStateObjectResource & operator=(const PipelineStateObjectResource & other) = default;
 
-    VulkanPipelineStateObjectResource(VulkanPipelineStateObjectResource && other) = default;
-    VulkanPipelineStateObjectResource & operator=(VulkanPipelineStateObjectResource && other) = default;
+    PipelineStateObjectResource(PipelineStateObjectResource && other) = default;
+    PipelineStateObjectResource & operator=(PipelineStateObjectResource && other) = default;
 
-    [[nodiscard]] const VulkanPipelineStateObject & ParentPipelineStateObject() const
+    [[nodiscard]] const PipelineStateObject & ParentPipelineStateObject() const
     {
         return *m_parentPso;
     }
 
-    [[nodiscard]] VulkanPipelineStateObject & ParentPipelineStateObject()
+    [[nodiscard]] PipelineStateObject & ParentPipelineStateObject()
     {
         return *m_parentPso;
     }
 
 private:
-    VulkanPipelineStateObject * m_parentPso = nullptr;
+    PipelineStateObject * m_parentPso = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

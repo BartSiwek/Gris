@@ -1,18 +1,18 @@
 ﻿#include <gris/graphics/vulkan/texture.h>
 
 #include <gris/graphics/vulkan/allocator.h>
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
-Gris::Graphics::Vulkan::VulkanTexture::VulkanTexture(VulkanDevice * device,
-                                                     uint32_t width,
-                                                     uint32_t height,
-                                                     uint32_t mipLevels,
-                                                     vk::SampleCountFlagBits numSamples,
-                                                     vk::Format format,
-                                                     vk::ImageTiling tiling,
-                                                     const vk::ImageUsageFlags & usage,
-                                                     const vk::MemoryPropertyFlags & properties)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::Texture::Texture(Device * device,
+                                         uint32_t width,
+                                         uint32_t height,
+                                         uint32_t mipLevels,
+                                         vk::SampleCountFlagBits numSamples,
+                                         vk::Format format,
+                                         vk::ImageTiling tiling,
+                                         const vk::ImageUsageFlags & usage,
+                                         const vk::MemoryPropertyFlags & properties)
+    : DeviceResource(device)
     , m_mipLevels(mipLevels)
 {
     auto const imageInfo = vk::ImageCreateInfo({},
@@ -42,19 +42,19 @@ Gris::Graphics::Vulkan::VulkanTexture::VulkanTexture(VulkanDevice * device,
     allocationInfo.memoryTypeBits = 0;
     allocationInfo.pool = {};
     allocationInfo.pUserData = nullptr;
-    m_imageMemory = Allocator().AllocateMemory(m_image.get(), allocationInfo);
+    m_imageMemory = AllocatorHandle().AllocateMemory(m_image.get(), allocationInfo);
 
-    Allocator().Bind(m_image.get(), m_imageMemory);
+    AllocatorHandle().Bind(m_image.get(), m_imageMemory);
 }
 
 // TODO: Do this better
-[[nodiscard]] const vk::Image & Gris::Graphics::Vulkan::VulkanTexture::ImageHandle() const
+[[nodiscard]] const vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle() const
 {
     return m_image.get();
 }
 
 // TODO: Do this better
-[[nodiscard]] vk::Image & Gris::Graphics::Vulkan::VulkanTexture::ImageHandle()
+[[nodiscard]] vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle()
 {
     return m_image.get();
 }

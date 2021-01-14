@@ -5,47 +5,47 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanAllocator;
-class VulkanWindowMixin;
+class Allocator;
+class WindowMixin;
 
-class VulkanInstanceHandleBadge
+class InstanceHandleBadge
 {
 public:
-    friend class VulkanWindowMixin;
+    friend class WindowMixin;
 
 private:
-    VulkanInstanceHandleBadge()
+    InstanceHandleBadge()
     {
     }
 };
 
-class VulkanInstance
+class Instance
 {
 public:
     using ExtensionGetter = std::vector<const char *> (*)();
 
     static void InstallExtensionGetter(ExtensionGetter getter);
 
-    [[nodiscard]] static vk::Instance InstanceHandle(VulkanInstanceHandleBadge badge);
+    [[nodiscard]] static vk::Instance InstanceHandle(InstanceHandleBadge badge);
     [[nodiscard]] static std::vector<vk::PhysicalDevice> EnumeratePhysicalDevices();
-    [[nodiscard]] static VulkanAllocator CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device);
+    [[nodiscard]] static Allocator CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device);
 
-    VulkanInstance(const VulkanInstance &) = delete;
-    VulkanInstance & operator=(const VulkanInstance &) = delete;
+    ~Instance() = default;
 
-    VulkanInstance(VulkanInstance &&) noexcept = delete;
-    VulkanInstance & operator=(VulkanInstance &&) noexcept = delete;
+    Instance(const Instance &) = delete;
+    Instance & operator=(const Instance &) = delete;
 
-    ~VulkanInstance() = default;
+    Instance(Instance &&) noexcept = delete;
+    Instance & operator=(Instance &&) noexcept = delete;
 
 private:
-    [[nodiscard]] static VulkanInstance & Instance();
+    [[nodiscard]] static Instance & GetInstance();
 
     [[nodiscard]] static std::vector<const char *> GetRequiredExtensions();
 
     static ExtensionGetter s_extensionGetter;
 
-    VulkanInstance();
+    Instance();
 
     void CreateInstance();
     void SetupDebugMessenger();

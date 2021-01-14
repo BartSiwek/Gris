@@ -3,8 +3,8 @@
 #include "validation_layers.h"
 
 #include <gris/graphics/vulkan/allocator.h>
-#include <gris/graphics/vulkan/engine_exception.h>
 #include <gris/graphics/vulkan/vma_headers.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/assert.h>
 
@@ -65,27 +65,27 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanInstance::ExtensionGetter Gris::Graphics::Vulkan::VulkanInstance::s_extensionGetter = nullptr;
+Gris::Graphics::Vulkan::Instance::ExtensionGetter Gris::Graphics::Vulkan::Instance::s_extensionGetter = nullptr;
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGetter getter)
+void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter getter)
 {
     s_extensionGetter = getter;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Instance Gris::Graphics::Vulkan::VulkanInstance::InstanceHandle(VulkanInstanceHandleBadge /* badge */)
+[[nodiscard]] vk::Instance Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */)
 {
-    return Instance().m_instance.get();
+    return GetInstance().m_instance.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<vk::PhysicalDevice> Gris::Graphics::Vulkan::VulkanInstance::EnumeratePhysicalDevices()
+[[nodiscard]] std::vector<vk::PhysicalDevice> Gris::Graphics::Vulkan::Instance::EnumeratePhysicalDevices()
 {
-    auto const enumeratePhysicalDevicesResult = Instance().m_instance->enumeratePhysicalDevices();
+    auto const enumeratePhysicalDevicesResult = GetInstance().m_instance->enumeratePhysicalDevices();
     if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
         throw VulkanEngineException("Error enumerating physical devices", enumeratePhysicalDevicesResult);
     return enumeratePhysicalDevicesResult.value;
@@ -93,7 +93,7 @@ void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGet
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanAllocator Gris::Graphics::Vulkan::VulkanInstance::CreateVulkanMemoryAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
+[[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::Instance::CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
 {
     auto allocatorInfo = VmaAllocatorCreateInfo{};
     allocatorInfo.flags = {};
@@ -106,7 +106,7 @@ void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGet
     allocatorInfo.pHeapSizeLimit = nullptr;
     allocatorInfo.pVulkanFunctions = nullptr;
     allocatorInfo.pRecordSettings = nullptr;
-    allocatorInfo.instance = static_cast<VkInstance>(Instance().m_instance.get());
+    allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance.get());
     allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_0;
 
     VmaAllocator allocator;
@@ -114,20 +114,20 @@ void Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(ExtensionGet
     if (allocatorCreateResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error creating Vulkan Memory Allocator", allocatorCreateResult);
 
-    return VulkanAllocator(allocator);
+    return Allocator(allocator);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanInstance & Gris::Graphics::Vulkan::VulkanInstance::Instance()
+Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::GetInstance()
 {
-    static VulkanInstance s_instance = {};
+    static Instance s_instance = {};
     return s_instance;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<const char *> Gris::Graphics::Vulkan::VulkanInstance::GetRequiredExtensions()
+[[nodiscard]] std::vector<const char *> Gris::Graphics::Vulkan::Instance::GetRequiredExtensions()
 {
     GRIS_ALAWYS_ASSERT(s_extensionGetter != nullptr, "Extension getter cannot be null");
     auto extensions = s_extensionGetter();
@@ -140,7 +140,7 @@ Gris::Graphics::Vulkan::VulkanInstance & Gris::Graphics::Vulkan::VulkanInstance:
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanInstance::VulkanInstance()
+Gris::Graphics::Vulkan::Instance::Instance()
 {
     CreateInstance();
     SetupDebugMessenger();
@@ -148,7 +148,7 @@ Gris::Graphics::Vulkan::VulkanInstance::VulkanInstance()
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanInstance::CreateInstance()
+void Gris::Graphics::Vulkan::Instance::CreateInstance()
 {
     if constexpr (ENABLE_VALIDATION_LAYERS)
     {
@@ -180,7 +180,7 @@ void Gris::Graphics::Vulkan::VulkanInstance::CreateInstance()
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanInstance::SetupDebugMessenger()
+void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
 {
     if constexpr (!ENABLE_VALIDATION_LAYERS)
         return;
@@ -200,7 +200,7 @@ void Gris::Graphics::Vulkan::VulkanInstance::SetupDebugMessenger()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanInstance::CheckValidationLayerSupport() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport() const
 {
     auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties();
     if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)

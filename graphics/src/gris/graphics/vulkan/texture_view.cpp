@@ -1,28 +1,28 @@
 ﻿#include <gris/graphics/vulkan/texture_view.h>
 
 #include <gris/graphics/vulkan/device.h>
-#include <gris/graphics/vulkan/engine_exception.h>
 #include <gris/graphics/vulkan/texture.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanTextureView::VulkanTextureView(VulkanDevice * device,
-                                                             const VulkanTexture & image,
-                                                             vk::Format format,
-                                                             const vk::ImageAspectFlags & aspectFlags,
-                                                             uint32_t mipLevels)
-    : VulkanTextureView(device, image.ImageHandle(), format, aspectFlags, mipLevels)
+Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
+                                                 const Texture & image,
+                                                 vk::Format format,
+                                                 const vk::ImageAspectFlags & aspectFlags,
+                                                 uint32_t mipLevels)
+    : TextureView(device, image.ImageHandle(), format, aspectFlags, mipLevels)
 {
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanTextureView::VulkanTextureView(VulkanDevice * device,
-                                                             const vk::Image & image,
-                                                             vk::Format format,
-                                                             const vk::ImageAspectFlags & aspectFlags,
-                                                             uint32_t mipLevels)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
+                                                 const vk::Image & image,
+                                                 vk::Format format,
+                                                 const vk::ImageAspectFlags & aspectFlags,
+                                                 uint32_t mipLevels)
+    : DeviceResource(device)
 {
     const vk::ImageViewCreateInfo viewInfo(
         {},
@@ -47,7 +47,7 @@ Gris::Graphics::Vulkan::VulkanTextureView::VulkanTextureView(VulkanDevice * devi
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::ImageView & Gris::Graphics::Vulkan::VulkanTextureView::ImageViewHandle() const
+[[nodiscard]] const vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle() const
 {
     return m_imageView.get();
 }
@@ -55,7 +55,7 @@ Gris::Graphics::Vulkan::VulkanTextureView::VulkanTextureView(VulkanDevice * devi
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::ImageView & Gris::Graphics::Vulkan::VulkanTextureView::ImageViewHandle()
+[[nodiscard]] vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle()
 {
     return m_imageView.get();
 }

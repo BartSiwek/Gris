@@ -7,17 +7,17 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanWindowMixin
+class WindowMixin
 {
 public:
-    VulkanWindowMixin() = default;
-    virtual ~VulkanWindowMixin() = default;
+    WindowMixin() = default;
+    virtual ~WindowMixin() = default;
 
-    VulkanWindowMixin(const VulkanWindowMixin & other) = delete;
-    VulkanWindowMixin & operator=(const VulkanWindowMixin & other) = delete;
+    WindowMixin(const WindowMixin & other) = delete;
+    WindowMixin & operator=(const WindowMixin & other) = delete;
 
-    VulkanWindowMixin(VulkanWindowMixin &&) noexcept = default;
-    VulkanWindowMixin & operator=(VulkanWindowMixin &&) noexcept = default;
+    WindowMixin(WindowMixin &&) noexcept = default;
+    WindowMixin & operator=(WindowMixin &&) noexcept = default;
 
     [[nodiscard]] vk::SurfaceKHR SurfaceHandle() const
     {
@@ -26,7 +26,7 @@ public:
     }
 
 protected:
-    static vk::Instance VulkanInstanceHandle();
+    static vk::Instance InstanceHandle();
 
     void SetSurfaceHandle(vk::UniqueSurfaceKHR surface)
     {

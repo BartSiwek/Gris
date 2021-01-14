@@ -3,17 +3,17 @@
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/deferred_context.h>
 #include <gris/graphics/vulkan/device.h>
-#include <gris/graphics/vulkan/engine_exception.h>
 #include <gris/graphics/vulkan/fence.h>
 #include <gris/graphics/vulkan/semaphore.h>
 #include <gris/graphics/vulkan/texture.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <iterator>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanImmediateContext::VulkanImmediateContext(VulkanDevice * device)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
+    : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -31,7 +31,7 @@ Gris::Graphics::Vulkan::VulkanImmediateContext::VulkanImmediateContext(VulkanDev
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const VulkanTexture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight)
+void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight)
 {
     auto const formatProperties = ParentDevice().GetFormatProperties(imageFormat);
 
@@ -110,7 +110,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::GenerateMipmaps(const Vulka
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBufferToImage(const VulkanBuffer & buffer, const VulkanTexture & texture, uint32_t width, uint32_t height)
+void Gris::Graphics::Vulkan::ImmediateContext::CopyBufferToImage(const Buffer & buffer, const Texture & texture, uint32_t width, uint32_t height)
 {
     auto commandBuffer = BeginSingleTimeCommands();
 
@@ -134,7 +134,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBufferToImage(const Vul
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::TransitionImageLayout(const VulkanTexture & texture, const vk::ImageLayout & oldLayout, const vk::ImageLayout & newLayout)
+void Gris::Graphics::Vulkan::ImmediateContext::TransitionImageLayout(const Texture & texture, const vk::ImageLayout & oldLayout, const vk::ImageLayout & newLayout)
 {
     auto commandBuffer = BeginSingleTimeCommands();
 
@@ -183,7 +183,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::TransitionImageLayout(const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBuffer(const VulkanBuffer & srcBuffer, const VulkanBuffer & dstBuffer, vk::DeviceSize size)
+void Gris::Graphics::Vulkan::ImmediateContext::CopyBuffer(const Buffer & srcBuffer, const Buffer & dstBuffer, vk::DeviceSize size)
 {
     auto commandBuffer = BeginSingleTimeCommands();
 
@@ -195,23 +195,23 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::CopyBuffer(const VulkanBuff
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
-    VulkanDeferredContext * context,
-    const std::vector<std::reference_wrapper<VulkanSemaphore>> & waitSemaphores,
-    const std::vector<std::reference_wrapper<VulkanSemaphore>> & signalSemaphores,
-    VulkanFence & fence)
+void Gris::Graphics::Vulkan::ImmediateContext::Submit(
+    DeferredContext * context,
+    const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores,
+    const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores,
+    Fence & fence)
 {
-    std::vector<vk::Semaphore> vulkanWaitSemaphores;
-    std::transform(waitSemaphores.begin(), waitSemaphores.end(), std::back_inserter(vulkanWaitSemaphores), [](const auto & semaphore)
+    std::vector<vk::Semaphore> waitSemaphoreHandles;
+    std::transform(waitSemaphores.begin(), waitSemaphores.end(), std::back_inserter(waitSemaphoreHandles), [](const auto & semaphore)
                    { return semaphore.get().SemaphoreHandle(); });
 
-    std::vector<vk::Semaphore> vulkanSignalSemaphores;
-    std::transform(signalSemaphores.begin(), signalSemaphores.end(), std::back_inserter(vulkanSignalSemaphores), [](const auto & semaphore)
+    std::vector<vk::Semaphore> signalSemaphoreHandles;
+    std::transform(signalSemaphores.begin(), signalSemaphores.end(), std::back_inserter(signalSemaphoreHandles), [](const auto & semaphore)
                    { return semaphore.get().SemaphoreHandle(); });
 
     std::array waitStages = { vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput) };
     std::array commandBuffers = { context->CommandBufferHandle() };
-    std::array submits = { vk::SubmitInfo(vulkanWaitSemaphores, waitStages, commandBuffers, vulkanSignalSemaphores) };
+    std::array submits = { vk::SubmitInfo(waitSemaphoreHandles, waitStages, commandBuffers, signalSemaphoreHandles) };
 
     auto const submitResult = m_graphicsQueue.submit(submits, fence.FenceHandle());
     if (submitResult != vk::Result::eSuccess)
@@ -220,7 +220,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::VulkanImmediateContext::BeginSingleTimeCommands()
+[[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::ImmediateContext::BeginSingleTimeCommands()
 {
     auto const allocInfo = vk::CommandBufferAllocateInfo(
         m_commandPool.get(),
@@ -244,7 +244,7 @@ void Gris::Graphics::Vulkan::VulkanImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanImmediateContext::EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const
+void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const
 {
     auto const endResult = commandBuffer.end();
     if (endResult != vk::Result::eSuccess)

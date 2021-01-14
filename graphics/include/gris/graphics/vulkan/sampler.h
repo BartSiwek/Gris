@@ -5,10 +5,10 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanSampler : public VulkanDeviceResource
+class Sampler : public DeviceResource
 {
 public:
-    VulkanSampler(VulkanDevice * device, float minLod, float maxLod);
+    Sampler(Device * device, float minLod, float maxLod);
 
     // TODO: Do this better
     const vk::Sampler & SamplerHandle() const;

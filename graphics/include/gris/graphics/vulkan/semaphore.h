@@ -5,12 +5,12 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanDevice;
+class Device;
 
-class VulkanSemaphore : public VulkanDeviceResource
+class Semaphore : public DeviceResource
 {
 public:
-    explicit VulkanSemaphore(VulkanDevice * device);
+    explicit Semaphore(Device * device);
 
     // TODO: Do this better
     const vk::Semaphore & SemaphoreHandle() const;
