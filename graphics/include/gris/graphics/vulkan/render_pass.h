@@ -5,10 +5,10 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanRenderPass : public VulkanDeviceResource
+class RenderPass : public DeviceResource
 {
 public:
-    VulkanRenderPass(VulkanDevice * device, vk::Format swapChainFormat, vk::Format depthFormat);
+    RenderPass(Device * device, vk::Format swapChainFormat, vk::Format depthFormat);
 
     // TODO: Do this better
     [[nodiscard]] const vk::RenderPass & RenderPassHandle() const;

@@ -5,22 +5,22 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanBuffer;
-class VulkanTexture;
-class VulkanDeferredContext;
-class VulkanSemaphore;
-class VulkanFence;
+class Buffer;
+class Texture;
+class DeferredContext;
+class Semaphore;
+class Fence;
 
-class VulkanImmediateContext : public VulkanDeviceResource
+class ImmediateContext : public DeviceResource
 {
 public:
-    explicit VulkanImmediateContext(VulkanDevice * device);
+    explicit ImmediateContext(Device * device);
 
-    void GenerateMipmaps(const VulkanTexture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight);
-    void CopyBufferToImage(const VulkanBuffer & buffer, const VulkanTexture & texture, uint32_t width, uint32_t height);
-    void TransitionImageLayout(const VulkanTexture & texture, const vk::ImageLayout & oldLayout, const vk::ImageLayout & newLayout);
-    void CopyBuffer(const VulkanBuffer & srcBuffer, const VulkanBuffer & dstBuffer, vk::DeviceSize size);
-    void Submit(VulkanDeferredContext * context, const std::vector<std::reference_wrapper<VulkanSemaphore>> & waitSemaphores, const std::vector<std::reference_wrapper<VulkanSemaphore>> & signalSemaphores, VulkanFence & fence);
+    void GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight);
+    void CopyBufferToImage(const Buffer & buffer, const Texture & texture, uint32_t width, uint32_t height);
+    void TransitionImageLayout(const Texture & texture, const vk::ImageLayout & oldLayout, const vk::ImageLayout & newLayout);
+    void CopyBuffer(const Buffer & srcBuffer, const Buffer & dstBuffer, vk::DeviceSize size);
+    void Submit(DeferredContext * context, const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores, const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores, Fence & fence);
 
 private:
     [[nodiscard]] vk::UniqueCommandBuffer BeginSingleTimeCommands();

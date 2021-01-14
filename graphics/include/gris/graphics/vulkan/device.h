@@ -7,36 +7,36 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanSwapChain;
-class VulkanDeviceResource;
-class VulkanBuffer;
-class VulkanTexture;
-class VulkanDeferredContext;
-class VulkanShader;
-class VulkanInputLayout;
-class VulkanRenderPass;
-class VulkanPipelineStateObject;
-class VulkanTextureView;
-class VulkanSampler;
-class VulkanFramebuffer;
-class VulkanFence;
-class VulkanSemaphore;
+class SwapChain;
+class DeviceResource;
+class Buffer;
+class Texture;
+class DeferredContext;
+class Shader;
+class InputLayout;
+class RenderPass;
+class PipelineStateObject;
+class TextureView;
+class Sampler;
+class Framebuffer;
+class Fence;
+class Semaphore;
 
-class VulkanDevice
+class Device
 {
 public:
-    friend class VulkanDeviceResource;
+    friend class DeviceResource;
 
-    explicit VulkanDevice(VulkanPhysicalDevice physicalDevice);
+    explicit Device(PhysicalDevice physicalDevice);
 
-    [[nodiscard]] const VulkanImmediateContext * Context() const;
-    [[nodiscard]] VulkanImmediateContext * Context();
+    [[nodiscard]] const ImmediateContext * Context() const;
+    [[nodiscard]] ImmediateContext * Context();
 
     [[nodiscard]] const vk::SampleCountFlagBits & MsaaSamples() const;
 
     [[nodiscard]] const DeviceQueueFamilyIndices & QueueFamilies() const;
 
-    [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const VulkanWindowMixin & window) const;
+    [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const WindowMixin & window) const;
 
     void WaitIdle();
 
@@ -51,32 +51,32 @@ public:
     // TODO: Make device independent of frame count
     void CreateDescriptorPool(uint32_t imageCount);
 
-    [[nodiscard]] VulkanSwapChain CreateSwapChain(const VulkanWindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+    [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
 
-    [[nodiscard]] VulkanDeferredContext CreateDeferredContext();
-    [[nodiscard]] VulkanShader CreateShader(const std::vector<char> & code);
-    [[nodiscard]] VulkanBuffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
-    [[nodiscard]] VulkanTexture CreateTexture(uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
-    [[nodiscard]] VulkanTextureView CreateTextureView(const VulkanTexture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
-    [[nodiscard]] VulkanSampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] VulkanPipelineStateObject CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const VulkanRenderPass & renderPass, const VulkanInputLayout & inputLayout, const VulkanShader & vertexShader, const VulkanShader & fragmentShader);
-    [[nodiscard]] VulkanFramebuffer CreateFramebuffer(const VulkanTextureView & colorImageView, const VulkanTextureView & depthImageView, const VulkanTextureView & swapChainImageView, const VulkanRenderPass & renderPass, uint32_t width, uint32_t height);
-    [[nodiscard]] VulkanFence CreateFence(bool signaled);
-    [[nodiscard]] VulkanSemaphore CreateSemaphore();
+    [[nodiscard]] DeferredContext CreateDeferredContext();
+    [[nodiscard]] Shader CreateShader(const std::vector<char> & code);
+    [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    [[nodiscard]] Texture CreateTexture(uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
+    [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
+    [[nodiscard]] PipelineStateObject CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const RenderPass & renderPass, const InputLayout & inputLayout, const Shader & vertexShader, const Shader & fragmentShader);
+    [[nodiscard]] Framebuffer CreateFramebuffer(const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
+    [[nodiscard]] Fence CreateFence(bool signaled);
+    [[nodiscard]] Semaphore CreateSemaphore();
 
 private:
-    [[nodiscard]] const VulkanAllocator & Allocator() const;
-    [[nodiscard]] VulkanAllocator & Allocator();
+    [[nodiscard]] const Allocator & AllocatorHandle() const;
+    [[nodiscard]] Allocator & AllocatorHandle();
 
     [[nodiscard]] const vk::DescriptorPool & DescriptorPoolHandle() const;
     [[nodiscard]] vk::DescriptorPool & DescriptorPoolHandle();
 
-    VulkanPhysicalDevice m_physicalDevice;
+    PhysicalDevice m_physicalDevice;
 
     vk::UniqueDevice m_device = {};
-    VulkanAllocator m_allocator = {};
+    Allocator m_allocator = {};
     vk::UniqueDescriptorPool m_descriptorPool = {};
-    std::unique_ptr<VulkanImmediateContext> m_context = {};
+    std::unique_ptr<ImmediateContext> m_context = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

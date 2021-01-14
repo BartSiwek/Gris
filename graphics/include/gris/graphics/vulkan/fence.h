@@ -5,10 +5,10 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanFence : public VulkanDeviceResource
+class Fence : public DeviceResource
 {
 public:
-    VulkanFence(VulkanDevice * device, bool signaled);
+    Fence(Device * device, bool signaled);
 
     // TODO: Do this better
     [[nodiscard]] const vk::Fence & FenceHandle() const;

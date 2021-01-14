@@ -1,11 +1,11 @@
 ﻿#include <gris/graphics/vulkan/sampler.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanSampler::VulkanSampler(VulkanDevice * device, float minLod, float maxLod)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float maxLod)
+    : DeviceResource(device)
 {
     auto const samplerInfo = vk::SamplerCreateInfo({},
                                                    vk::Filter::eLinear,
@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::VulkanSampler::VulkanSampler(VulkanDevice * device, floa
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-const vk::Sampler & Gris::Graphics::Vulkan::VulkanSampler::SamplerHandle() const
+const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 {
     return m_sampler.get();
 }
@@ -42,7 +42,7 @@ const vk::Sampler & Gris::Graphics::Vulkan::VulkanSampler::SamplerHandle() const
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-vk::Sampler & Gris::Graphics::Vulkan::VulkanSampler::SamplerHandle()
+vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
 {
     return m_sampler.get();
 }

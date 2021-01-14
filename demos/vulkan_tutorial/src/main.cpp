@@ -69,9 +69,9 @@ struct Vertex
     glm::vec3 color;
     glm::vec2 texCoord;
 
-    static Gris::Graphics::Vulkan::VulkanInputLayout BuildInputLayout()
+    static Gris::Graphics::Vulkan::InputLayout BuildInputLayout()
     {
-        Gris::Graphics::Vulkan::VulkanInputLayout layout;
+        Gris::Graphics::Vulkan::InputLayout layout;
 
         layout.AddBinding(0, sizeof(Vertex), vk::VertexInputRate::eVertex);
 
@@ -140,41 +140,41 @@ public:
     }
 
 private:
-    std::unique_ptr<Gris::Graphics::Vulkan::Glfw::GlfwVulkanWindow> m_window = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanDevice> m_device = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanSwapChain> m_swapChain = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Glfw::Window> m_window = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Device> m_device = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::SwapChain> m_swapChain = {};
 
-    std::vector<Gris::Graphics::Vulkan::VulkanFramebuffer> m_swapChainFramebuffers = {};
+    std::vector<Gris::Graphics::Vulkan::Framebuffer> m_swapChainFramebuffers = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanRenderPass> m_renderPass = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanShader> m_vertexShader = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanShader> m_fragmentShader = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanPipelineStateObject> m_pso = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanShaderResourceBinding> m_shaderResourceBinding = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::RenderPass> m_renderPass = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBinding = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanTexture> m_colorImage = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanTextureView> m_colorImageView = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_colorImageView = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanTexture> m_depthImage = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanTextureView> m_depthImageView = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_depthImage = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_depthImageView = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanTexture> m_textureImage = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanTextureView> m_textureImageView = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanSampler> m_textureSampler = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_textureImage = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_textureImageView = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Sampler> m_textureSampler = {};
 
     uint32_t m_indexCount = 0;
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanBuffer> m_vertexBuffer = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanBufferView> m_vertexBufferView = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Buffer> m_vertexBuffer = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::BufferView> m_vertexBufferView = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanBuffer> m_indexBuffer = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::VulkanBufferView> m_indexBufferView = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::Buffer> m_indexBuffer = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::BufferView> m_indexBufferView = {};
 
-    std::vector<Gris::Graphics::Vulkan::VulkanBuffer> m_uniformBuffers = {};
-    std::vector<Gris::Graphics::Vulkan::VulkanBufferView> m_uniformBufferViews = {};
+    std::vector<Gris::Graphics::Vulkan::Buffer> m_uniformBuffers = {};
+    std::vector<Gris::Graphics::Vulkan::BufferView> m_uniformBufferViews = {};
 
-    std::vector<Gris::Graphics::Vulkan::VulkanDeferredContext> m_commandBuffers = {};
+    std::vector<Gris::Graphics::Vulkan::DeferredContext> m_commandBuffers = {};
 
-    std::vector<Gris::Graphics::Vulkan::VulkanVirtualFrame> m_virtualFrames = {};
+    std::vector<Gris::Graphics::Vulkan::VirtualFrame> m_virtualFrames = {};
 
     bool m_framebufferResized = false;
 
@@ -185,42 +185,42 @@ private:
 
     static void InstallExtensionGetters()
     {
-        Gris::Graphics::Vulkan::VulkanInstance::InstallExtensionGetter(Gris::Graphics::Vulkan::Glfw::GetVulkanInstanceExtensionsFromGLFW);
+        Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(Gris::Graphics::Vulkan::Glfw::GetInstanceExtensionsFromGLFW);
     }
 
     void InitWindow()
     {
-        m_window = std::make_unique<Gris::Graphics::Vulkan::Glfw::GlfwVulkanWindow>(WIDTH, HEIGHT, "Vulkan tutorial");
+        m_window = std::make_unique<Gris::Graphics::Vulkan::Glfw::Window>(WIDTH, HEIGHT, "Vulkan tutorial");
         m_window->AddObserver(this);
     }
 
     void InitVulkan()
     {
-        m_device = std::make_unique<Gris::Graphics::Vulkan::VulkanDevice>(Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::FindPhysicalDevice(*m_window));
+        m_device = std::make_unique<Gris::Graphics::Vulkan::Device>(Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(*m_window));
 
         createTextureImage();
-        m_textureImageView = std::make_unique<Gris::Graphics::Vulkan::VulkanTextureView>(m_device->CreateTextureView(*m_textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_textureImage->MipLevels()));
-        m_textureSampler = std::make_unique<Gris::Graphics::Vulkan::VulkanSampler>(m_device->CreateSampler(0.0f, static_cast<float>(m_textureImage->MipLevels())));
+        m_textureImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_textureImage->MipLevels()));
+        m_textureSampler = std::make_unique<Gris::Graphics::Vulkan::Sampler>(m_device->CreateSampler(0.0f, static_cast<float>(m_textureImage->MipLevels())));
 
         auto [vertices, indices] = loadModel();
         m_indexCount = static_cast<uint32_t>(indices.size());
         createVertexBuffer(vertices);
         createIndexBuffer(indices);
 
-        m_swapChain = std::make_unique<Gris::Graphics::Vulkan::VulkanSwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
-        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::VulkanRenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
+        m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
+        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
 
         auto const vertexShaderPath = Gris::DirectoryRegistry::TryResolvePath(VERTEX_SHADER_PATH);
         if (!vertexShaderPath)
             throw Gris::EngineException("Error resolving vertex shader path", VERTEX_SHADER_PATH);
-        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::VulkanShader>(m_device->CreateShader(ReadFile(*vertexShaderPath)));
+        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile(*vertexShaderPath)));
 
         auto const fragmentShaderPath = Gris::DirectoryRegistry::TryResolvePath(FRAGMENT_SHADER_PATH);
         if (!fragmentShaderPath)
             throw Gris::EngineException("Error resolving fragment shader path", FRAGMENT_SHADER_PATH);
-        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::VulkanShader>(m_device->CreateShader(ReadFile(*fragmentShaderPath)));
+        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile(*fragmentShaderPath)));
 
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::VulkanPipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -234,7 +234,7 @@ private:
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
             m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::VulkanShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
+        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
             m_shaderResourceBinding->SetImageView(i, "texSampler", *m_textureImageView);
@@ -252,7 +252,7 @@ private:
     {
         while (!m_window->ShouldClose())
         {
-            Gris::Graphics::Glfw::GlfwInstance::PollEvents();
+            Gris::Graphics::Glfw::Instance::PollEvents();
             drawFrame();
         }
 
@@ -264,9 +264,9 @@ private:
         m_device->WaitIdle();
 
         m_swapChain.reset();
-        m_swapChain = std::make_unique<Gris::Graphics::Vulkan::VulkanSwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
-        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::VulkanRenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::VulkanPipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
+        m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
+        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -282,7 +282,7 @@ private:
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
             m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::VulkanShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
+        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
             m_shaderResourceBinding->SetImageView(i, "texSampler", *m_textureImageView);
@@ -307,16 +307,16 @@ private:
     {
         auto const swapChainExtent = m_swapChain->Extent();
         auto const swapChainFormat = m_swapChain->Format();
-        m_colorImage = std::make_unique<Gris::Graphics::Vulkan::VulkanTexture>(m_device->CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device->MsaaSamples(), swapChainFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransientAttachment | vk::ImageUsageFlagBits::eColorAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_colorImageView = std::make_unique<Gris::Graphics::Vulkan::VulkanTextureView>(m_device->CreateTextureView(*m_colorImage, swapChainFormat, vk::ImageAspectFlagBits::eColor, 1));
+        m_colorImage = std::make_unique<Gris::Graphics::Vulkan::Texture>(m_device->CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device->MsaaSamples(), swapChainFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransientAttachment | vk::ImageUsageFlagBits::eColorAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_colorImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_colorImage, swapChainFormat, vk::ImageAspectFlagBits::eColor, 1));
     }
 
     void createDepthResources()
     {
         auto const depthFormat = findDepthFormat();
         auto const swapChainExtent = m_swapChain->Extent();
-        m_depthImage = std::make_unique<Gris::Graphics::Vulkan::VulkanTexture>(m_device->CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device->MsaaSamples(), depthFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_depthImageView = std::make_unique<Gris::Graphics::Vulkan::VulkanTextureView>(m_device->CreateTextureView(*m_depthImage, depthFormat, vk::ImageAspectFlagBits::eDepth, 1));
+        m_depthImage = std::make_unique<Gris::Graphics::Vulkan::Texture>(m_device->CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device->MsaaSamples(), depthFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_depthImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_depthImage, depthFormat, vk::ImageAspectFlagBits::eDepth, 1));
     }
 
     [[nodiscard]] vk::Format findDepthFormat() const
@@ -348,7 +348,7 @@ private:
 
         stbi_image_free(pixels);
 
-        m_textureImage = std::make_unique<Gris::Graphics::Vulkan::VulkanTexture>(m_device->CreateTexture(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_textureImage = std::make_unique<Gris::Graphics::Vulkan::Texture>(m_device->CreateTexture(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal));
         m_device->Context()->TransitionImageLayout(*m_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
         m_device->Context()->CopyBufferToImage(stagingBuffer, *m_textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
         // Transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
@@ -413,10 +413,10 @@ private:
         auto stagingBuffer = m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(vertices.data(), static_cast<size_t>(bufferSize));
 
-        m_vertexBuffer = std::make_unique<Gris::Graphics::Vulkan::VulkanBuffer>(m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_vertexBuffer = std::make_unique<Gris::Graphics::Vulkan::Buffer>(m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
         m_device->Context()->CopyBuffer(stagingBuffer, *m_vertexBuffer, bufferSize);
 
-        m_vertexBufferView = std::make_unique<Gris::Graphics::Vulkan::VulkanBufferView>(m_vertexBuffer.get(), 0, static_cast<uint32_t>(bufferSize));
+        m_vertexBufferView = std::make_unique<Gris::Graphics::Vulkan::BufferView>(m_vertexBuffer.get(), 0, static_cast<uint32_t>(bufferSize));
     }
 
     void createIndexBuffer(const std::vector<uint32_t> & indices)
@@ -426,10 +426,10 @@ private:
         auto stagingBuffer = m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(indices.data(), static_cast<size_t>(bufferSize));
 
-        m_indexBuffer = std::make_unique<Gris::Graphics::Vulkan::VulkanBuffer>(m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_indexBuffer = std::make_unique<Gris::Graphics::Vulkan::Buffer>(m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
         m_device->Context()->CopyBuffer(stagingBuffer, *m_indexBuffer, bufferSize);
 
-        m_indexBufferView = std::make_unique<Gris::Graphics::Vulkan::VulkanBufferView>(m_indexBuffer.get(), 0, static_cast<uint32_t>(bufferSize));
+        m_indexBufferView = std::make_unique<Gris::Graphics::Vulkan::BufferView>(m_indexBuffer.get(), 0, static_cast<uint32_t>(bufferSize));
     }
 
     void createCommandBuffers(uint32_t indexCount)

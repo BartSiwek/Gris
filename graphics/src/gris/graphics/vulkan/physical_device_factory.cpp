@@ -1,18 +1,18 @@
 #include <gris/graphics/vulkan/physical_device_factory.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/physical_device.h>
 #include <gris/graphics/vulkan/utils.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 #include <gris/graphics/vulkan/window_mixin.h>
 
 #include <set>
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanPhysicalDevice Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::FindPhysicalDevice(const VulkanWindowMixin & window)
+[[nodiscard]] Gris::Graphics::Vulkan::PhysicalDevice Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(const WindowMixin & window)
 {
-    auto devices = VulkanInstance::EnumeratePhysicalDevices();
+    auto devices = Instance::EnumeratePhysicalDevices();
 
     for (auto const & device : devices)
     {
@@ -20,7 +20,7 @@
         if (isSuitable)
         {
             auto const msaaSamples = GetMaxUsableSampleCount(device);
-            return VulkanPhysicalDevice(device, msaaSamples, queueFamilies);
+            return PhysicalDevice(device, msaaSamples, queueFamilies);
         }
     }
 
@@ -29,7 +29,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::tuple<bool, Gris::Graphics::Vulkan::DeviceQueueFamilyIndices> Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::IsDeviceSuitable(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
+[[nodiscard]] std::tuple<bool, Gris::Graphics::Vulkan::DeviceQueueFamilyIndices> Gris::Graphics::Vulkan::PhysicalDeviceFactory::IsDeviceSuitable(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
 {
     auto queueFamilies = FindQueueFamilies(device, surface);
     auto extensionsSupported = CheckDeviceExtensionSupport(device);
@@ -49,7 +49,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::DeviceQueueFamilyIndices Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::FindQueueFamilies(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
+[[nodiscard]] Gris::Graphics::Vulkan::DeviceQueueFamilyIndices Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindQueueFamilies(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
 {
     auto queueFamilies = device.getQueueFamilyProperties();
 
@@ -84,13 +84,13 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::CheckDeviceExtensionSupport(const vk::PhysicalDevice & device)
+[[nodiscard]] bool Gris::Graphics::Vulkan::PhysicalDeviceFactory::CheckDeviceExtensionSupport(const vk::PhysicalDevice & device)
 {
     auto availableExtensionsResult = device.enumerateDeviceExtensionProperties();
     if (availableExtensionsResult.result != vk::Result::eSuccess)
         throw VulkanEngineException("Error enumerating physical device extension properties", availableExtensionsResult);
 
-    std::set<std::string> requiredExtensions(VulkanPhysicalDevice::REQUIRED_EXTENSIONS.begin(), VulkanPhysicalDevice::REQUIRED_EXTENSIONS.end());
+    std::set<std::string> requiredExtensions(PhysicalDevice::REQUIRED_EXTENSIONS.begin(), PhysicalDevice::REQUIRED_EXTENSIONS.end());
     for (auto const & extension : availableExtensionsResult.value)
     {
         requiredExtensions.erase(extension.extensionName);
@@ -101,7 +101,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::SampleCountFlagBits Gris::Graphics::Vulkan::VulkanPhysicalDeviceFactory::GetMaxUsableSampleCount(const vk::PhysicalDevice & physicalDevice)
+[[nodiscard]] vk::SampleCountFlagBits Gris::Graphics::Vulkan::PhysicalDeviceFactory::GetMaxUsableSampleCount(const vk::PhysicalDevice & physicalDevice)
 {
     auto const physicalDeviceProperties = physicalDevice.getProperties();
 

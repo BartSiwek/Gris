@@ -6,19 +6,19 @@
 namespace Gris::Graphics::Vulkan::Glfw
 {
 
-class GlfwVulkanWindow : public Graphics::Glfw::GlfwWindowMixin
-    , public VulkanWindowMixin
+class Window : public Graphics::Glfw::WindowMixin
+    , public WindowMixin
 {
 public:
-    GlfwVulkanWindow(uint32_t width, uint32_t height, const std::string & title);
+    Window(uint32_t width, uint32_t height, const std::string & title);
 
-    GlfwVulkanWindow(const GlfwVulkanWindow &) = delete;
-    GlfwVulkanWindow & operator=(const GlfwVulkanWindow &) = delete;
+    Window(const Window &) = delete;
+    Window & operator=(const Window &) = delete;
 
-    GlfwVulkanWindow(GlfwVulkanWindow &&) noexcept = default;
-    GlfwVulkanWindow & operator=(GlfwVulkanWindow &&) noexcept = default;
+    Window(Window &&) noexcept = default;
+    Window & operator=(Window &&) noexcept = default;
 
-    ~GlfwVulkanWindow() override = default;
+    ~Window() override = default;
 };
 
 }  // namespace Gris::Graphics::Vulkan::Glfw

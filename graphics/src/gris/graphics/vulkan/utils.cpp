@@ -1,6 +1,6 @@
 #include <gris/graphics/vulkan/utils.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 

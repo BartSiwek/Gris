@@ -7,31 +7,31 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanAllocator
+class Allocator
 {
 public:
-    VulkanAllocator();
+    Allocator();
 
-    explicit VulkanAllocator(VmaAllocator allocator);
+    explicit Allocator(VmaAllocator allocator);
 
-    VulkanAllocator(const VulkanAllocator & other) = delete;
-    VulkanAllocator & operator=(const VulkanAllocator & other) = delete;
+    Allocator(const Allocator & other) = delete;
+    Allocator & operator=(const Allocator & other) = delete;
 
-    VulkanAllocator(VulkanAllocator && other) noexcept;
-    VulkanAllocator & operator=(VulkanAllocator && other) noexcept;
+    Allocator(Allocator && other) noexcept;
+    Allocator & operator=(Allocator && other) noexcept;
 
-    ~VulkanAllocator();
+    ~Allocator();
 
-    [[nodiscard]] VulkanAllocation AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo);
-    [[nodiscard]] VulkanAllocation AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo);
+    [[nodiscard]] Allocation AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo);
+    [[nodiscard]] Allocation AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo);
 
     void FreeMemory(const VmaAllocation & allocation);
 
-    void Bind(const vk::Buffer & buffer, const VulkanAllocation & allocation);
-    void Bind(const vk::Image & image, const VulkanAllocation & allocation);
+    void Bind(const vk::Buffer & buffer, const Allocation & allocation);
+    void Bind(const vk::Image & image, const Allocation & allocation);
 
-    [[nodiscard]] void * Map(const VulkanAllocation & allocation) const;
-    void Unmap(const VulkanAllocation & allocation) const;
+    [[nodiscard]] void * Map(const Allocation & allocation) const;
+    void Unmap(const Allocation & allocation) const;
 
 private:
     VmaAllocator m_allocator = VK_NULL_HANDLE;

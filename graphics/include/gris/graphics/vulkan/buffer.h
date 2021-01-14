@@ -6,17 +6,17 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanBuffer : public VulkanDeviceResource
+class Buffer : public DeviceResource
 {
 public:
-    VulkanBuffer(VulkanDevice * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
-    ~VulkanBuffer() = default;
+    Buffer(Device * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    ~Buffer() = default;
 
-    VulkanBuffer(const VulkanBuffer & other) = delete;
-    VulkanBuffer & operator=(const VulkanBuffer & other) = delete;
+    Buffer(const Buffer & other) = delete;
+    Buffer & operator=(const Buffer & other) = delete;
 
-    VulkanBuffer(VulkanBuffer && other) = default;
-    VulkanBuffer & operator=(VulkanBuffer && other) = default;
+    Buffer(Buffer && other) = default;
+    Buffer & operator=(Buffer && other) = default;
 
     // TODO: Do this via context
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
@@ -26,7 +26,7 @@ public:
 
 private:
     vk::UniqueBuffer m_buffer = {};
-    VulkanAllocation m_bufferMemory = {};
+    Allocation m_bufferMemory = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

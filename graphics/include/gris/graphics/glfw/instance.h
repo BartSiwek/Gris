@@ -3,24 +3,25 @@
 namespace Gris::Graphics::Glfw
 {
 
-class GlfwInstance
+class Instance
 {
 public:
     static void Init();
 
     static void PollEvents();
 
-    GlfwInstance(const GlfwInstance &) = delete;
-    GlfwInstance & operator=(const GlfwInstance &) = delete;
+    ~Instance();
 
-    GlfwInstance(GlfwInstance &&) = delete;
-    GlfwInstance & operator=(GlfwInstance &&) = delete;
+    Instance(const Instance &) = delete;
+    Instance & operator=(const Instance &) = delete;
+
+    Instance(Instance &&) = delete;
+    Instance & operator=(Instance &&) = delete;
 
 private:
-    static GlfwInstance & Instance();
+    static void EnsureInstanceCreated();
 
-    GlfwInstance();
-    ~GlfwInstance();
+    Instance();
 };
 
 }  // namespace Gris::Graphics::Glfw

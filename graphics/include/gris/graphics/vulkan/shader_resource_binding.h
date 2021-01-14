@@ -6,29 +6,29 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanSampler;
-class VulkanTextureView;
-class VulkanBuffer;
+class Sampler;
+class TextureView;
+class Buffer;
 
-class VulkanShaderResourceBinding : VulkanPipelineStateObjectResource
+class ShaderResourceBinding : PipelineStateObjectResource
 {
 public:
-    VulkanShaderResourceBinding(VulkanPipelineStateObject * pso, uint32_t frameCount);
+    ShaderResourceBinding(PipelineStateObject * pso, uint32_t frameCount);
 
     // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle(uint32_t frameIndex) const;
     [[nodiscard]] vk::DescriptorSet & DescriptorSetHandle(uint32_t frameIndex);
 
-    void SetSampler(uint32_t frameIndex, const std::string & samplerName, const VulkanSampler & sampler);
-    void SetImageView(uint32_t frameIndex, const std::string & imageName, const VulkanTextureView & textureView);
-    void SetUniformBuffer(uint32_t frameIndex, const std::string & bufferName, const VulkanBufferView & bufferView);
+    void SetSampler(uint32_t frameIndex, const std::string & samplerName, const Sampler & sampler);
+    void SetImageView(uint32_t frameIndex, const std::string & imageName, const TextureView & textureView);
+    void SetUniformBuffer(uint32_t frameIndex, const std::string & bufferName, const BufferView & bufferView);
 
     void CreateDescriptorSets();
 
 private:
-    std::vector<std::unordered_map<std::string, const VulkanSampler *>> m_samplers;
-    std::vector<std::unordered_map<std::string, const VulkanTextureView *>> m_textureViews;
-    std::vector<std::unordered_map<std::string, const VulkanBufferView *>> m_bufferViews;
+    std::vector<std::unordered_map<std::string, const Sampler *>> m_samplers;
+    std::vector<std::unordered_map<std::string, const TextureView *>> m_textureViews;
+    std::vector<std::unordered_map<std::string, const BufferView *>> m_bufferViews;
 
     std::vector<vk::DescriptorSet> m_descriptorSets;
 };

@@ -5,30 +5,30 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanAllocator;
+class Allocator;
 
-class VulkanAllocation
+class Allocation
 {
 public:
-    VulkanAllocation();
+    Allocation();
 
-    VulkanAllocation(VmaAllocation allocation, VulkanAllocator * owner);
+    Allocation(VmaAllocation allocation, Allocator * owner);
 
-    VulkanAllocation(const VulkanAllocation & other) = delete;
-    VulkanAllocation & operator=(const VulkanAllocation & other) = delete;
+    Allocation(const Allocation & other) = delete;
+    Allocation & operator=(const Allocation & other) = delete;
 
-    VulkanAllocation(VulkanAllocation && other) noexcept;
-    VulkanAllocation & operator=(VulkanAllocation && other) noexcept;
+    Allocation(Allocation && other) noexcept;
+    Allocation & operator=(Allocation && other) noexcept;
 
-    ~VulkanAllocation();
+    ~Allocation();
 
     void Reset();
 
 private:
-    friend class VulkanAllocator;
+    friend class Allocator;
 
     VmaAllocation m_allocation = VK_NULL_HANDLE;
-    VulkanAllocator * m_owner = nullptr;
+    Allocator * m_owner = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

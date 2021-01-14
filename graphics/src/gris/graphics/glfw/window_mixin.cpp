@@ -9,11 +9,11 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, const uint32_t height, const std::string & title)
+Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint32_t height, const std::string & title)
     : m_width(width)
     , m_height(height)
 {
-    GlfwInstance::Init();
+    Instance::Init();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
@@ -21,21 +21,21 @@ Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(const uint32_t width, con
     glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, [](GLFWwindow * window, const int newWidth, const int newHeight)
                                    {
-                                       auto * windowPtr = static_cast<GlfwWindowMixin *>(glfwGetWindowUserPointer(window));
+                                       auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
                                        windowPtr->OnSizeChanged(static_cast<uint32_t>(newWidth), static_cast<uint32_t>(newHeight));
                                    });
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin::~GlfwWindowMixin()
+Gris::Graphics::Glfw::WindowMixin::~WindowMixin()
 {
     glfwDestroyWindow(m_window);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(GlfwWindowMixin && other) noexcept
+Gris::Graphics::Glfw::WindowMixin::WindowMixin(WindowMixin && other) noexcept
     : m_width(std::exchange(other.m_width, 0))
     , m_height(std::exchange(other.m_height, 0))
     , m_window(std::exchange(other.m_window, nullptr))
@@ -45,7 +45,7 @@ Gris::Graphics::Glfw::GlfwWindowMixin::GlfwWindowMixin(GlfwWindowMixin && other)
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin & Gris::Graphics::Glfw::GlfwWindowMixin::operator=(GlfwWindowMixin && other) noexcept
+Gris::Graphics::Glfw::WindowMixin & Gris::Graphics::Glfw::WindowMixin::operator=(WindowMixin && other) noexcept
 {
     if (this != &other)
     {
@@ -60,42 +60,42 @@ Gris::Graphics::Glfw::GlfwWindowMixin & Gris::Graphics::Glfw::GlfwWindowMixin::o
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwWindowMixin::operator bool() const
+Gris::Graphics::Glfw::WindowMixin::operator bool() const
 {
     return m_window != nullptr;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] uint32_t Gris::Graphics::Glfw::GlfwWindowMixin::Width() const
+[[nodiscard]] uint32_t Gris::Graphics::Glfw::WindowMixin::Width() const
 {
     return m_width;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] uint32_t Gris::Graphics::Glfw::GlfwWindowMixin::Height() const
+[[nodiscard]] uint32_t Gris::Graphics::Glfw::WindowMixin::Height() const
 {
     return m_height;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Glfw::GlfwWindowMixin::ShouldClose() const
+[[nodiscard]] bool Gris::Graphics::Glfw::WindowMixin::ShouldClose() const
 {
     return glfwWindowShouldClose(m_window);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwWindowMixin::AddObserver(WindowObserver * observer)
+void Gris::Graphics::Glfw::WindowMixin::AddObserver(WindowObserver * observer)
 {
     m_observers.emplace_back(observer);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwWindowMixin::RemoveObserver(WindowObserver * observer)
+void Gris::Graphics::Glfw::WindowMixin::RemoveObserver(WindowObserver * observer)
 {
     auto const observerIt = std::find(std::begin(m_observers), std::end(m_observers), observer);
     if (observerIt != std::end(m_observers))
@@ -104,21 +104,21 @@ void Gris::Graphics::Glfw::GlfwWindowMixin::RemoveObserver(WindowObserver * obse
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const GLFWwindow * Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle() const
+[[nodiscard]] const GLFWwindow * Gris::Graphics::Glfw::WindowMixin::WindowHandle() const
 {
     return m_window;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] GLFWwindow * Gris::Graphics::Glfw::GlfwWindowMixin::WindowHandle()
+[[nodiscard]] GLFWwindow * Gris::Graphics::Glfw::WindowMixin::WindowHandle()
 {
     return m_window;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwWindowMixin::OnSizeChanged(uint32_t width, uint32_t height)
+void Gris::Graphics::Glfw::WindowMixin::OnSizeChanged(uint32_t width, uint32_t height)
 {
     m_width = width;
     m_height = height;
@@ -128,7 +128,7 @@ void Gris::Graphics::Glfw::GlfwWindowMixin::OnSizeChanged(uint32_t width, uint32
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwWindowMixin::NotifySizeChanged()
+void Gris::Graphics::Glfw::WindowMixin::NotifySizeChanged()
 {
     for (auto * observer : m_observers)
         observer->WindowResized(m_width, m_height);

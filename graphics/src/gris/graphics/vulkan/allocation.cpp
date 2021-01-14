@@ -4,11 +4,11 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation() = default;
+Gris::Graphics::Vulkan::Allocation::Allocation() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VmaAllocation allocation, VulkanAllocator * owner)
+Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, Allocator * owner)
     : m_allocation(std::move(allocation))
     , m_owner(owner)
 {
@@ -16,7 +16,7 @@ Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VmaAllocation allocat
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VulkanAllocation && other) noexcept
+Gris::Graphics::Vulkan::Allocation::Allocation(Allocation && other) noexcept
     : m_allocation(std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE)))
     , m_owner(std::exchange(other.m_owner, nullptr))
 {
@@ -24,7 +24,7 @@ Gris::Graphics::Vulkan::VulkanAllocation::VulkanAllocation(VulkanAllocation && o
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation & Gris::Graphics::Vulkan::VulkanAllocation::operator=(VulkanAllocation && other) noexcept
+Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operator=(Allocation && other) noexcept
 {
     if (this != &other)
     {
@@ -37,14 +37,14 @@ Gris::Graphics::Vulkan::VulkanAllocation & Gris::Graphics::Vulkan::VulkanAllocat
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanAllocation::~VulkanAllocation()
+Gris::Graphics::Vulkan::Allocation::~Allocation()
 {
     Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::VulkanAllocation::Reset()
+void Gris::Graphics::Vulkan::Allocation::Reset()
 {
     if (m_owner)
     {

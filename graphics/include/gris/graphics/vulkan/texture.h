@@ -6,10 +6,10 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanTexture : public VulkanDeviceResource
+class Texture : public DeviceResource
 {
 public:
-    VulkanTexture(VulkanDevice * device,
+    Texture(Device * device,
                   uint32_t width,
                   uint32_t height,
                   uint32_t mipLevels,
@@ -30,7 +30,7 @@ public:
 
 private:
     vk::UniqueImage m_image = {};
-    VulkanAllocation m_imageMemory = {};
+    Allocation m_imageMemory = {};
 
     uint32_t m_mipLevels = 1;
 };

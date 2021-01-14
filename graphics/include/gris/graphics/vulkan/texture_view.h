@@ -5,18 +5,18 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanTexture;
+class Texture;
 
-class VulkanTextureView : public VulkanDeviceResource
+class TextureView : public DeviceResource
 {
 public:
-    VulkanTextureView(VulkanDevice * device,
-                      const VulkanTexture & image,
+    TextureView(Device * device,
+                      const Texture & image,
                       vk::Format format,
                       const vk::ImageAspectFlags & aspectFlags,
                       uint32_t mipLevels);
 
-    VulkanTextureView(VulkanDevice * device,
+    TextureView(Device * device,
                       const vk::Image & image,
                       vk::Format format,
                       const vk::ImageAspectFlags & aspectFlags,

@@ -10,17 +10,17 @@ struct GLFWwindow;
 namespace Gris::Graphics::Glfw
 {
 
-class GlfwWindowMixin
+class WindowMixin
 {
 public:
-    GlfwWindowMixin(uint32_t width, uint32_t height, const std::string & title);
-    virtual ~GlfwWindowMixin();
+    WindowMixin(uint32_t width, uint32_t height, const std::string & title);
+    virtual ~WindowMixin();
 
-    GlfwWindowMixin(const GlfwWindowMixin & other) = delete;
-    GlfwWindowMixin & operator=(const GlfwWindowMixin & other) = delete;
+    WindowMixin(const WindowMixin & other) = delete;
+    WindowMixin & operator=(const WindowMixin & other) = delete;
 
-    GlfwWindowMixin(GlfwWindowMixin && other) noexcept;
-    GlfwWindowMixin & operator=(GlfwWindowMixin && other) noexcept;
+    WindowMixin(WindowMixin && other) noexcept;
+    WindowMixin & operator=(WindowMixin && other) noexcept;
 
     explicit operator bool() const;
 

@@ -4,37 +4,36 @@
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwInstance::Init()
+void Gris::Graphics::Glfw::Instance::Init()
 {
-    Instance();
+    EnsureInstanceCreated();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Glfw::GlfwInstance::PollEvents()
+void Gris::Graphics::Glfw::Instance::PollEvents()
 {
-    Instance();
+    EnsureInstanceCreated();
     glfwPollEvents();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::GlfwInstance & Gris::Graphics::Glfw::GlfwInstance::Instance()
-{
-    static GlfwInstance s_instance = {};
-    return s_instance;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Glfw::GlfwInstance::GlfwInstance()
-{
-    glfwInit();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Glfw::GlfwInstance::~GlfwInstance()
+Gris::Graphics::Glfw::Instance::~Instance()
 {
     glfwTerminate();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Glfw::Instance::EnsureInstanceCreated()
+{
+    static Instance s_instance = {};
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Glfw::Instance::Instance()
+{
+    glfwInit();
 }

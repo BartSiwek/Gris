@@ -5,13 +5,13 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class VulkanRenderPass;
-class VulkanTextureView;
+class RenderPass;
+class TextureView;
 
-class VulkanFramebuffer : public VulkanDeviceResource
+class Framebuffer : public DeviceResource
 {
 public:
-    VulkanFramebuffer(VulkanDevice * device, const VulkanTextureView & colorImageView, const VulkanTextureView & depthImageView, const VulkanTextureView & swapChainImageView, const VulkanRenderPass & renderPass, uint32_t width, uint32_t height);
+    Framebuffer(Device * device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
 
     // TODO: Do this better
     const vk::Framebuffer & FramebufferHandle() const;

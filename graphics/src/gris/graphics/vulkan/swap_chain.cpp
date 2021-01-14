@@ -1,7 +1,7 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 
 #include <gris/graphics/vulkan/device.h>
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 #include <gris/graphics/vulkan/window_mixin.h>
 
 #include <gris/assert.h>
@@ -61,8 +61,8 @@ vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities, u
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice * device, const VulkanWindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
+    : DeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
 {
     auto const & indices = device->QueueFamilies();
@@ -137,14 +137,14 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice * device, 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] uint32_t Gris::Graphics::Vulkan::VulkanSwapChain::ImageCount() const
+[[nodiscard]] uint32_t Gris::Graphics::Vulkan::SwapChain::ImageCount() const
 {
     return static_cast<uint32_t>(m_swapChainImages.size());
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const Gris::Graphics::Vulkan::VulkanTextureView & Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index) const
+[[nodiscard]] const Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::SwapChain::ImageView(const size_t index) const
 {
     GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
@@ -152,7 +152,7 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice * device, 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::VulkanTextureView & Gris::Graphics::Vulkan::VulkanSwapChain::ImageView(const size_t index)
+[[nodiscard]] Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::SwapChain::ImageView(const size_t index)
 {
     GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
@@ -160,21 +160,21 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice * device, 
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Format Gris::Graphics::Vulkan::VulkanSwapChain::Format() const
+[[nodiscard]] vk::Format Gris::Graphics::Vulkan::SwapChain::Format() const
 {
     return m_swapChainImageFormat;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Extent2D Gris::Graphics::Vulkan::VulkanSwapChain::Extent() const
+[[nodiscard]] vk::Extent2D Gris::Graphics::Vulkan::SwapChain::Extent() const
 {
     return m_swapChainExtent;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::optional<Gris::Graphics::Vulkan::VulkanVirtualFrame> Gris::Graphics::Vulkan::VulkanSwapChain::NextImage()
+[[nodiscard]] std::optional<Gris::Graphics::Vulkan::VirtualFrame> Gris::Graphics::Vulkan::SwapChain::NextImage()
 {
     auto const virtualFrameIndex = m_currentVirtualFrame;
     m_currentVirtualFrame = (m_currentVirtualFrame + 1) % m_virtualFrameCount;
@@ -217,12 +217,12 @@ Gris::Graphics::Vulkan::VulkanSwapChain::VulkanSwapChain(VulkanDevice * device, 
     if (resetResult != vk::Result::eSuccess)
         throw VulkanEngineException("Error resetting current frame fence", resetResult);
 
-    return VulkanVirtualFrame{ virtualFrameIndex, imageIndex };
+    return VirtualFrame{ virtualFrameIndex, imageIndex };
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::VulkanSwapChain::Present(const VulkanVirtualFrame & virtualFrame)
+[[nodiscard]] bool Gris::Graphics::Vulkan::SwapChain::Present(const VirtualFrame & virtualFrame)
 {
     std::array swapChains = { m_swapChain.get() };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };

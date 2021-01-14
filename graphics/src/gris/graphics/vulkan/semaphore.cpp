@@ -1,11 +1,11 @@
 ﻿#include <gris/graphics/vulkan/semaphore.h>
 
-#include <gris/graphics/vulkan/engine_exception.h>
+#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::VulkanSemaphore::VulkanSemaphore(VulkanDevice * device)
-    : VulkanDeviceResource(device)
+Gris::Graphics::Vulkan::Semaphore::Semaphore(Device * device)
+    : DeviceResource(device)
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo();
 
@@ -18,14 +18,14 @@ Gris::Graphics::Vulkan::VulkanSemaphore::VulkanSemaphore(VulkanDevice * device)
 
 // -------------------------------------------------------------------------------------------------
 
-const vk::Semaphore & Gris::Graphics::Vulkan::VulkanSemaphore::SemaphoreHandle() const
+const vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle() const
 {
     return m_semaphore.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Semaphore & Gris::Graphics::Vulkan::VulkanSemaphore::SemaphoreHandle()
+vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle()
 {
     return m_semaphore.get();
 }
