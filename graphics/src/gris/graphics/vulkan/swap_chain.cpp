@@ -146,7 +146,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 
 [[nodiscard]] const Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::SwapChain::ImageView(const size_t index) const
 {
-    GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
+    GRIS_ALWAYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
 }
 
@@ -154,7 +154,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 
 [[nodiscard]] Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::SwapChain::ImageView(const size_t index)
 {
-    GRIS_ALAWYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
+    GRIS_ALWAYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");
     return m_swapChainImageViews[index];
 }
 

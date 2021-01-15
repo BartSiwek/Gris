@@ -34,6 +34,7 @@ set_project_warnings(Gris.ProjectWarnings)
 ########################################################################
 
 set(CONAN_REQUIRES
+  fmt/7.1.3
   catch2/2.13.2
   glfw/3.3.2
   glm/0.9.9.8

@@ -9,7 +9,7 @@
 Gris::Graphics::Vulkan::DeviceResource::DeviceResource(Device * device)
     : m_parentDevice(device)
 {
-    GRIS_ALAWYS_ASSERT(m_parentDevice != nullptr, "Parent device cannot be null");
+    GRIS_ALWAYS_ASSERT(m_parentDevice != nullptr, "Parent device cannot be null");
 }
 
 // -------------------------------------------------------------------------------------------------
