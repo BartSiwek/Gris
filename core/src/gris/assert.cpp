@@ -57,7 +57,7 @@ namespace Detail
 {
 
     // -------------------------------------------------------------------------------------------------
-    static AssertLoggingCallback sg_loggingCallback = &StderrLoggingCallback;
+    static AssertLoggingCallback sg_loggingCallback = &LogCriticalCallback;
     static AssertHandler sg_failureHandler = &AbortHandler;
 
     // -------------------------------------------------------------------------------------------------
