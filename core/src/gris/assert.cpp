@@ -2,8 +2,8 @@
 
 #include <gris/macros.h>
 
-#include <memory>
 #include <iostream>
+#include <memory>
 
 namespace Gris::Assert
 {
@@ -49,21 +49,21 @@ void NullHandler()
 namespace Detail
 {
 
-// -------------------------------------------------------------------------------------------------
-static AssertLoggingCallback sg_loggingCallback = &StderrLoggingCallback;
-static AssertHandler sg_failureHandler = &AbortHandler;
+    // -------------------------------------------------------------------------------------------------
+    static AssertLoggingCallback sg_loggingCallback = &StderrLoggingCallback;
+    static AssertHandler sg_failureHandler = &AbortHandler;
 
-// -------------------------------------------------------------------------------------------------
-void InvokeLoggingCallback(std::string message)
-{
-    (*sg_loggingCallback)(std::move(message));
-}
+    // -------------------------------------------------------------------------------------------------
+    void InvokeLoggingCallback(std::string message)
+    {
+        (*sg_loggingCallback)(std::move(message));
+    }
 
-// -------------------------------------------------------------------------------------------------
-void InvokeFailureHandler()
-{
-    (*sg_failureHandler)();
-}
+    // -------------------------------------------------------------------------------------------------
+    void InvokeFailureHandler()
+    {
+        (*sg_failureHandler)();
+    }
 
 }  // namespace Detail
 

@@ -81,51 +81,51 @@ void NullHandler();
 namespace Detail
 {
 
-void InvokeLoggingCallback(std::string message);
-void InvokeFailureHandler();
+    void InvokeLoggingCallback(std::string message);
+    void InvokeFailureHandler();
 
-template<typename... T>
-void Ignore(T const &...) noexcept
-{
-}
+    template<typename... T>
+    void Ignore(T const &...) noexcept
+    {
+    }
 
-template<typename T>
-bool MaybeCastToBool(T && value)
-{
-    if constexpr (std::is_same_v<bool, T>)
-        return value;
-    else
-        return static_cast<bool>(std::forward<T>(value));
-}
+    template<typename T>
+    bool MaybeCastToBool(T && value)
+    {
+        if constexpr (std::is_same_v<bool, T>)
+            return value;
+        else
+            return static_cast<bool>(std::forward<T>(value));
+    }
 
 }  // namespace Detail
 }  // namespace Gris::Assert
 
-#define GRIS_ASSERT_IMPL(condition, message)                                                                           \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                         \
-        {                                                                                                              \
-            auto formattedMessage = fmt::format(FMT_STRING("{} {:d} Assertion [" #condition "] failed. " message),     \
-                                                __FILE__,                                                              \
-                                                __LINE__);                                                             \
-            Gris::Assert::Detail::InvokeLoggingCallback(std::move(formattedMessage));                                  \
-            Gris::Assert::Detail::InvokeFailureHandler();                                                              \
-        }                                                                                                              \
+#define GRIS_ASSERT_IMPL(condition, message)                                                                       \
+    do                                                                                                             \
+    {                                                                                                              \
+        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                     \
+        {                                                                                                          \
+            auto formattedMessage = fmt::format(FMT_STRING("{} {:d} Assertion [" #condition "] failed. " message), \
+                                                __FILE__,                                                          \
+                                                __LINE__);                                                         \
+            Gris::Assert::Detail::InvokeLoggingCallback(std::move(formattedMessage));                              \
+            Gris::Assert::Detail::InvokeFailureHandler();                                                          \
+        }                                                                                                          \
     } while (false)
 
-#define GRIS_ASSERT_FORMAT_IMPL(condition, formatSpec, ...)                                                            \
-    do                                                                                                                 \
-    {                                                                                                                  \
-        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                         \
-        {                                                                                                              \
-            auto formattedMessage = fmt::format(FMT_STRING("{} {:d} Assertion [" #condition "] failed. " formatSpec),  \
-                                                __FILE__,                                                              \
-                                                __LINE__,                                                              \
-                                                __VA_ARGS__);                                                          \
-            Gris::Assert::Detail::InvokeLoggingCallback(std::move(formattedMessage));                                  \
-            Gris::Assert::Detail::InvokeFailureHandler();                                                              \
-        }                                                                                                              \
+#define GRIS_ASSERT_FORMAT_IMPL(condition, formatSpec, ...)                                                           \
+    do                                                                                                                \
+    {                                                                                                                 \
+        if (!Gris::Assert::Detail::MaybeCastToBool(condition))                                                        \
+        {                                                                                                             \
+            auto formattedMessage = fmt::format(FMT_STRING("{} {:d} Assertion [" #condition "] failed. " formatSpec), \
+                                                __FILE__,                                                             \
+                                                __LINE__,                                                             \
+                                                __VA_ARGS__);                                                         \
+            Gris::Assert::Detail::InvokeLoggingCallback(std::move(formattedMessage));                                 \
+            Gris::Assert::Detail::InvokeFailureHandler();                                                             \
+        }                                                                                                             \
     } while (false)
 
 #define GRIS_ASSERT_IGNORE_IMPL(...) Gris::Assert::Detail::Ignore(__VA_ARGS__)
