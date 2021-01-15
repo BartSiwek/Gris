@@ -7,8 +7,7 @@
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/assert.h>
-
-#include <iostream>
+#include <gris/log.h>
 
 // -------------------------------------------------------------------------------------------------
 
@@ -20,43 +19,41 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
                                              const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData,
                                              void * /* pUserData */)
 {
-
-    switch (messageSeverity)
-    {
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-        std::cerr << "[Verbose] ";
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        std::cerr << "[Info] ";
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        std::cerr << "[Warning] ";
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        std::cerr << "[Error] ";
-        break;
-    default:
-        std::cerr << "[Unknown] ";
-        break;
-    }
-
+    std::string messageTypeLabel;
     switch (messageType)
     {
     case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
-        std::cerr << "[General] ";
+        messageTypeLabel = "[General]";
         break;
     case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
-        std::cerr << "[Validation] ";
+        messageTypeLabel = "[Validation]";
         break;
     case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
-        std::cerr << "[Performance] ";
+        messageTypeLabel = "[Performance]";
         break;
     default:
-        std::cerr << "[Unknown] ";
+        messageTypeLabel = "[Unknown]";
         break;
     }
-
-    std::cerr << pCallbackData->pMessage << std::endl;
+    
+    switch (messageSeverity)
+    {
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
+        Gris::Log::Debug("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
+        Gris::Log::Info("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
+        Gris::Log::Warning("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
+        Gris::Log::Error("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    default:
+        Gris::Log::Error("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    }
 
     return VK_FALSE;
 }

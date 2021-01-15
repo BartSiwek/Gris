@@ -6,7 +6,6 @@
 
 #include <fmt/format.h>
 
-#include <cstdint>
 #include <stdexcept>
 
 #if defined(GRIS_TU_MODE_NONE) || defined(GRIS_TU_MODE_ALWAYS) || defined(GRIS_TU_MODE_DISABLE_ALWAYS)
@@ -72,6 +71,7 @@ AssertHandler SetFailureHandler(AssertHandler handler);
 
 void StdoutLoggingCallback(std::string message);
 void StderrLoggingCallback(std::string message);
+void LogCriticalCallback(std::string message);
 void NullLoggingCallback(std::string message);
 
 void AbortHandler();

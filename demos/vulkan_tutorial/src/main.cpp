@@ -1,5 +1,6 @@
 #include <gris/directory_registry.h>
 #include <gris/engine_exception.h>
+#include <gris/log.h>
 #include <gris/graphics/glfw/instance.h>
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
@@ -133,6 +134,7 @@ class HelloTriangleApplication : public Gris::Graphics::WindowObserver
 public:
     void run()
     {
+        SetLogLevel(Gris::Log::Level::Trace);
         InstallExtensionGetters();
         InitWindow();
         InitVulkan();
@@ -506,7 +508,7 @@ int main()
     }
     catch (const std::exception & e)
     {
-        std::cerr << e.what() << std::endl;
+        Gris::Log::Critical(e.what());
         return EXIT_FAILURE;
     }
 

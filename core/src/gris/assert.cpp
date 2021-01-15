@@ -1,6 +1,7 @@
 #include <gris/assert.h>
 
 #include <gris/macros.h>
+#include <gris/log.h>
 
 #include <iostream>
 #include <memory>
@@ -18,6 +19,12 @@ void StdoutLoggingCallback(std::string message)
 void StderrLoggingCallback(std::string message)
 {
     std::cerr << message;
+}
+
+// -------------------------------------------------------------------------------------------------
+void LogCriticalCallback(std::string message)
+{
+    Log::Critical(message);
 }
 
 // -------------------------------------------------------------------------------------------------
