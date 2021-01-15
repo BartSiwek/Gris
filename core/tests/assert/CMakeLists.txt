@@ -239,4 +239,9 @@ if(GRIS_ASSERT_COMPILATION_TESTS)
   test_compile_fail(test_assert_tu_always_and_disable_always_fails "compilation/assert_tu_none_and_disable_always.cpp" "Gris.Core;Gris.ProjectOptions;Gris.ProjectWarnings" "")
   test_compile_fail(test_assert_tu_fast_and_disable_fast_fails "compilation/assert_tu_fast_and_disable_fast.cpp" "Gris.Core;Gris.ProjectOptions;Gris.ProjectWarnings" "")
   test_compile_fail(test_assert_tu_slow_and_disable_slow_fails "compilation/assert_tu_slow_and_disable_slow.cpp" "Gris.Core;Gris.ProjectOptions;Gris.ProjectWarnings" "")
+
+  # Formatting errors
+  test_compile_fail(test_assert_always_with_bad_format_fails "compilation/assert_always_with_bad_format_fails.cpp" "Gris.Core;Gris.ProjectOptions;Gris.ProjectWarnings" "")
+  test_compile_fail(test_assert_fast_with_bad_format_fails "compilation/assert_fast_with_bad_format_fails.cpp" "Gris.Core;Gris.ProjectOptions;Gris.ProjectWarnings" "")
+  test_compile_fail(test_assert_slow_with_bad_format_fails "compilation/assert_slow_with_bad_format_fails.cpp" "Gris.Core;Gris.ProjectOptions;Gris.ProjectWarnings" "")
 endif()

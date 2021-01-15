@@ -22,6 +22,10 @@ target_link_libraries(Gris.Core PRIVATE
   Gris.ProjectWarnings
 )
 
+target_link_libraries(Gris.Core PUBLIC
+  CONAN_PKG::fmt
+)
+
 ########################################################################
 
 group_sources(Gris.Core)

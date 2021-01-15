@@ -19,7 +19,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
     , m_msaaSamples(msaaSamples)
     , m_queueFamilies(queueFamilies)
 {
-    GRIS_ALAWYS_ASSERT(m_physicalDevice, "Physical device must be valid");
+    GRIS_ALWAYS_ASSERT(m_physicalDevice, "Physical device must be valid");
 }
 
 // -------------------------------------------------------------------------------------------------

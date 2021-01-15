@@ -21,7 +21,7 @@ public:
 
     [[nodiscard]] vk::SurfaceKHR SurfaceHandle() const
     {
-        GRIS_ALAWYS_ASSERT(m_surface, "Invalid surface handle");
+        GRIS_ALWAYS_ASSERT(m_surface, "Invalid surface handle");
         return m_surface.get();
     }
 

@@ -129,7 +129,7 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::GetInstance
 
 [[nodiscard]] std::vector<const char *> Gris::Graphics::Vulkan::Instance::GetRequiredExtensions()
 {
-    GRIS_ALAWYS_ASSERT(s_extensionGetter != nullptr, "Extension getter cannot be null");
+    GRIS_ALWAYS_ASSERT(s_extensionGetter != nullptr, "Extension getter cannot be null");
     auto extensions = s_extensionGetter();
 
     if constexpr (ENABLE_VALIDATION_LAYERS)

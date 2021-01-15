@@ -11,12 +11,22 @@ namespace
 
 void assert_true_always()
 {
-    GRIS_ALAWYS_ASSERT(true, "True");
+    GRIS_ALWAYS_ASSERT(true, "True");
+}
+
+void assert_format_true_always()
+{
+    GRIS_ALWAYS_ASSERT_FORMAT(true, "Format {:d}", 42);
 }
 
 void assert_false_always()
 {
-    GRIS_ALAWYS_ASSERT(false, "False");
+    GRIS_ALWAYS_ASSERT(false, "False");
+}
+
+void assert_format_false_always()
+{
+    GRIS_ALWAYS_ASSERT_FORMAT(false, "Format {:d}", 42);
 }
 
 void assert_true_fast()
@@ -24,9 +34,19 @@ void assert_true_fast()
     GRIS_FAST_ASSERT(true, "True");
 }
 
+void assert_format_true_fast()
+{
+    GRIS_FAST_ASSERT_FORMAT(true, "Format {:d}", 42);
+}
+
 void assert_false_fast()
 {
     GRIS_FAST_ASSERT(false, "False");
+}
+
+void assert_format_false_fast()
+{
+    GRIS_FAST_ASSERT_FORMAT(false, "Format {:d}", 42);
 }
 
 void assert_true_slow()
@@ -34,9 +54,19 @@ void assert_true_slow()
     GRIS_SLOW_ASSERT(true, "True");
 }
 
+void assert_format_true_slow()
+{
+    GRIS_SLOW_ASSERT_FORMAT(true, "Format {:d}", 42);
+}
+
 void assert_false_slow()
 {
     GRIS_SLOW_ASSERT(false, "False");
+}
+
+void assert_format_false_slow()
+{
+    GRIS_SLOW_ASSERT_FORMAT(false, "Format {:d}", 42);
 }
 
 }  // namespace
@@ -49,30 +79,36 @@ TEST_CASE("Assert with always disabled, fast disabled and slow", "[assert rules]
     SECTION("Always does not fire on success")
     {
         CHECK_NOTHROW(assert_true_always());
+        CHECK_NOTHROW(assert_format_true_always());
     }
 
     SECTION("Always does not fire on failure (disabled)")
     {
         CHECK_NOTHROW(assert_false_always());
+        CHECK_NOTHROW(assert_format_false_always());
     }
 
     SECTION("Fast does not fire on success")
     {
         CHECK_NOTHROW(assert_true_fast());
+        CHECK_NOTHROW(assert_format_true_fast());
     }
 
     SECTION("Fast does not fire on failure (disabled)")
     {
         CHECK_NOTHROW(assert_false_fast());
+        CHECK_NOTHROW(assert_format_false_fast());
     }
 
     SECTION("Slow does not fire on success")
     {
         CHECK_NOTHROW(assert_true_slow());
+        CHECK_NOTHROW(assert_format_true_slow());
     }
 
     SECTION("Slow fires on failure")
     {
         CHECK_THROWS_AS(assert_false_slow(), Gris::Assert::AssertionException);
+        CHECK_THROWS_AS(assert_format_false_slow(), Gris::Assert::AssertionException);
     }
 }
