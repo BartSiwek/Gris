@@ -1,6 +1,5 @@
 #include <gris/directory_registry.h>
 #include <gris/engine_exception.h>
-#include <gris/log.h>
 #include <gris/graphics/glfw/instance.h>
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
@@ -21,6 +20,7 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
+#include <gris/log.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)

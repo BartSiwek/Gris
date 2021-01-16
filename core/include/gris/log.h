@@ -109,4 +109,4 @@ void Critical(const FormatString & format, Args &&... args)
     spdlog::critical(format, std::forward<Args>(args)...);
 }
 
-}
+}  // namespace Gris::Log

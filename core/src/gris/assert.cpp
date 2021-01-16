@@ -1,7 +1,7 @@
 #include <gris/assert.h>
 
-#include <gris/macros.h>
 #include <gris/log.h>
+#include <gris/macros.h>
 
 #include <iostream>
 #include <memory>
