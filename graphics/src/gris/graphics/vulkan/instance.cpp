@@ -48,10 +48,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
         Gris::Log::Warning("{} {}", messageTypeLabel, pCallbackData->pMessage);
         break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        Gris::Log::Error("{} {}", messageTypeLabel, pCallbackData->pMessage);
-        break;
     default:
         Gris::Log::Error("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+        GRIS_ALWAYS_ASSERT(false, "VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT is not a valid message severity");
         break;
     }
 
