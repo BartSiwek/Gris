@@ -1,5 +1,6 @@
 #include <gris/assert.h>
 
+#include <gris/log.h>
 #include <gris/macros.h>
 
 #include <iostream>
@@ -18,6 +19,12 @@ void StdoutLoggingCallback(std::string message)
 void StderrLoggingCallback(std::string message)
 {
     std::cerr << message;
+}
+
+// -------------------------------------------------------------------------------------------------
+void LogCriticalCallback(std::string message)
+{
+    Log::Critical(message);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -50,7 +57,7 @@ namespace Detail
 {
 
     // -------------------------------------------------------------------------------------------------
-    static AssertLoggingCallback sg_loggingCallback = &StderrLoggingCallback;
+    static AssertLoggingCallback sg_loggingCallback = &LogCriticalCallback;
     static AssertHandler sg_failureHandler = &AbortHandler;
 
     // -------------------------------------------------------------------------------------------------

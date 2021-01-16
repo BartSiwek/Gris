@@ -7,8 +7,7 @@
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/assert.h>
-
-#include <iostream>
+#include <gris/log.h>
 
 // -------------------------------------------------------------------------------------------------
 
@@ -20,43 +19,42 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
                                              const VkDebugUtilsMessengerCallbackDataEXT * pCallbackData,
                                              void * /* pUserData */)
 {
+    std::string messageTypeLabel;
+    switch (messageType)
+    {
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+        messageTypeLabel = "[General]";
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+        messageTypeLabel = "[Validation]";
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+        messageTypeLabel = "[Performance]";
+        break;
+    default:
+        messageTypeLabel = "[Unknown]";
+        break;
+    }
 
     switch (messageSeverity)
     {
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
-        std::cerr << "[Verbose] ";
+        Gris::Log::Debug("{} {}", messageTypeLabel, pCallbackData->pMessage);
         break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT:
-        std::cerr << "[Info] ";
+        Gris::Log::Info("{} {}", messageTypeLabel, pCallbackData->pMessage);
         break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT:
-        std::cerr << "[Warning] ";
+        Gris::Log::Warning("{} {}", messageTypeLabel, pCallbackData->pMessage);
         break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-        std::cerr << "[Error] ";
-        break;
     default:
-        std::cerr << "[Unknown] ";
+        Gris::Log::Error("{} {}", messageTypeLabel, pCallbackData->pMessage);
+        break;
+    case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
+        GRIS_ALWAYS_ASSERT(false, "VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT is not a valid message severity");
         break;
     }
-
-    switch (messageType)
-    {
-    case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
-        std::cerr << "[General] ";
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
-        std::cerr << "[Validation] ";
-        break;
-    case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
-        std::cerr << "[Performance] ";
-        break;
-    default:
-        std::cerr << "[Unknown] ";
-        break;
-    }
-
-    std::cerr << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;
 }

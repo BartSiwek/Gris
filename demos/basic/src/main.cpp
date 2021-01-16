@@ -1,7 +1,7 @@
-#include <iostream>
+#include <gris/log.h>
 
 int main()
 {
-    std::cout << "Hello demo" << std::endl;
+    Gris::Log::Info("Hello demo!");
     return EXIT_SUCCESS;
 }

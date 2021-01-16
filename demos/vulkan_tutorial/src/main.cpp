@@ -20,6 +20,7 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
+#include <gris/log.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -133,6 +134,7 @@ class HelloTriangleApplication : public Gris::Graphics::WindowObserver
 public:
     void run()
     {
+        SetLogLevel(Gris::Log::Level::Trace);
         InstallExtensionGetters();
         InitWindow();
         InitVulkan();
@@ -506,7 +508,7 @@ int main()
     }
     catch (const std::exception & e)
     {
-        std::cerr << e.what() << std::endl;
+        Gris::Log::Critical(e.what());
         return EXIT_FAILURE;
     }
 

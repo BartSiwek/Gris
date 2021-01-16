@@ -17,6 +17,9 @@ include(conan)
 
 option(GRIS_ASSERT_COMPILATION_TESTS "Enable or disable Gris compilation assert tests" OFF)
 
+set(GRIS_LOG_LEVEL INFO CACHE STRING "Set minimum enabled logging level")
+set_property(CACHE GRIS_LOG_LEVEL PROPERTY STRINGS TRACE DEBUG INFO WARNING ERROR CRITICAL OFF)
+
 ########################################################################
 
 enable_testing()
@@ -35,6 +38,7 @@ set_project_warnings(Gris.ProjectWarnings)
 
 set(CONAN_REQUIRES
   fmt/7.1.3
+  spdlog/1.8.2
   catch2/2.13.2
   glfw/3.3.2
   glm/0.9.9.8
