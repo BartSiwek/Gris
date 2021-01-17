@@ -5,8 +5,8 @@
 #ifdef _MSC_VER
 #include <windows.h>
 #else
-#include <errno.h>
-#include <string.h>
+#include <cerrno>
+#include <cstring>
 #include <unistd.h>
 #endif
 
@@ -62,7 +62,9 @@ std::string ErrorToString(DWORD error)
 void Gris::DirectoryRegistry::AddResolvePath(std::filesystem::path path)
 {
     if (!path.is_absolute())
+    {
         throw EngineException("Argument to DirectoryRegistry::AddPath must be an absolute path");
+    }
 
     Instance().m_additionalPaths.emplace_back(std::move(path));
 }
@@ -72,15 +74,21 @@ void Gris::DirectoryRegistry::AddResolvePath(std::filesystem::path path)
 [[nodiscard]] std::optional<std::filesystem::path> Gris::DirectoryRegistry::TryResolvePath(const std::filesystem::path & path)
 {
     if (path.is_absolute())
+    {
         return path;
+    }
 
     auto pathFromExecutableLocation = Instance().TryResolvePathFromExecutableLocation(path);
     if (pathFromExecutableLocation)
+    {
         return pathFromExecutableLocation;
+    }
 
-    auto pathFromWorkingDirectory = Instance().TryResolvePathFromWorkingDirectory(path);
+    auto pathFromWorkingDirectory = TryResolvePathFromWorkingDirectory(path);
     if (pathFromWorkingDirectory)
+    {
         return pathFromWorkingDirectory;
+    }
 
     return Instance().TryResolvePathInAdditionalDirectories(path);
 }
@@ -91,6 +99,19 @@ void Gris::DirectoryRegistry::AddResolvePath(std::filesystem::path path)
 {
     static DirectoryRegistry s_instance = {};
     return s_instance;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] std::optional<std::filesystem::path> Gris::DirectoryRegistry::TryResolvePathFromWorkingDirectory(const std::filesystem::path & path)
+{
+    auto pathFromWorkingDirectory = std::filesystem::current_path() / path;
+    if (exists(pathFromWorkingDirectory))
+    {
+        return pathFromWorkingDirectory;
+    }
+
+    return {};
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -152,17 +173,10 @@ Gris::DirectoryRegistry::DirectoryRegistry()
 {
     auto pathFromExecutableLocation = m_executableLocation / path;
     if (exists(pathFromExecutableLocation))
+    {
         return pathFromExecutableLocation;
-    return {};
-}
+    }
 
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] std::optional<std::filesystem::path> Gris::DirectoryRegistry::TryResolvePathFromWorkingDirectory(const std::filesystem::path & path) const
-{
-    auto pathFromWorkingDirectory = std::filesystem::current_path() / path;
-    if (exists(pathFromWorkingDirectory))
-        return pathFromWorkingDirectory;
     return {};
 }
 
@@ -174,7 +188,9 @@ Gris::DirectoryRegistry::DirectoryRegistry()
     {
         auto currentPath = additionalPath / path;
         if (exists(currentPath))
+        {
             return currentPath;
+        }
     }
 
     return {};

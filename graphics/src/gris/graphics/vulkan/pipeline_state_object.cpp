@@ -91,7 +91,9 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateDescriptorSetLayout()
 
     auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo);
     if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating descriptor set layout", createDescriptorSetLayoutResult);
+    }
 
     m_descriptorSetLayout = std::move(createDescriptorSetLayoutResult.value);
 }
@@ -124,15 +126,15 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     auto const & attributeDescriptors = inputLayout.AttributeDescriptions();
     vk::PipelineVertexInputStateCreateInfo vertexInputInfo({}, bindingDescriptors, attributeDescriptors);
 
-    vk::PipelineInputAssemblyStateCreateInfo inputAssembly({}, vk::PrimitiveTopology::eTriangleList, false);
+    vk::PipelineInputAssemblyStateCreateInfo inputAssembly({}, vk::PrimitiveTopology::eTriangleList, static_cast<VkBool32>(false));
 
     auto const viewports = std::array{
-        vk::Viewport(0.0f,
-                     0.0f,
+        vk::Viewport(0.0F,
+                     0.0F,
                      static_cast<float>(swapChainWidth),
                      static_cast<float>(swapChainHeight),
-                     0.0f,
-                     1.0f)
+                     0.0F,
+                     1.0F)
     };
     auto const scissors = std::array{
         vk::Rect2D(
@@ -142,29 +144,29 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     auto const viewportState = vk::PipelineViewportStateCreateInfo({}, viewports, scissors);
 
     auto const rasterizer = vk::PipelineRasterizationStateCreateInfo({},
-                                                                     false,
-                                                                     false,
+                                                                     static_cast<VkBool32>(false),
+                                                                     static_cast<VkBool32>(false),
                                                                      vk::PolygonMode::eFill,
                                                                      vk::CullModeFlagBits::eBack,
                                                                      vk::FrontFace::eCounterClockwise,
-                                                                     false,
-                                                                     0.0f,
-                                                                     0.0f,
-                                                                     0.0f,
-                                                                     1.0f);
+                                                                     static_cast<VkBool32>(false),
+                                                                     0.0F,
+                                                                     0.0F,
+                                                                     0.0F,
+                                                                     1.0F);
 
-    auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo({}, ParentDevice().MsaaSamples(), false);
+    auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo({}, ParentDevice().MsaaSamples(), static_cast<VkBool32>(false));
 
     auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo(
         {},
-        true,
-        true,
+        static_cast<VkBool32>(true),
+        static_cast<VkBool32>(true),
         vk::CompareOp::eLess,
-        false,
-        false);
+        static_cast<VkBool32>(false),
+        static_cast<VkBool32>(false));
 
     auto const colorBlendAttachments = std::array{
-        vk::PipelineColorBlendAttachmentState(false,
+        vk::PipelineColorBlendAttachmentState(static_cast<VkBool32>(false),
                                               vk::BlendFactor::eZero,
                                               vk::BlendFactor::eZero,
                                               vk::BlendOp::eAdd,
@@ -175,17 +177,19 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     };
 
     auto const colorBlending = vk::PipelineColorBlendStateCreateInfo({},
-                                                                     false,
+                                                                     static_cast<VkBool32>(false),
                                                                      vk::LogicOp::eCopy,
                                                                      colorBlendAttachments,
-                                                                     { 0.0f, 0.0f, 0.0f, 0.0f });
+                                                                     { 0.0F, 0.0F, 0.0F, 0.0F });
 
     auto const descriptorSetLayouts = std::array{ m_descriptorSetLayout.get() };
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo({}, descriptorSetLayouts);
 
     auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo);
     if (createPipelineLayoutResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating pipeline layout", createPipelineLayoutResult);
+    }
 
     m_pipelineLayout = std::move(createPipelineLayoutResult.value);
 
@@ -208,7 +212,9 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
 
     auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo);
     if (createGraphicsPipelineResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating graphics pipeline", createGraphicsPipelineResult);
+    }
 
     m_graphicsPipeline = std::move(createGraphicsPipelineResult.value);
 }

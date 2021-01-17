@@ -63,16 +63,16 @@ public:
     }
 };
 
-using AssertLoggingCallback = void (*)(std::string message);
+using AssertLoggingCallback = void (*)(const std::string & message);
 using AssertHandler = void (*)();
 
 AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback);
 AssertHandler SetFailureHandler(AssertHandler handler);
 
-void StdoutLoggingCallback(std::string message);
-void StderrLoggingCallback(std::string message);
-void LogCriticalCallback(std::string message);
-void NullLoggingCallback(std::string message);
+void StdoutLoggingCallback(const std::string & message);
+void StderrLoggingCallback(const std::string & message);
+void LogCriticalCallback(const std::string & message);
+void NullLoggingCallback(const std::string & message);
 
 void AbortHandler();
 void ThrowHandler();
@@ -81,7 +81,7 @@ void NullHandler();
 namespace Detail
 {
 
-    void InvokeLoggingCallback(std::string message);
+    void InvokeLoggingCallback(const std::string & message);
     void InvokeFailureHandler();
 
     template<typename... T>

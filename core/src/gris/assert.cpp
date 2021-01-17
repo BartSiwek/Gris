@@ -10,25 +10,25 @@ namespace Gris::Assert
 {
 
 // -------------------------------------------------------------------------------------------------
-void StdoutLoggingCallback(std::string message)
+void StdoutLoggingCallback(const std::string & message)
 {
     std::cout << message;
 }
 
 // -------------------------------------------------------------------------------------------------
-void StderrLoggingCallback(std::string message)
+void StderrLoggingCallback(const std::string & message)
 {
     std::cerr << message;
 }
 
 // -------------------------------------------------------------------------------------------------
-void LogCriticalCallback(std::string message)
+void LogCriticalCallback(const std::string & message)
 {
     Log::Critical(message);
 }
 
 // -------------------------------------------------------------------------------------------------
-void NullLoggingCallback(std::string message)
+void NullLoggingCallback(const std::string & message)
 {
     // NO-OP
     (void)message;
@@ -57,13 +57,16 @@ namespace Detail
 {
 
     // -------------------------------------------------------------------------------------------------
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     static AssertLoggingCallback sg_loggingCallback = &LogCriticalCallback;
+
+    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     static AssertHandler sg_failureHandler = &AbortHandler;
 
     // -------------------------------------------------------------------------------------------------
-    void InvokeLoggingCallback(std::string message)
+    void InvokeLoggingCallback(const std::string & message)
     {
-        (*sg_loggingCallback)(std::move(message));
+        (*sg_loggingCallback)(message);
     }
 
     // -------------------------------------------------------------------------------------------------
@@ -78,7 +81,9 @@ namespace Detail
 AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback)
 {
     if (callback == nullptr)
+    {
         abort();
+    }
 
     auto prev = Detail::sg_loggingCallback;
     Detail::sg_loggingCallback = callback;
@@ -89,7 +94,9 @@ AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback)
 AssertHandler SetFailureHandler(AssertHandler handler)
 {
     if (handler == nullptr)
+    {
         abort();
+    }
 
     auto prev = Detail::sg_failureHandler;
     Detail::sg_failureHandler = handler;

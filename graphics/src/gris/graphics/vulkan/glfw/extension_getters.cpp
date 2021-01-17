@@ -9,6 +9,7 @@ std::vector<const char *> Gris::Graphics::Vulkan::Glfw::GetInstanceExtensionsFro
     uint32_t glfwExtensionCount = 0;
     auto * const glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
     return extensions;

@@ -83,7 +83,7 @@ Gris::Graphics::Glfw::WindowMixin::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Glfw::WindowMixin::ShouldClose() const
 {
-    return glfwWindowShouldClose(m_window);
+    return static_cast<bool>(glfwWindowShouldClose(m_window));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -99,7 +99,9 @@ void Gris::Graphics::Glfw::WindowMixin::RemoveObserver(WindowObserver * observer
 {
     auto const observerIt = std::find(std::begin(m_observers), std::end(m_observers), observer);
     if (observerIt != std::end(m_observers))
+    {
         m_observers.erase(observerIt);
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -131,5 +133,7 @@ void Gris::Graphics::Glfw::WindowMixin::OnSizeChanged(uint32_t width, uint32_t h
 void Gris::Graphics::Glfw::WindowMixin::NotifySizeChanged()
 {
     for (auto * observer : m_observers)
+    {
         observer->WindowResized(m_width, m_height);
+    }
 }

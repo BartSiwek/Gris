@@ -20,14 +20,18 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 
     auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo);
     if (createCommandPoolResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
+    }
 
     m_commandPool = std::move(createCommandPoolResult.value);
 
     auto const allocInfo = vk::CommandBufferAllocateInfo(m_commandPool.get(), vk::CommandBufferLevel::ePrimary, 1);
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error allocating command buffers", allocateCommandBuffersResult);
+    }
 
     m_commandBuffers = std::move(allocateCommandBuffersResult.value);
 }
@@ -48,7 +52,9 @@ void Gris::Graphics::Vulkan::DeferredContext::Begin()
 
     auto const beginResult = m_commandBuffers[m_frameIndex]->begin(beginInfo);
     if (beginResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error beginning command buffer", beginResult);
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -56,8 +62,8 @@ void Gris::Graphics::Vulkan::DeferredContext::Begin()
 void Gris::Graphics::Vulkan::DeferredContext::BeginRenderPass(const RenderPass & renderPass, const Framebuffer & framebuffer, const vk::Extent2D & extent)
 {
     std::array<vk::ClearValue, 2> clearValues = {
-        vk::ClearColorValue(std::array{ 0.0f, 0.0f, 0.0f, 1.0f }),
-        vk::ClearDepthStencilValue(1.0f, 0)
+        vk::ClearColorValue(std::array{ 0.0F, 0.0F, 0.0F, 1.0F }),
+        vk::ClearDepthStencilValue(1.0F, 0)
     };
 
     auto const renderPassInfo = vk::RenderPassBeginInfo(renderPass.RenderPassHandle(), framebuffer.FramebufferHandle(), vk::Rect2D({ 0, 0 }, extent), clearValues);
@@ -116,5 +122,7 @@ void Gris::Graphics::Vulkan::DeferredContext::End()
 {
     auto const endResult = m_commandBuffers[m_frameIndex]->end();
     if (endResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error ending command buffer", endResult);
+    }
 }

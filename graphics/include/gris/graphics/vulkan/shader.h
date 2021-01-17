@@ -8,7 +8,7 @@ namespace Gris::Graphics::Vulkan
 class Shader : public DeviceResource
 {
 public:
-    Shader(Device * device, const std::vector<char> & code);
+    Shader(Device * device, const std::vector<uint32_t> & code);
 
     // TODO: Do this better
     [[nodiscard]] const vk::ShaderModule & ModuleHandle() const;

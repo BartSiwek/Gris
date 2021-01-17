@@ -9,13 +9,17 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
 {
     vk::FenceCreateFlags flags;
     if (signaled)
+    {
         flags |= vk::FenceCreateFlagBits::eSignaled;
+    }
 
     auto const fenceInfo = vk::FenceCreateInfo(flags);
 
     auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo);
     if (fenceCreateResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating frame fence", fenceCreateResult);
+    }
 
     m_fence = std::move(fenceCreateResult.value);
 }

@@ -45,7 +45,9 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
         const auto props = m_physicalDevice.getFormatProperties(format);
         if ((tiling == vk::ImageTiling::eLinear && (props.linearTilingFeatures & features) == features)
             || (tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features))
+        {
             return format;
+        }
     }
 
     throw VulkanEngineException("Failed to find supported format!");
@@ -74,15 +76,16 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
         m_queueFamilies.presentFamily.value()
     };
 
-    std::array<float, 1> queuePriority = { 1.0f };
+    std::array<float, 1> queuePriority = { 1.0F };
     std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
+    queueCreateInfos.reserve(uniqueQueueFamilies.size());
     for (auto queueFamily : uniqueQueueFamilies)
     {
         queueCreateInfos.emplace_back(vk::DeviceQueueCreateFlags{}, queueFamily, 1, queuePriority.data());
     }
 
     vk::PhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.samplerAnisotropy = true;
+    deviceFeatures.samplerAnisotropy = static_cast<VkBool32>(true);
 
     std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)
@@ -94,7 +97,9 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
 
     auto createDeviceResult = m_physicalDevice.createDeviceUnique(createInfo);
     if (createDeviceResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating logical device", createDeviceResult);
+    }
 
     return std::move(createDeviceResult.value);
 }

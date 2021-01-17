@@ -8,12 +8,13 @@
 
 Gris::Graphics::Vulkan::Glfw::Window::Window(uint32_t width, uint32_t height, const std::string & title)
     : Gris::Graphics::Glfw::WindowMixin(width, height, title)
-    , Gris::Graphics::Vulkan::WindowMixin()
 {
-    VkSurfaceKHR surface;
+    VkSurfaceKHR surface = VK_NULL_HANDLE;
     auto const createSurfaceResult = static_cast<vk::Result>(glfwCreateWindowSurface(InstanceHandle(), WindowHandle(), nullptr, &surface));
     if (createSurfaceResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Failed to create GLFW window surface", createSurfaceResult);
+    }
 
     const vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(InstanceHandle());
     SetSurfaceHandle(vk::UniqueSurfaceKHR(vk::SurfaceKHR(surface), deleter));

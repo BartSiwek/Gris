@@ -17,7 +17,7 @@
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
-    : m_physicalDevice(std::move(physicalDevice))
+    : m_physicalDevice(physicalDevice)
 {
     m_device = m_physicalDevice.CreateDevice();
     m_allocator = m_physicalDevice.CreateAllocator(m_device.get());
@@ -65,7 +65,9 @@ void Gris::Graphics::Vulkan::Device::WaitIdle()
 {
     auto const waitResult = m_device->waitIdle();
     if (waitResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Idle wait failed", waitResult);
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -111,7 +113,9 @@ void Gris::Graphics::Vulkan::Device::CreateDescriptorPool(uint32_t imageCount)
 
     auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo);
     if (createDescriptorPoolResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);
+    }
 
     m_descriptorPool = std::move(createDescriptorPoolResult.value);
 }
@@ -146,7 +150,7 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::Shader Gris::Graphics::Vulkan::Device::CreateShader(const std::vector<char> & code)
+[[nodiscard]] Gris::Graphics::Vulkan::Shader Gris::Graphics::Vulkan::Device::CreateShader(const std::vector<uint32_t> & code)
 {
     return Shader(this, code);
 }
