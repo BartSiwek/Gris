@@ -506,7 +506,7 @@ private:
         constexpr glm::vec3 Up = glm::vec3(0.0F, 0.0F, 1.0F);
         constexpr glm::vec3 RotationAxis = glm::vec3(0.0F, 0.0F, 1.0F);
         constexpr float NearPlane = 0.1F;
-        constexpr float FarPlane = 0.1F;
+        constexpr float FarPlane = 10.0F;
 
         ubo.model = glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis);
         ubo.view = glm::lookAt(EyeLocation, Origin, Up);
