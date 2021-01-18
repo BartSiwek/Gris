@@ -81,22 +81,22 @@ void NullHandler();
 namespace Detail
 {
 
-    void InvokeLoggingCallback(const std::string & message);
-    void InvokeFailureHandler();
+void InvokeLoggingCallback(const std::string & message);
+void InvokeFailureHandler();
 
-    template<typename... T>
-    void Ignore(T const &...) noexcept
-    {
-    }
+template<typename... T>
+void Ignore(T const &...) noexcept
+{
+}
 
-    template<typename T>
-    bool MaybeCastToBool(T && value)
-    {
-        if constexpr (std::is_same_v<bool, T>)
-            return value;
-        else
-            return static_cast<bool>(std::forward<T>(value));
-    }
+template<typename T>
+bool MaybeCastToBool(T && value)
+{
+    if constexpr (std::is_same_v<bool, T>)
+        return value;
+    else
+        return static_cast<bool>(std::forward<T>(value));
+}
 
 }  // namespace Detail
 }  // namespace Gris::Assert

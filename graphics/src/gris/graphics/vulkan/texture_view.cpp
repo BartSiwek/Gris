@@ -25,17 +25,17 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
     : DeviceResource(device)
 {
     const vk::ImageViewCreateInfo viewInfo(
-        {},
-        image,
-        vk::ImageViewType::e2D,
-        format,
-        {},
-        vk::ImageSubresourceRange(
-            aspectFlags,
-            0,
-            mipLevels,
-            0,
-            1));
+             {},
+             image,
+             vk::ImageViewType::e2D,
+             format,
+             {},
+             vk::ImageSubresourceRange(
+                      aspectFlags,
+                      0,
+                      mipLevels,
+                      0,
+                      1));
 
     auto createImageViewResult = DeviceHandle().createImageViewUnique(viewInfo);
     if (createImageViewResult.result != vk::Result::eSuccess)

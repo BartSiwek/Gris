@@ -56,24 +56,24 @@ void NullHandler()
 namespace Detail
 {
 
-    // -------------------------------------------------------------------------------------------------
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-    static AssertLoggingCallback sg_loggingCallback = &LogCriticalCallback;
+// -------------------------------------------------------------------------------------------------
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+static AssertLoggingCallback sg_loggingCallback = &LogCriticalCallback;
 
-    // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-    static AssertHandler sg_failureHandler = &AbortHandler;
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
+static AssertHandler sg_failureHandler = &AbortHandler;
 
-    // -------------------------------------------------------------------------------------------------
-    void InvokeLoggingCallback(const std::string & message)
-    {
-        (*sg_loggingCallback)(message);
-    }
+// -------------------------------------------------------------------------------------------------
+void InvokeLoggingCallback(const std::string & message)
+{
+    (*sg_loggingCallback)(message);
+}
 
-    // -------------------------------------------------------------------------------------------------
-    void InvokeFailureHandler()
-    {
-        (*sg_failureHandler)();
-    }
+// -------------------------------------------------------------------------------------------------
+void InvokeFailureHandler()
+{
+    (*sg_failureHandler)();
+}
 
 }  // namespace Detail
 

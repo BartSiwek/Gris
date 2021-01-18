@@ -13,13 +13,13 @@ class PipelineStateObject : public DeviceResource
 {
 public:
     PipelineStateObject(
-        Device * device,
-        uint32_t swapChainWidth,
-        uint32_t swapChainHeight,
-        const RenderPass & renderPass,
-        const InputLayout & inputLayout,
-        const Shader & vertexShader,
-        const Shader & fragmentShader);
+             Device * device,
+             uint32_t swapChainWidth,
+             uint32_t swapChainHeight,
+             const RenderPass & renderPass,
+             const InputLayout & inputLayout,
+             const Shader & vertexShader,
+             const Shader & fragmentShader);
 
     // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSetLayout & DescriptorSetLayoutHandle() const;
@@ -37,12 +37,12 @@ private:
     void CreateDescriptorSetLayout();
 
     void CreateGraphicsPipeline(
-        uint32_t swapChainWidth,
-        uint32_t swapChainHeight,
-        const RenderPass & renderPass,
-        const InputLayout & inputLayout,
-        const Shader & vertexShader,
-        const Shader & fragmentShader);
+             uint32_t swapChainWidth,
+             uint32_t swapChainHeight,
+             const RenderPass & renderPass,
+             const InputLayout & inputLayout,
+             const Shader & vertexShader,
+             const Shader & fragmentShader);
 
     vk::UniqueDescriptorSetLayout m_descriptorSetLayout;
     vk::UniquePipelineLayout m_pipelineLayout;

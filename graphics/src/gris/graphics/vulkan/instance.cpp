@@ -200,11 +200,11 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
     }
 
     vk::ApplicationInfo appInfo(
-        "Vulkan tutorial",
-        VK_MAKE_VERSION(1, 0, 0),
-        "No Engine",
-        VK_MAKE_VERSION(1, 0, 0),
-        VK_API_VERSION_1_0);
+             "Vulkan tutorial",
+             VK_MAKE_VERSION(1, 0, 0),
+             "No Engine",
+             VK_MAKE_VERSION(1, 0, 0),
+             VK_API_VERSION_1_0);
 
     std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)

@@ -6,8 +6,7 @@
 namespace Gris::Graphics::Vulkan::Glfw
 {
 
-class Window : public Graphics::Glfw::WindowMixin
-    , public WindowMixin
+class Window : public Graphics::Glfw::WindowMixin, public WindowMixin
 {
 public:
     Window(uint32_t width, uint32_t height, const std::string & title);

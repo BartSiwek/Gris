@@ -9,13 +9,13 @@
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
-    Device * device,
-    uint32_t swapChainWidth,
-    uint32_t swapChainHeight,
-    const RenderPass & renderPass,
-    const InputLayout & inputLayout,
-    const Shader & vertexShader,
-    const Shader & fragmentShader)
+         Device * device,
+         uint32_t swapChainWidth,
+         uint32_t swapChainHeight,
+         const RenderPass & renderPass,
+         const InputLayout & inputLayout,
+         const Shader & vertexShader,
+         const Shader & fragmentShader)
     : DeviceResource(device)
 {
     CreateDescriptorSetLayout();
@@ -101,12 +101,12 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateDescriptorSetLayout()
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
-    uint32_t swapChainWidth,
-    uint32_t swapChainHeight,
-    const RenderPass & renderPass,
-    const InputLayout & inputLayout,
-    const Shader & vertexShader,
-    const Shader & fragmentShader)
+         uint32_t swapChainWidth,
+         uint32_t swapChainHeight,
+         const RenderPass & renderPass,
+         const InputLayout & inputLayout,
+         const Shader & vertexShader,
+         const Shader & fragmentShader)
 {
     m_graphicsPipeline.reset();
     m_pipelineLayout.reset();
@@ -138,8 +138,8 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     };
     auto const scissors = std::array{
         vk::Rect2D(
-            { 0, 0 },
-            { swapChainWidth, swapChainHeight })
+                 { 0, 0 },
+                 { swapChainWidth, swapChainHeight })
     };
     auto const viewportState = vk::PipelineViewportStateCreateInfo({}, viewports, scissors);
 
@@ -158,12 +158,12 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo({}, ParentDevice().MsaaSamples(), static_cast<VkBool32>(false));
 
     auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo(
-        {},
-        static_cast<VkBool32>(true),
-        static_cast<VkBool32>(true),
-        vk::CompareOp::eLess,
-        static_cast<VkBool32>(false),
-        static_cast<VkBool32>(false));
+             {},
+             static_cast<VkBool32>(true),
+             static_cast<VkBool32>(true),
+             vk::CompareOp::eLess,
+             static_cast<VkBool32>(false),
+             static_cast<VkBool32>(false));
 
     auto const colorBlendAttachments = std::array{
         vk::PipelineColorBlendAttachmentState(static_cast<VkBool32>(false),
