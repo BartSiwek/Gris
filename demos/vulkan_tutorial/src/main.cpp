@@ -508,7 +508,7 @@ private:
         constexpr float NearPlane = 0.1F;
         constexpr float FarPlane = 10.0F;
 
-        ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::half_pi<float>(), RotationAxis);
+        ubo.model = glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis);
         ubo.view = glm::lookAt(EyeLocation, Origin, Up);
         ubo.proj = glm::perspective(glm::quarter_pi<float>(), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), NearPlane, FarPlane);
         ubo.proj[1][1] *= -1;
