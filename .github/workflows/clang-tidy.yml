@@ -99,6 +99,4 @@ jobs:
     - name: Run clang-tidy
       shell: bash
       run: |
-        clang-tidy
-        which clang-tidy
         python3 third_party/clang-tidy-runner/run-clang-tidy.py -j $(($(nproc)/2+1)) -p build
