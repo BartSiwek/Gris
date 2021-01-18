@@ -30,7 +30,9 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
 
     auto createImageResult = DeviceHandle().createImageUnique(imageInfo);
     if (createImageResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating image", createImageResult);
+    }
 
     m_image = std::move(createImageResult.value);
 

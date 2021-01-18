@@ -23,10 +23,11 @@ public:
 private:
     [[nodiscard]] static DirectoryRegistry & Instance();
 
+    [[nodiscard]] static std::optional<std::filesystem::path> TryResolvePathFromWorkingDirectory(const std::filesystem::path & path);
+
     DirectoryRegistry();
 
     [[nodiscard]] std::optional<std::filesystem::path> TryResolvePathFromExecutableLocation(const std::filesystem::path & path) const;
-    [[nodiscard]] std::optional<std::filesystem::path> TryResolvePathFromWorkingDirectory(const std::filesystem::path & path) const;
     [[nodiscard]] std::optional<std::filesystem::path> TryResolvePathInAdditionalDirectories(const std::filesystem::path & path) const;
 
     std::filesystem::path m_executableLocation = {};

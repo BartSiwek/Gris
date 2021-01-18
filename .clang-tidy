@@ -1,5 +1,12 @@
 ---
 Checks:          '*,-fuchsia-*,-google-*,-zircon-*,-abseil-*,-modernize-use-trailing-return-type,-llvm-*,-llvmlibc-*'
+CheckOptions:
+  - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
+  - key:             misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
+  - key:             hicpp-signed-bitwise.IgnorePositiveIntegerLiterals
+    value:           '1'
 WarningsAsErrors: '*'
 HeaderFilterRegex: ''
-FormatStyle:     none
+FormatStyle: file

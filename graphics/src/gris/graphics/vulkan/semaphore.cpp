@@ -11,7 +11,9 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(Device * device)
 
     auto imageSemaphoreCreateResult = DeviceHandle().createSemaphoreUnique(semaphoreInfo);
     if (imageSemaphoreCreateResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating frame image available semaphore", imageSemaphoreCreateResult);
+    }
 
     m_semaphore = std::move(imageSemaphoreCreateResult.value);
 }

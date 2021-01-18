@@ -43,7 +43,7 @@
     }
 
     auto supportedFeatures = device.getFeatures();
-    auto isSuitable = queueFamilies.IsComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
+    auto isSuitable = queueFamilies.IsComplete() && extensionsSupported && swapChainAdequate && static_cast<bool>(supportedFeatures.samplerAnisotropy);
     return { isSuitable, queueFamilies };
 }
 
@@ -54,7 +54,7 @@
     auto queueFamilies = device.getQueueFamilyProperties();
 
     DeviceQueueFamilyIndices indices;
-    auto i = 0u;
+    auto i = 0U;
     for (auto const & queueFamily : queueFamilies)
     {
         if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
@@ -64,9 +64,11 @@
 
         auto const surfaceSupportResult = device.getSurfaceSupportKHR(i, surface);
         if (surfaceSupportResult.result != vk::Result::eSuccess)
+        {
             throw VulkanEngineException("Error getting surface support for physical device", surfaceSupportResult);
+        }
 
-        if (surfaceSupportResult.value)
+        if (surfaceSupportResult.value != 0U)
         {
             indices.presentFamily = i;
         }
@@ -88,7 +90,9 @@
 {
     auto availableExtensionsResult = device.enumerateDeviceExtensionProperties();
     if (availableExtensionsResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error enumerating physical device extension properties", availableExtensionsResult);
+    }
 
     std::set<std::string> requiredExtensions(PhysicalDevice::REQUIRED_EXTENSIONS.begin(), PhysicalDevice::REQUIRED_EXTENSIONS.end());
     for (auto const & extension : availableExtensionsResult.value)

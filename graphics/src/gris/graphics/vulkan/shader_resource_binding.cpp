@@ -63,7 +63,9 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
 
     auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo);
     if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error allocating descriptor sets", allocateDescriptorSetsResult);
+    }
 
     m_descriptorSets = std::move(allocateDescriptorSetsResult.value);
 

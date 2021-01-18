@@ -14,19 +14,21 @@ Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float ma
                                                    vk::SamplerAddressMode::eRepeat,
                                                    vk::SamplerAddressMode::eRepeat,
                                                    vk::SamplerAddressMode::eRepeat,
-                                                   0.0f,
-                                                   true,
-                                                   16.0f,
-                                                   false,
+                                                   0.0F,
+                                                   static_cast<VkBool32>(true),
+                                                   16.0F,
+                                                   static_cast<VkBool32>(false),
                                                    vk::CompareOp::eAlways,
                                                    minLod,
                                                    maxLod,
                                                    vk::BorderColor::eIntOpaqueBlack,
-                                                   false);
+                                                   static_cast<VkBool32>(false));
 
     auto createSamplerResult = DeviceHandle().createSamplerUnique(samplerInfo);
     if (createSamplerResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating sampler", createSamplerResult);
+    }
 
     m_sampler = std::move(createSamplerResult.value);
 }

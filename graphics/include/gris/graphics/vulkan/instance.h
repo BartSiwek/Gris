@@ -42,6 +42,7 @@ private:
     [[nodiscard]] static Instance & GetInstance();
 
     [[nodiscard]] static std::vector<const char *> GetRequiredExtensions();
+    [[nodiscard]] static bool CheckValidationLayerSupport();
 
     static ExtensionGetter s_extensionGetter;
 
@@ -49,8 +50,6 @@ private:
 
     void CreateInstance();
     void SetupDebugMessenger();
-
-    [[nodiscard]] bool CheckValidationLayerSupport() const;
 
     vk::UniqueInstance m_instance = {};
     vk::DispatchLoaderDynamic m_dispatch = {};

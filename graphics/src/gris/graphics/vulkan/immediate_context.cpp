@@ -24,7 +24,9 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
 
     auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo);
     if (createCommandPoolResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
+    }
 
     m_commandPool = std::move(createCommandPoolResult.value);
 }
@@ -36,7 +38,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
     auto const formatProperties = ParentDevice().GetFormatProperties(imageFormat);
 
     if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear))
+    {
         throw VulkanEngineException("Texture image format does not support linear blitting!");
+    }
 
     auto commandBuffer = BeginSingleTimeCommands();
 
@@ -92,9 +96,13 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
         commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barriers);
 
         if (mipWidth > 1)
+        {
             mipWidth /= 2;
+        }
         if (mipHeight > 1)
+        {
             mipHeight /= 2;
+        }
     }
 
     barriers[0].subresourceRange.baseMipLevel = texture.MipLevels() - 1;
@@ -215,7 +223,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
     auto const submitResult = m_graphicsQueue.submit(submits, fence.FenceHandle());
     if (submitResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error submitting to graphics queue", submitResult);
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -229,7 +239,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error allocating command buffers", allocateCommandBuffersResult);
+    }
 
     auto && commandBuffer = allocateCommandBuffersResult.value.front();
 
@@ -237,7 +249,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
     auto const beginResult = commandBuffer->begin(beginInfo);
     if (beginResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error beginning the command buffer", beginResult);
+    }
 
     return std::move(commandBuffer);
 }
@@ -248,17 +262,23 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
 {
     auto const endResult = commandBuffer.end();
     if (endResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error ending the command buffer", endResult);
+    }
 
     std::array commandBuffers = { commandBuffer };
     std::array submits = { vk::SubmitInfo({}, {}, commandBuffers, {}) };
 
     auto const submitResult = m_graphicsQueue.submit(submits, vk::Fence());
     if (submitResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error submitting the command buffer", submitResult);
+    }
 
     // TODO: There has to be a better way to do this
     auto const waitResult = m_graphicsQueue.waitIdle();
     if (waitResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error waiting for graphics queue to be idle", waitResult);
+    }
 }

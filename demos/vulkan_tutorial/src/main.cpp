@@ -57,10 +57,10 @@
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
-const char * MODEL_PATH = "viking_room.obj";
-const char * TEXTURE_PATH = "viking_room.png";
-const char * VERTEX_SHADER_PATH = "vert.spv";
-const char * FRAGMENT_SHADER_PATH = "frag.spv";
+const char * const MODEL_PATH = "viking_room.obj";
+const char * const TEXTURE_PATH = "viking_room.png";
+const char * const VERTEX_SHADER_PATH = "vert.spv";
+const char * const FRAGMENT_SHADER_PATH = "frag.spv";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -97,25 +97,30 @@ struct hash<Vertex>
 {
     size_t operator()(Vertex const & vertex) const noexcept
     {
-        return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+        return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1U)) >> 1U) ^ (hash<glm::vec2>()(vertex.texCoord) << 1U);
     }
 };
 
 }  // namespace std
 
+constexpr static size_t GlslMatrixAlignment = 16;
+
 struct UniformBufferObject
 {
-    alignas(16) glm::mat4 model;
-    alignas(16) glm::mat4 view;
-    alignas(16) glm::mat4 proj;
+    alignas(GlslMatrixAlignment) glm::mat4 model;
+    alignas(GlslMatrixAlignment) glm::mat4 view;
+    alignas(GlslMatrixAlignment) glm::mat4 proj;
 };
 
-[[nodiscard]] std::vector<char> ReadFile(const std::filesystem::path & path)
+template<typename T>
+[[nodiscard]] std::vector<T> ReadFile(const std::filesystem::path & path)
 {
     std::ifstream file(path, std::ios::ate | std::ios::binary);
 
     if (!file.is_open())
+    {
         throw Gris::EngineException("Failed to open file!");
+    }
 
     auto fileSize = file.tellg();
     std::vector<char> buffer(static_cast<size_t>(fileSize));
@@ -125,9 +130,12 @@ struct UniformBufferObject
 
     file.close();
 
-    return buffer;
-}
+    auto resultElementCount = static_cast<size_t>(fileSize) / sizeof(T) + (static_cast<size_t>(fileSize) % sizeof(T) == 0 ? 0 : 1);
+    std::vector<T> result(resultElementCount);
+    memcpy(result.data(), buffer.data(), static_cast<size_t>(fileSize));
 
+    return result;
+}
 
 class HelloTriangleApplication : public Gris::Graphics::WindowObserver
 {
@@ -202,7 +210,7 @@ private:
 
         createTextureImage();
         m_textureImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_textureImage->MipLevels()));
-        m_textureSampler = std::make_unique<Gris::Graphics::Vulkan::Sampler>(m_device->CreateSampler(0.0f, static_cast<float>(m_textureImage->MipLevels())));
+        m_textureSampler = std::make_unique<Gris::Graphics::Vulkan::Sampler>(m_device->CreateSampler(0.0F, static_cast<float>(m_textureImage->MipLevels())));
 
         auto [vertices, indices] = loadModel();
         m_indexCount = static_cast<uint32_t>(indices.size());
@@ -214,13 +222,19 @@ private:
 
         auto const vertexShaderPath = Gris::DirectoryRegistry::TryResolvePath(VERTEX_SHADER_PATH);
         if (!vertexShaderPath)
+        {
             throw Gris::EngineException("Error resolving vertex shader path", VERTEX_SHADER_PATH);
-        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile(*vertexShaderPath)));
+        }
+
+        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*vertexShaderPath)));
 
         auto const fragmentShaderPath = Gris::DirectoryRegistry::TryResolvePath(FRAGMENT_SHADER_PATH);
         if (!fragmentShaderPath)
+        {
             throw Gris::EngineException("Error resolving fragment shader path", FRAGMENT_SHADER_PATH);
-        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile(*fragmentShaderPath)));
+        }
+
+        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath)));
 
         m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
         createColorResources();
@@ -231,10 +245,14 @@ private:
         m_device->CreateDescriptorPool(m_swapChain->ImageCount());
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        {
             m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+        }
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        {
             m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+        }
 
         m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
@@ -279,10 +297,14 @@ private:
         m_uniformBuffers.clear();
         m_uniformBufferViews.clear();
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        {
             m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+        }
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        {
             m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+        }
 
         m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
@@ -302,7 +324,9 @@ private:
 
         auto const swapChainExtent = m_swapChain->Extent();
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        {
             m_swapChainFramebuffers.emplace_back(m_device->CreateFramebuffer(*m_colorImageView, *m_depthImageView, m_swapChain->ImageView(i), *m_renderPass, swapChainExtent.width, swapChainExtent.height));
+        }
     }
 
     void createColorResources()
@@ -333,17 +357,23 @@ private:
     {
         auto const texturePath = Gris::DirectoryRegistry::TryResolvePath(TEXTURE_PATH);
         if (!texturePath)
+        {
             throw Gris::EngineException("Failed to resolve texture image path", TEXTURE_PATH);
+        }
 
         auto resolvedPath = texturePath->string();
 
-        int texWidth, texHeight, texChannels;
+        int texWidth = 0;
+        int texHeight = 0;
+        int texChannels = 0;
         auto * pixels = stbi_load(resolvedPath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
         vk::DeviceSize imageSize = static_cast<vk::DeviceSize>(texWidth) * static_cast<vk::DeviceSize>(texHeight) * 4;
         auto const mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
 
-        if (!pixels)
+        if (pixels == nullptr)
+        {
             throw Gris::EngineException("Failed to load texture image");
+        }
 
         auto stagingBuffer = m_device->CreateBuffer(imageSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(pixels, imageSize);
@@ -357,7 +387,7 @@ private:
         m_device->Context()->GenerateMipmaps(*m_textureImage, vk::Format::eR8G8B8A8Srgb, texWidth, texHeight);
     }
 
-    std::pair<std::vector<Vertex>, std::vector<uint32_t>> loadModel() const
+    [[nodiscard]] static std::pair<std::vector<Vertex>, std::vector<uint32_t>> loadModel()
     {
         tinyobj::attrib_t attrib;
         std::vector<tinyobj::shape_t> shapes;
@@ -366,11 +396,15 @@ private:
 
         auto modelPath = Gris::DirectoryRegistry::TryResolvePath(MODEL_PATH);
         if (!modelPath)
+        {
             throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
+        }
 
         auto resolvedPath = modelPath->string();
         if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, resolvedPath.c_str(), nullptr, false))
+        {
             throw Gris::EngineException("Error loading model", err);
+        }
 
         std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
@@ -390,10 +424,10 @@ private:
 
                 vertex.texCoord = {
                     attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 0],
-                    1.0f - attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 1]
+                    1.0F - attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 1]
                 };
 
-                vertex.color = { 1.0f, 1.0f, 1.0f };
+                vertex.color = { 1.0F, 1.0F, 1.0F };
 
                 if (uniqueVertices.count(vertex) == 0)
                 {
@@ -466,9 +500,17 @@ private:
         auto const swapChainExtent = m_swapChain->Extent();
 
         UniformBufferObject ubo = {};
-        ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        ubo.proj = glm::perspective(glm::radians(45.0f), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), 0.1f, 10.0f);
+
+        constexpr glm::vec3 EyeLocation = glm::vec3(2.0F, 2.0F, 2.0F);
+        constexpr glm::vec3 Origin = glm::vec3(0.0F, 0.0F, 0.0F);
+        constexpr glm::vec3 Up = glm::vec3(0.0F, 0.0F, 1.0F);
+        constexpr glm::vec3 RotationAxis = glm::vec3(0.0F, 0.0F, 1.0F);
+        constexpr float NearPlane = 0.1F;
+        constexpr float FarPlane = 10.0F;
+
+        ubo.model = glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis);
+        ubo.view = glm::lookAt(EyeLocation, Origin, Up);
+        ubo.proj = glm::perspective(glm::quarter_pi<float>(), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), NearPlane, FarPlane);
         ubo.proj[1][1] *= -1;
 
         m_uniformBuffers[currentImage].SetData(&ubo, sizeof(ubo));

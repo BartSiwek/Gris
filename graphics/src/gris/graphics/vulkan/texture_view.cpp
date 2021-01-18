@@ -39,7 +39,9 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 
     auto createImageViewResult = DeviceHandle().createImageViewUnique(viewInfo);
     if (createImageViewResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating image view", createImageViewResult);
+    }
 
     m_imageView = std::move(createImageViewResult.value);
 }

@@ -10,7 +10,9 @@ Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, con
 
     auto createBufferResult = DeviceHandle().createBufferUnique(bufferInfo);
     if (createBufferResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating buffer", createBufferResult);
+    }
 
     m_buffer = std::move(createBufferResult.value);
 

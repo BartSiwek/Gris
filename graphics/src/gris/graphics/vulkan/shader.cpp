@@ -4,14 +4,16 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<char> & code)
+Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code)
     : DeviceResource(device)
 {
-    auto const createInfo = vk::ShaderModuleCreateInfo({}, code.size(), reinterpret_cast<const uint32_t *>(code.data()));
+    auto const createInfo = vk::ShaderModuleCreateInfo({}, code);
 
     auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo);
     if (createShaderModuleResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating shader module", createShaderModuleResult);
+    }
 
     m_shaderModule = std::move(createShaderModuleResult.value);
 }

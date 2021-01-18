@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Allocation::Allocation() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, Allocator * owner)
-    : m_allocation(std::move(allocation))
+    : m_allocation(allocation)
     , m_owner(owner)
 {
 }
@@ -46,7 +46,7 @@ Gris::Graphics::Vulkan::Allocation::~Allocation()
 
 void Gris::Graphics::Vulkan::Allocation::Reset()
 {
-    if (m_owner)
+    if (m_owner != nullptr)
     {
         m_owner->FreeMemory(m_allocation);
         m_allocation = VK_NULL_HANDLE;

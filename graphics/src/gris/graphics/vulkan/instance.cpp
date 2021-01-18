@@ -63,6 +63,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 
 // -------------------------------------------------------------------------------------------------
 
+// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
 Gris::Graphics::Vulkan::Instance::ExtensionGetter Gris::Graphics::Vulkan::Instance::s_extensionGetter = nullptr;
 
 // -------------------------------------------------------------------------------------------------
@@ -85,7 +86,10 @@ void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter ge
 {
     auto const enumeratePhysicalDevicesResult = GetInstance().m_instance->enumeratePhysicalDevices();
     if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error enumerating physical devices", enumeratePhysicalDevicesResult);
+    }
+
     return enumeratePhysicalDevicesResult.value;
 }
 
@@ -107,10 +111,12 @@ void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter ge
     allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance.get());
     allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_0;
 
-    VmaAllocator allocator;
+    VmaAllocator allocator = {};
     auto const allocatorCreateResult = static_cast<vk::Result>(vmaCreateAllocator(&allocatorInfo, &allocator));
     if (allocatorCreateResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating Vulkan Memory Allocator", allocatorCreateResult);
+    }
 
     return Allocator(allocator);
 }
@@ -131,9 +137,45 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::GetInstance
     auto extensions = s_extensionGetter();
 
     if constexpr (ENABLE_VALIDATION_LAYERS)
+    {
         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    }
 
     return extensions;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport()
+{
+    auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties();
+    if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)
+    {
+        throw VulkanEngineException("Error enumerating instance layer properties", enumerateInstanceLayerPropertiesResult);
+    }
+
+    auto const & availableLayers = enumerateInstanceLayerPropertiesResult.value;
+
+    for (auto const & layerName : VALIDATION_LAYERS)
+    {
+        auto layerFound = false;
+
+        for (auto const & layerProperties : availableLayers)
+        {
+            if (strcmp(layerName, layerProperties.layerName) == 0)
+            {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -152,25 +194,32 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
     {
         auto const validationLayerSupport = CheckValidationLayerSupport();
         if (!validationLayerSupport)
+        {
             throw VulkanEngineException("Requested validation layers not found");
+        }
     }
 
-    vk::ApplicationInfo appInfo("Vulkan tutorial",
-                                VK_MAKE_VERSION(1, 0, 0),
-                                "No Engine",
-                                VK_MAKE_VERSION(1, 0, 0),
-                                VK_API_VERSION_1_0);
+    vk::ApplicationInfo appInfo(
+        "Vulkan tutorial",
+        VK_MAKE_VERSION(1, 0, 0),
+        "No Engine",
+        VK_MAKE_VERSION(1, 0, 0),
+        VK_API_VERSION_1_0);
 
     std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)
+    {
         enabledLayers.insert(enabledLayers.begin(), VALIDATION_LAYERS.begin(), VALIDATION_LAYERS.end());
+    }
 
     auto extensions = GetRequiredExtensions();
     const vk::InstanceCreateInfo createInfo(vk::InstanceCreateFlags{}, &appInfo, enabledLayers, extensions);
 
     auto createInstanceResult = vk::createInstanceUnique(createInfo);
     if (createInstanceResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating Vulkan instance", createInstanceResult);
+    }
 
     m_instance = std::move(createInstanceResult.value);
     m_dispatch = vk::DispatchLoaderDynamic(m_instance.get(), vkGetInstanceProcAddr);
@@ -181,7 +230,9 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
 void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
 {
     if constexpr (!ENABLE_VALIDATION_LAYERS)
+    {
         return;
+    }
 
     auto const createInfo = vk::DebugUtilsMessengerCreateInfoEXT({},
                                                                  vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
@@ -191,37 +242,9 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
 
     auto createDebugUtilsMessengerResult = m_instance->createDebugUtilsMessengerEXTUnique(createInfo, nullptr, m_dispatch);
     if (createDebugUtilsMessengerResult.result != vk::Result::eSuccess)
-        throw VulkanEngineException("Error creating debug messenger", createDebugUtilsMessengerResult);
-
-    m_debugMessenger = std::move(createDebugUtilsMessengerResult.value);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport() const
-{
-    auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties();
-    if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)
-        throw VulkanEngineException("Error enumerating instance layer properties", enumerateInstanceLayerPropertiesResult);
-
-    auto const & availableLayers = enumerateInstanceLayerPropertiesResult.value;
-
-    for (auto const & layerName : VALIDATION_LAYERS)
     {
-        auto layerFound = false;
-
-        for (auto const & layerProperties : availableLayers)
-        {
-            if (strcmp(layerName, layerProperties.layerName) == 0)
-            {
-                layerFound = true;
-                break;
-            }
-        }
-
-        if (!layerFound)
-            return false;
+        throw VulkanEngineException("Error creating debug messenger", createDebugUtilsMessengerResult);
     }
 
-    return true;
+    m_debugMessenger = std::move(createDebugUtilsMessengerResult.value);
 }

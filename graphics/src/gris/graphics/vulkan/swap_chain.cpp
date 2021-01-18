@@ -99,18 +99,22 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
                                                        swapChainSupport.capabilities.currentTransform,
                                                        vk::CompositeAlphaFlagBitsKHR::eOpaque,
                                                        presentMode,
-                                                       true,
+                                                       static_cast<VkBool32>(true),
                                                        nullptr);
 
     auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo);
     if (createSwapChainResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error creating swap chain", createSwapChainResult);
+    }
 
     m_swapChain = std::move(createSwapChainResult.value);
 
     auto swapChainImagesResult = DeviceHandle().getSwapchainImagesKHR(m_swapChain.get());
     if (swapChainImagesResult.result != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error getting swap chain images", swapChainImagesResult);
+    }
 
     m_swapChainImages = std::move(swapChainImagesResult.value);
     m_presentQueue = DeviceHandle().getQueue(device->QueueFamilies().presentFamily.value(), 0);
@@ -120,7 +124,9 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 
     m_swapChainImageViews.reserve(m_swapChainImages.size());
     for (auto const & swapChainImage : m_swapChainImages)
+    {
         m_swapChainImageViews.emplace_back(&ParentDevice(), swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1);
+    }
 
     m_renderFinishedFences.reserve(m_swapChainImages.size());
     m_imageAvailableSemaphores.reserve(m_swapChainImages.size());
@@ -180,13 +186,15 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     m_currentVirtualFrame = (m_currentVirtualFrame + 1) % m_virtualFrameCount;
 
     std::array fences = { m_renderFinishedFences[virtualFrameIndex].FenceHandle() };
-    auto const waitResult = DeviceHandle().waitForFences(fences, true, std::numeric_limits<uint64_t>::max());
+    auto const waitResult = DeviceHandle().waitForFences(fences, static_cast<VkBool32>(true), std::numeric_limits<uint64_t>::max());
     if (waitResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Failed to wait for current frame fence!", waitResult);
+    }
 
     ///
 
-    uint32_t imageIndex;
+    uint32_t imageIndex = 0;
     auto const acquireResult = static_cast<vk::Result>(vkAcquireNextImageKHR(static_cast<VkDevice>(DeviceHandle()), static_cast<VkSwapchainKHR>(m_swapChain.get()), std::numeric_limits<uint64_t>::max(), static_cast<VkSemaphore>(m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle()), VK_NULL_HANDLE, &imageIndex));
     if (acquireResult == vk::Result::eErrorOutOfDateKHR)
     {
@@ -203,9 +211,11 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     if (previousVirtualFrameIndex != virtualFrameIndex && previousVirtualFrameIndex != std::numeric_limits<uint32_t>::max())
     {
         std::array additionalFences = { m_renderFinishedFences[previousVirtualFrameIndex].FenceHandle() };
-        auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, true, std::numeric_limits<uint64_t>::max());
+        auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, static_cast<VkBool32>(true), std::numeric_limits<uint64_t>::max());
         if (additionalFenceWaitResult != vk::Result::eSuccess)
+        {
             throw VulkanEngineException("Failed to wait for image in flight fence!", additionalFenceWaitResult);
+        }
     }
 
     m_swapChainImageToVirtualFrame[imageIndex] = virtualFrameIndex;
@@ -215,7 +225,9 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     fences = { m_renderFinishedFences[virtualFrameIndex].FenceHandle() };
     auto const resetResult = DeviceHandle().resetFences(fences);
     if (resetResult != vk::Result::eSuccess)
+    {
         throw VulkanEngineException("Error resetting current frame fence", resetResult);
+    }
 
     return VirtualFrame{ virtualFrameIndex, imageIndex };
 }
