@@ -98,4 +98,4 @@ jobs:
     - name: Run clang-tidy
       shell: bash
       run: |
-        python3 /usr/local/bin/run-clang-tidy.py -j $(($(nproc)/2+1)) -p build
+        python3 third_party/clang-tidy-runner/run-clang-tidy.py -j $(($(nproc)/2+1)) -p build
