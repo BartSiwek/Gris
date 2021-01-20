@@ -13,3 +13,4 @@ Dependencies are mostly managed via [Conan](https://conan.io/) however there are
 
 ## Optional dependencies
 * [clang-format](https://clang.llvm.org/docs/ClangFormat.html) (version 11.0+) - needed for automatic code formatiing
+* [clang-tidy](https://clang.llvm.org/extra/clang-tidy/)
