@@ -82,8 +82,8 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
     for (auto queueFamily : uniqueQueueFamilies)
     {
         queueCreateInfos.emplace_back(vk::DeviceQueueCreateInfo{}
-                                               .setQueueFamilyIndex(queueFamily)
-                                               .setQueuePriorities(queuePriority));
+                                          .setQueueFamilyIndex(queueFamily)
+                                          .setQueuePriorities(queuePriority));
     }
 
     vk::PhysicalDeviceFeatures deviceFeatures{};
@@ -96,10 +96,10 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
     }
 
     auto const createInfo = vk::DeviceCreateInfo{}
-                                     .setQueueCreateInfos(queueCreateInfos)
-                                     .setPEnabledLayerNames(enabledLayers)
-                                     .setPEnabledExtensionNames(REQUIRED_EXTENSIONS)
-                                     .setPEnabledFeatures(&deviceFeatures);
+                                .setQueueCreateInfos(queueCreateInfos)
+                                .setPEnabledLayerNames(enabledLayers)
+                                .setPEnabledExtensionNames(REQUIRED_EXTENSIONS)
+                                .setPEnabledFeatures(&deviceFeatures);
 
     auto createDeviceResult = m_physicalDevice.createDeviceUnique(createInfo);
     if (createDeviceResult.result != vk::Result::eSuccess)

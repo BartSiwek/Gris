@@ -16,17 +16,17 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
     , m_mipLevels(mipLevels)
 {
     auto const imageInfo = vk::ImageCreateInfo{}
-                                    .setImageType(vk::ImageType::e2D)
-                                    .setFormat(format)
-                                    .setExtent(vk::Extent3D(width, height, 1))
-                                    .setMipLevels(m_mipLevels)
-                                    .setArrayLayers(1)
-                                    .setSamples(numSamples)
-                                    .setTiling(tiling)
-                                    .setUsage(usage)
-                                    .setSharingMode(vk::SharingMode::eExclusive)
-                                    .setQueueFamilyIndices({})
-                                    .setInitialLayout(vk::ImageLayout::eUndefined);
+                               .setImageType(vk::ImageType::e2D)
+                               .setFormat(format)
+                               .setExtent(vk::Extent3D(width, height, 1))
+                               .setMipLevels(m_mipLevels)
+                               .setArrayLayers(1)
+                               .setSamples(numSamples)
+                               .setTiling(tiling)
+                               .setUsage(usage)
+                               .setSharingMode(vk::SharingMode::eExclusive)
+                               .setQueueFamilyIndices({})
+                               .setInitialLayout(vk::ImageLayout::eUndefined);
 
     auto createImageResult = DeviceHandle().createImageUnique(imageInfo);
     if (createImageResult.result != vk::Result::eSuccess)

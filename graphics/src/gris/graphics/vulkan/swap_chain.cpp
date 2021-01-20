@@ -87,20 +87,20 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     }
 
     auto const createInfo = vk::SwapchainCreateInfoKHR{}
-                                     .setSurface(window.SurfaceHandle())
-                                     .setMinImageCount(imageCount)
-                                     .setImageFormat(surfaceFormat.format)
-                                     .setImageColorSpace(surfaceFormat.colorSpace)
-                                     .setImageExtent(extent)
-                                     .setImageArrayLayers(1)
-                                     .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
-                                     .setImageSharingMode(imageSharingMode)
-                                     .setQueueFamilyIndices(queueFamilyIndices)
-                                     .setPreTransform(swapChainSupport.capabilities.currentTransform)
-                                     .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
-                                     .setPresentMode(presentMode)
-                                     .setClipped(static_cast<vk::Bool32>(true))
-                                     .setOldSwapchain({});
+                                .setSurface(window.SurfaceHandle())
+                                .setMinImageCount(imageCount)
+                                .setImageFormat(surfaceFormat.format)
+                                .setImageColorSpace(surfaceFormat.colorSpace)
+                                .setImageExtent(extent)
+                                .setImageArrayLayers(1)
+                                .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
+                                .setImageSharingMode(imageSharingMode)
+                                .setQueueFamilyIndices(queueFamilyIndices)
+                                .setPreTransform(swapChainSupport.capabilities.currentTransform)
+                                .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
+                                .setPresentMode(presentMode)
+                                .setClipped(static_cast<vk::Bool32>(true))
+                                .setOldSwapchain({});
 
     auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo);
     if (createSwapChainResult.result != vk::Result::eSuccess)
@@ -239,9 +239,9 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     std::array swapChains = { m_swapChain.get() };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };
     auto presentInfo = static_cast<VkPresentInfoKHR>(vk::PresentInfoKHR{}
-                                                              .setWaitSemaphores(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle())
-                                                              .setSwapchains(swapChains)
-                                                              .setImageIndices(imageIndices));
+                                                         .setWaitSemaphores(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle())
+                                                         .setSwapchains(swapChains)
+                                                         .setImageIndices(imageIndices));
 
     auto const presentResult = static_cast<vk::Result>(vkQueuePresentKHR(static_cast<VkQueue>(m_presentQueue), &presentInfo));
     if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR)

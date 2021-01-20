@@ -60,8 +60,8 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
     auto const layoutCount = m_textureViews.size();
     std::vector<vk::DescriptorSetLayout> layouts(layoutCount, ParentPipelineStateObject().DescriptorSetLayoutHandle());
     auto const allocInfo = vk::DescriptorSetAllocateInfo{}
-                                    .setDescriptorPool(DescriptorPoolHandle())
-                                    .setSetLayouts(layouts);
+                               .setDescriptorPool(DescriptorPoolHandle())
+                               .setSetLayouts(layouts);
 
     auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo);
     if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
@@ -75,27 +75,27 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
     {
         auto const & bufferView = m_bufferViews[i]["ubo"];
         std::array bufferInfo = { vk::DescriptorBufferInfo{}
-                                           .setBuffer(bufferView->BufferHandle())
-                                           .setOffset(bufferView->Offset())
-                                           .setRange(bufferView->Size()) };
+                                      .setBuffer(bufferView->BufferHandle())
+                                      .setOffset(bufferView->Offset())
+                                      .setRange(bufferView->Size()) };
         std::array imageInfo = { vk::DescriptorImageInfo{}
-                                          .setSampler(m_samplers[i]["texSampler"]->SamplerHandle())
-                                          .setImageView(m_textureViews[i]["texSampler"]->ImageViewHandle())
-                                          .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal) };
+                                     .setSampler(m_samplers[i]["texSampler"]->SamplerHandle())
+                                     .setImageView(m_textureViews[i]["texSampler"]->ImageViewHandle())
+                                     .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal) };
 
         std::array descriptorWrites = {
             vk::WriteDescriptorSet{}
-                     .setDstSet(m_descriptorSets[i])
-                     .setDstBinding(0)
-                     .setDstArrayElement(0)
-                     .setDescriptorType(vk::DescriptorType::eUniformBuffer)
-                     .setBufferInfo(bufferInfo),
+                .setDstSet(m_descriptorSets[i])
+                .setDstBinding(0)
+                .setDstArrayElement(0)
+                .setDescriptorType(vk::DescriptorType::eUniformBuffer)
+                .setBufferInfo(bufferInfo),
             vk::WriteDescriptorSet{}
-                     .setDstSet(m_descriptorSets[i])
-                     .setDstBinding(1)
-                     .setDstArrayElement(0)
-                     .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-                     .setImageInfo(imageInfo),
+                .setDstSet(m_descriptorSets[i])
+                .setDstBinding(1)
+                .setDstArrayElement(0)
+                .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                .setImageInfo(imageInfo),
         };
 
         DeviceHandle().updateDescriptorSets(descriptorWrites, {});

@@ -32,34 +32,34 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapC
 void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
 {
     auto const colorAttachment = vk::AttachmentDescription{}
-                                          .setFormat(swapChainFormat)
-                                          .setSamples(ParentDevice().MsaaSamples())
-                                          .setLoadOp(vk::AttachmentLoadOp::eClear)
-                                          .setStoreOp(vk::AttachmentStoreOp::eStore)
-                                          .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
-                                          .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
-                                          .setInitialLayout(vk::ImageLayout::eUndefined)
-                                          .setFinalLayout(vk::ImageLayout::eColorAttachmentOptimal);
+                                     .setFormat(swapChainFormat)
+                                     .setSamples(ParentDevice().MsaaSamples())
+                                     .setLoadOp(vk::AttachmentLoadOp::eClear)
+                                     .setStoreOp(vk::AttachmentStoreOp::eStore)
+                                     .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                                     .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                                     .setInitialLayout(vk::ImageLayout::eUndefined)
+                                     .setFinalLayout(vk::ImageLayout::eColorAttachmentOptimal);
 
     auto const depthAttachment = vk::AttachmentDescription{}
-                                          .setFormat(depthFormat)
-                                          .setSamples(ParentDevice().MsaaSamples())
-                                          .setLoadOp(vk::AttachmentLoadOp::eClear)
-                                          .setStoreOp(vk::AttachmentStoreOp::eDontCare)
-                                          .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
-                                          .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
-                                          .setInitialLayout(vk::ImageLayout::eUndefined)
-                                          .setFinalLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
+                                     .setFormat(depthFormat)
+                                     .setSamples(ParentDevice().MsaaSamples())
+                                     .setLoadOp(vk::AttachmentLoadOp::eClear)
+                                     .setStoreOp(vk::AttachmentStoreOp::eDontCare)
+                                     .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                                     .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                                     .setInitialLayout(vk::ImageLayout::eUndefined)
+                                     .setFinalLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
 
     auto const colorAttachmentResolve = vk::AttachmentDescription{}
-                                                 .setFormat(swapChainFormat)
-                                                 .setSamples(vk::SampleCountFlagBits::e1)
-                                                 .setLoadOp(vk::AttachmentLoadOp::eDontCare)
-                                                 .setStoreOp(vk::AttachmentStoreOp::eStore)
-                                                 .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
-                                                 .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
-                                                 .setInitialLayout(vk::ImageLayout::eUndefined)
-                                                 .setFinalLayout(vk::ImageLayout::ePresentSrcKHR);
+                                            .setFormat(swapChainFormat)
+                                            .setSamples(vk::SampleCountFlagBits::e1)
+                                            .setLoadOp(vk::AttachmentLoadOp::eDontCare)
+                                            .setStoreOp(vk::AttachmentStoreOp::eStore)
+                                            .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
+                                            .setStencilStoreOp(vk::AttachmentStoreOp::eDontCare)
+                                            .setInitialLayout(vk::ImageLayout::eUndefined)
+                                            .setFinalLayout(vk::ImageLayout::ePresentSrcKHR);
 
     auto const colorAttachmentRef = vk::AttachmentReference{}.setAttachment(0).setLayout(vk::ImageLayout::eColorAttachmentOptimal);
     auto const depthAttachmentRef = vk::AttachmentReference{}.setAttachment(1).setLayout(vk::ImageLayout::eDepthStencilAttachmentOptimal);
@@ -72,27 +72,26 @@ void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFo
 
     auto const subpasses = std::array{
         vk::SubpassDescription{}
-                 .setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
-                 .setColorAttachments(colorAttachments)
-                 .setResolveAttachments(resolveAttachments)
-                 .setPDepthStencilAttachment(&depthAttachmentRef)
+            .setPipelineBindPoint(vk::PipelineBindPoint::eGraphics)
+            .setColorAttachments(colorAttachments)
+            .setResolveAttachments(resolveAttachments)
+            .setPDepthStencilAttachment(&depthAttachmentRef)
     };
 
-    auto const dependencies = std::array
-    {
+    auto const dependencies = std::array{
         vk::SubpassDependency{}
-                 .setSrcSubpass(VK_SUBPASS_EXTERNAL)
-                 .setDstSubpass(0)
-                 .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
-                 .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
-                 .setSrcAccessMask({})
-                 .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
+            .setSrcSubpass(VK_SUBPASS_EXTERNAL)
+            .setDstSubpass(0)
+            .setSrcStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+            .setDstStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput)
+            .setSrcAccessMask({})
+            .setDstAccessMask(vk::AccessFlagBits::eColorAttachmentWrite)
     };
 
     auto const renderPassInfo = vk::RenderPassCreateInfo{}
-                                         .setAttachments(attachments)
-                                         .setSubpasses(subpasses)
-                                         .setDependencies(dependencies);
+                                    .setAttachments(attachments)
+                                    .setSubpasses(subpasses)
+                                    .setDependencies(dependencies);
 
     auto createRenderPassResult = DeviceHandle().createRenderPassUnique(renderPassInfo);
     if (createRenderPassResult.result != vk::Result::eSuccess)

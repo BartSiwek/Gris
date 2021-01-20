@@ -21,8 +21,8 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
     m_graphicsQueue = DeviceHandle().getQueue(graphicsQueueFamily, 0);
 
     auto const poolInfo = vk::CommandPoolCreateInfo{}
-                                   .setFlags(vk::CommandPoolCreateFlagBits::eTransient)
-                                   .setQueueFamilyIndex(graphicsQueueFamily);
+                              .setFlags(vk::CommandPoolCreateFlagBits::eTransient)
+                              .setQueueFamilyIndex(graphicsQueueFamily);
 
     auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo);
     if (createCommandPoolResult.result != vk::Result::eSuccess)
@@ -55,11 +55,11 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
                                VK_QUEUE_FAMILY_IGNORED,
                                texture.ImageHandle(),
                                vk::ImageSubresourceRange(
-                                        vk::ImageAspectFlagBits::eColor,
-                                        0,
-                                        1,
-                                        0,
-                                        1))
+                                   vk::ImageAspectFlagBits::eColor,
+                                   0,
+                                   1,
+                                   0,
+                                   1))
     };
 
     auto mipWidth = texWidth;
@@ -76,16 +76,16 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
         commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, barriers);
 
         auto const blit = vk::ImageBlit(
-                 vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
-                                            i - 1,
-                                            0,
-                                            1),
-                 std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth, mipHeight, 1) },
-                 vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
-                                            i,
-                                            0,
-                                            1),
-                 std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1) });
+            vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
+                                       i - 1,
+                                       0,
+                                       1),
+            std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth, mipHeight, 1) },
+            vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
+                                       i,
+                                       0,
+                                       1),
+            std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1) });
 
         std::array blits = { blit };
         commandBuffer->blitImage(texture.ImageHandle(), vk::ImageLayout::eTransferSrcOptimal, texture.ImageHandle(), vk::ImageLayout::eTransferDstOptimal, blits, {});
@@ -128,10 +128,10 @@ void Gris::Graphics::Vulkan::ImmediateContext::CopyBufferToImage(const Buffer & 
                                             0,
                                             0,
                                             vk::ImageSubresourceLayers(
-                                                     vk::ImageAspectFlagBits::eColor,
-                                                     0,
-                                                     0,
-                                                     1),
+                                                vk::ImageAspectFlagBits::eColor,
+                                                0,
+                                                0,
+                                                1),
                                             vk::Offset3D(0, 0, 0),
                                             vk::Extent3D(width, height, 1));
 
@@ -156,11 +156,11 @@ void Gris::Graphics::Vulkan::ImmediateContext::TransitionImageLayout(const Textu
                                    VK_QUEUE_FAMILY_IGNORED,
                                    texture.ImageHandle(),
                                    vk::ImageSubresourceRange(
-                                            vk::ImageAspectFlagBits::eColor,
-                                            0,
-                                            texture.MipLevels(),
-                                            0,
-                                            1));
+                                       vk::ImageAspectFlagBits::eColor,
+                                       0,
+                                       texture.MipLevels(),
+                                       0,
+                                       1));
 
     vk::PipelineStageFlags sourceStage;
     vk::PipelineStageFlags destinationStage;
@@ -206,10 +206,10 @@ void Gris::Graphics::Vulkan::ImmediateContext::CopyBuffer(const Buffer & srcBuff
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::ImmediateContext::Submit(
-         DeferredContext * context,
-         const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores,
-         const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores,
-         Fence & fence)
+    DeferredContext * context,
+    const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores,
+    const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores,
+    Fence & fence)
 {
     std::vector<vk::Semaphore> waitSemaphoreHandles;
     std::transform(waitSemaphores.begin(), waitSemaphores.end(), std::back_inserter(waitSemaphoreHandles), [](const auto & semaphore)
@@ -222,10 +222,10 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
     std::array waitStages = { vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput) };
     std::array commandBuffers = { context->CommandBufferHandle() };
     std::array submits = { vk::SubmitInfo{}
-                                    .setWaitSemaphores(waitSemaphoreHandles)
-                                    .setWaitDstStageMask(waitStages)
-                                    .setCommandBuffers(commandBuffers)
-                                    .setSignalSemaphores(signalSemaphoreHandles) };
+                               .setWaitSemaphores(waitSemaphoreHandles)
+                               .setWaitDstStageMask(waitStages)
+                               .setCommandBuffers(commandBuffers)
+                               .setSignalSemaphores(signalSemaphoreHandles) };
 
     auto const submitResult = m_graphicsQueue.submit(submits, fence.FenceHandle());
     if (submitResult != vk::Result::eSuccess)
@@ -239,9 +239,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 [[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::ImmediateContext::BeginSingleTimeCommands()
 {
     auto const allocInfo = vk::CommandBufferAllocateInfo{}
-                                    .setCommandPool(m_commandPool.get())
-                                    .setLevel(vk::CommandBufferLevel::ePrimary)
-                                    .setCommandBufferCount(1);
+                               .setCommandPool(m_commandPool.get())
+                               .setLevel(vk::CommandBufferLevel::ePrimary)
+                               .setCommandBufferCount(1);
 
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)

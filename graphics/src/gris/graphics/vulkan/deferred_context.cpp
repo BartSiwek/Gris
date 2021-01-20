@@ -27,10 +27,10 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
     m_commandPool = std::move(createCommandPoolResult.value);
 
     auto const allocInfo = vk::CommandBufferAllocateInfo{}
-                                    .setCommandPool(m_commandPool.get())
-                                    .setLevel(vk::CommandBufferLevel::ePrimary)
-                                    .setCommandBufferCount(1);
-    
+                               .setCommandPool(m_commandPool.get())
+                               .setLevel(vk::CommandBufferLevel::ePrimary)
+                               .setCommandBufferCount(1);
+
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
     {
@@ -71,10 +71,10 @@ void Gris::Graphics::Vulkan::DeferredContext::BeginRenderPass(const RenderPass &
     };
 
     auto const renderPassInfo = vk::RenderPassBeginInfo{}
-                                         .setRenderPass(renderPass.RenderPassHandle())
-                                         .setFramebuffer(framebuffer.FramebufferHandle())
-                                         .setRenderArea(vk::Rect2D({ 0, 0 }, extent))
-                                         .setClearValues(clearValues);
+                                    .setRenderPass(renderPass.RenderPassHandle())
+                                    .setFramebuffer(framebuffer.FramebufferHandle())
+                                    .setRenderArea(vk::Rect2D({ 0, 0 }, extent))
+                                    .setClearValues(clearValues);
 
     m_commandBuffers[m_frameIndex]->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 }

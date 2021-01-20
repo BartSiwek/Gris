@@ -110,8 +110,8 @@ void Gris::Graphics::Vulkan::Device::CreateDescriptorPool(uint32_t imageCount)
     };
 
     auto const poolInfo = vk::DescriptorPoolCreateInfo{}
-                                   .setMaxSets(imageCount)
-                                   .setPoolSizes(poolSizes);
+                              .setMaxSets(imageCount)
+                              .setPoolSizes(poolSizes);
 
     auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo);
     if (createDescriptorPoolResult.result != vk::Result::eSuccess)
