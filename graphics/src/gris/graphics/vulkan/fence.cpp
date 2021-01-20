@@ -13,7 +13,7 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
         flags |= vk::FenceCreateFlagBits::eSignaled;
     }
 
-    auto const fenceInfo = vk::FenceCreateInfo(flags);
+    auto const fenceInfo = vk::FenceCreateInfo{}.setFlags(flags);
 
     auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo);
     if (fenceCreateResult.result != vk::Result::eSuccess)

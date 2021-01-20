@@ -9,13 +9,13 @@
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
-         Device * device,
-         uint32_t swapChainWidth,
-         uint32_t swapChainHeight,
-         const RenderPass & renderPass,
-         const InputLayout & inputLayout,
-         const Shader & vertexShader,
-         const Shader & fragmentShader)
+    Device * device,
+    uint32_t swapChainWidth,
+    uint32_t swapChainHeight,
+    const RenderPass & renderPass,
+    const InputLayout & inputLayout,
+    const Shader & vertexShader,
+    const Shader & fragmentShader)
     : DeviceResource(device)
 {
     CreateDescriptorSetLayout();
@@ -87,7 +87,7 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateDescriptorSetLayout()
                                                                      nullptr);
 
     auto const bindings = std::array{ uboLayoutBinding, samplerLayoutBinding };
-    auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo({}, bindings);
+    auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings(bindings);
 
     auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo);
     if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)
@@ -101,89 +101,97 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateDescriptorSetLayout()
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
-         uint32_t swapChainWidth,
-         uint32_t swapChainHeight,
-         const RenderPass & renderPass,
-         const InputLayout & inputLayout,
-         const Shader & vertexShader,
-         const Shader & fragmentShader)
+    uint32_t swapChainWidth,
+    uint32_t swapChainHeight,
+    const RenderPass & renderPass,
+    const InputLayout & inputLayout,
+    const Shader & vertexShader,
+    const Shader & fragmentShader)
 {
     m_graphicsPipeline.reset();
     m_pipelineLayout.reset();
 
     auto const shaderStages = std::array{
-        vk::PipelineShaderStageCreateInfo({},
-                                          vk::ShaderStageFlagBits::eVertex,
-                                          vertexShader.ModuleHandle(),
-                                          "main"),
-        vk::PipelineShaderStageCreateInfo({},
-                                          vk::ShaderStageFlagBits::eFragment,
-                                          fragmentShader.ModuleHandle(),
-                                          "main")
+        vk::PipelineShaderStageCreateInfo{}
+            .setStage(vk::ShaderStageFlagBits::eVertex)
+            .setModule(vertexShader.ModuleHandle())
+            .setPName("main"),
+        vk::PipelineShaderStageCreateInfo{}
+            .setStage(vk::ShaderStageFlagBits::eFragment)
+            .setModule(fragmentShader.ModuleHandle())
+            .setPName("main"),
     };
 
     auto const & bindingDescriptors = inputLayout.BindingDescription();
     auto const & attributeDescriptors = inputLayout.AttributeDescriptions();
-    vk::PipelineVertexInputStateCreateInfo vertexInputInfo({}, bindingDescriptors, attributeDescriptors);
+    auto const vertexInputInfo = vk::PipelineVertexInputStateCreateInfo{}
+                                     .setVertexBindingDescriptions(bindingDescriptors)
+                                     .setVertexAttributeDescriptions(attributeDescriptors);
 
-    vk::PipelineInputAssemblyStateCreateInfo inputAssembly({}, vk::PrimitiveTopology::eTriangleList, static_cast<VkBool32>(false));
+    auto const inputAssembly = vk::PipelineInputAssemblyStateCreateInfo{}
+                                   .setTopology(vk::PrimitiveTopology::eTriangleList)
+                                   .setPrimitiveRestartEnable(static_cast<vk::Bool32>(false));
 
     auto const viewports = std::array{
-        vk::Viewport(0.0F,
-                     0.0F,
-                     static_cast<float>(swapChainWidth),
-                     static_cast<float>(swapChainHeight),
-                     0.0F,
-                     1.0F)
+        vk::Viewport{}
+            .setX(0.0F)
+            .setY(0.0F)
+            .setWidth(static_cast<float>(swapChainWidth))
+            .setHeight(static_cast<float>(swapChainHeight))
+            .setMinDepth(0.0F)
+            .setMaxDepth(1.0F)
     };
     auto const scissors = std::array{
-        vk::Rect2D(
-                 { 0, 0 },
-                 { swapChainWidth, swapChainHeight })
+        vk::Rect2D{}
+            .setOffset({ 0, 0 })
+            .setExtent({ swapChainWidth, swapChainHeight })
     };
-    auto const viewportState = vk::PipelineViewportStateCreateInfo({}, viewports, scissors);
+    auto const viewportState = vk::PipelineViewportStateCreateInfo{}
+                                   .setViewports(viewports)
+                                   .setScissors(scissors);
 
-    auto const rasterizer = vk::PipelineRasterizationStateCreateInfo({},
-                                                                     static_cast<VkBool32>(false),
-                                                                     static_cast<VkBool32>(false),
-                                                                     vk::PolygonMode::eFill,
-                                                                     vk::CullModeFlagBits::eBack,
-                                                                     vk::FrontFace::eCounterClockwise,
-                                                                     static_cast<VkBool32>(false),
-                                                                     0.0F,
-                                                                     0.0F,
-                                                                     0.0F,
-                                                                     1.0F);
+    auto const rasterizer = vk::PipelineRasterizationStateCreateInfo{}
+                                .setDepthClampEnable(static_cast<vk::Bool32>(false))
+                                .setRasterizerDiscardEnable(static_cast<vk::Bool32>(false))
+                                .setPolygonMode(vk::PolygonMode::eFill)
+                                .setCullMode(vk::CullModeFlagBits::eBack)
+                                .setFrontFace(vk::FrontFace::eCounterClockwise)
+                                .setDepthBiasEnable(static_cast<vk::Bool32>(false))
+                                .setDepthBiasConstantFactor(0.0F)
+                                .setDepthBiasClamp(0.0F)
+                                .setDepthBiasSlopeFactor(0.0F)
+                                .setLineWidth(1.0F);
 
-    auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo({}, ParentDevice().MsaaSamples(), static_cast<VkBool32>(false));
+    auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo{}
+                                     .setRasterizationSamples(ParentDevice().MsaaSamples())
+                                     .setSampleShadingEnable(static_cast<vk::Bool32>(false));
 
-    auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo(
-             {},
-             static_cast<VkBool32>(true),
-             static_cast<VkBool32>(true),
-             vk::CompareOp::eLess,
-             static_cast<VkBool32>(false),
-             static_cast<VkBool32>(false));
+    auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo{}
+                                  .setDepthTestEnable(static_cast<vk::Bool32>(true))
+                                  .setDepthWriteEnable(static_cast<vk::Bool32>(true))
+                                  .setDepthCompareOp(vk::CompareOp::eLess)
+                                  .setStencilTestEnable(static_cast<vk::Bool32>(false));
 
     auto const colorBlendAttachments = std::array{
-        vk::PipelineColorBlendAttachmentState(static_cast<VkBool32>(false),
-                                              vk::BlendFactor::eZero,
-                                              vk::BlendFactor::eZero,
-                                              vk::BlendOp::eAdd,
-                                              vk::BlendFactor::eZero,
-                                              vk::BlendFactor::eZero,
-                                              vk::BlendOp::eAdd,
-                                              vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA)
+        vk::PipelineColorBlendAttachmentState{}
+            .setBlendEnable(static_cast<vk::Bool32>(false))
+            .setSrcColorBlendFactor(vk::BlendFactor::eZero)
+            .setDstColorBlendFactor(vk::BlendFactor::eZero)
+            .setColorBlendOp(vk::BlendOp::eAdd)
+            .setSrcAlphaBlendFactor(vk::BlendFactor::eZero)
+            .setDstAlphaBlendFactor(vk::BlendFactor::eZero)
+            .setAlphaBlendOp(vk::BlendOp::eAdd)
+            .setColorWriteMask(vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA)
     };
 
-    auto const colorBlending = vk::PipelineColorBlendStateCreateInfo({},
-                                                                     static_cast<VkBool32>(false),
-                                                                     vk::LogicOp::eCopy,
-                                                                     colorBlendAttachments,
-                                                                     { 0.0F, 0.0F, 0.0F, 0.0F });
+    auto const colorBlending = vk::PipelineColorBlendStateCreateInfo{}
+                                   .setLogicOpEnable(static_cast<vk::Bool32>(false))
+                                   .setLogicOp(vk::LogicOp::eCopy)
+                                   .setAttachments(colorBlendAttachments)
+                                   .setBlendConstants({ 0.0F, 0.0F, 0.0F, 0.0F });
 
     auto const descriptorSetLayouts = std::array{ m_descriptorSetLayout.get() };
-    auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo({}, descriptorSetLayouts);
+    auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}.setSetLayouts(descriptorSetLayouts);
 
     auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo);
     if (createPipelineLayoutResult.result != vk::Result::eSuccess)
@@ -193,22 +201,20 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
 
     m_pipelineLayout = std::move(createPipelineLayoutResult.value);
 
-    auto const pipelineInfo = vk::GraphicsPipelineCreateInfo({},
-                                                             shaderStages,
-                                                             &vertexInputInfo,
-                                                             &inputAssembly,
-                                                             {},
-                                                             &viewportState,
-                                                             &rasterizer,
-                                                             &multisampleInfo,
-                                                             &depthStencil,
-                                                             &colorBlending,
-                                                             {},
-                                                             m_pipelineLayout.get(),
-                                                             renderPass.RenderPassHandle(),
-                                                             0,
-                                                             {},
-                                                             0);
+    auto const pipelineInfo = vk::GraphicsPipelineCreateInfo{}
+                                  .setStages(shaderStages)
+                                  .setPVertexInputState(&vertexInputInfo)
+                                  .setPInputAssemblyState(&inputAssembly)
+                                  .setPTessellationState({})
+                                  .setPViewportState(&viewportState)
+                                  .setPRasterizationState(&rasterizer)
+                                  .setPMultisampleState(&multisampleInfo)
+                                  .setPDepthStencilState(&depthStencil)
+                                  .setPColorBlendState(&colorBlending)
+                                  .setPDynamicState({})
+                                  .setLayout(m_pipelineLayout.get())
+                                  .setRenderPass(renderPass.RenderPassHandle())
+                                  .setSubpass(0);
 
     auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo);
     if (createGraphicsPipelineResult.result != vk::Result::eSuccess)

@@ -7,7 +7,7 @@
 Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code)
     : DeviceResource(device)
 {
-    auto const createInfo = vk::ShaderModuleCreateInfo({}, code);
+    auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
     auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo);
     if (createShaderModuleResult.result != vk::Result::eSuccess)

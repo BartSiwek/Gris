@@ -199,12 +199,12 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
         }
     }
 
-    vk::ApplicationInfo appInfo(
-             "Vulkan tutorial",
-             VK_MAKE_VERSION(1, 0, 0),
-             "No Engine",
-             VK_MAKE_VERSION(1, 0, 0),
-             VK_API_VERSION_1_0);
+    auto const appInfo = vk::ApplicationInfo{}
+                             .setPApplicationName("Vulkan tutorial")
+                             .setApplicationVersion(VK_MAKE_VERSION(1, 0, 0))
+                             .setPEngineName("No Engine")
+                             .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
+                             .setApiVersion(VK_API_VERSION_1_0);
 
     std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)
@@ -213,7 +213,10 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
     }
 
     auto extensions = GetRequiredExtensions();
-    const vk::InstanceCreateInfo createInfo(vk::InstanceCreateFlags{}, &appInfo, enabledLayers, extensions);
+    const auto createInfo = vk::InstanceCreateInfo{}
+                                .setPApplicationInfo(&appInfo)
+                                .setPEnabledLayerNames(enabledLayers)
+                                .setPEnabledExtensionNames(extensions);
 
     auto createInstanceResult = vk::createInstanceUnique(createInfo);
     if (createInstanceResult.result != vk::Result::eSuccess)
@@ -234,11 +237,10 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
         return;
     }
 
-    auto const createInfo = vk::DebugUtilsMessengerCreateInfoEXT({},
-                                                                 vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError,
-                                                                 vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance,
-                                                                 &DebugCallback,
-                                                                 nullptr);
+    auto const createInfo = vk::DebugUtilsMessengerCreateInfoEXT{}
+                                .setMessageSeverity(vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError)
+                                .setMessageType(vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance)
+                                .setPfnUserCallback(&DebugCallback);
 
     auto createDebugUtilsMessengerResult = m_instance->createDebugUtilsMessengerEXTUnique(createInfo, nullptr, m_dispatch);
     if (createDebugUtilsMessengerResult.result != vk::Result::eSuccess)

@@ -7,22 +7,22 @@
 Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float maxLod)
     : DeviceResource(device)
 {
-    auto const samplerInfo = vk::SamplerCreateInfo({},
-                                                   vk::Filter::eLinear,
-                                                   vk::Filter::eLinear,
-                                                   vk::SamplerMipmapMode::eLinear,
-                                                   vk::SamplerAddressMode::eRepeat,
-                                                   vk::SamplerAddressMode::eRepeat,
-                                                   vk::SamplerAddressMode::eRepeat,
-                                                   0.0F,
-                                                   static_cast<VkBool32>(true),
-                                                   16.0F,
-                                                   static_cast<VkBool32>(false),
-                                                   vk::CompareOp::eAlways,
-                                                   minLod,
-                                                   maxLod,
-                                                   vk::BorderColor::eIntOpaqueBlack,
-                                                   static_cast<VkBool32>(false));
+    auto const samplerInfo = vk::SamplerCreateInfo{}
+                                 .setMinFilter(vk::Filter::eLinear)
+                                 .setMagFilter(vk::Filter::eLinear)
+                                 .setMipmapMode(vk::SamplerMipmapMode::eLinear)
+                                 .setAddressModeU(vk::SamplerAddressMode::eRepeat)
+                                 .setAddressModeV(vk::SamplerAddressMode::eRepeat)
+                                 .setAddressModeW(vk::SamplerAddressMode::eRepeat)
+                                 .setMipLodBias(0.0F)
+                                 .setAnisotropyEnable(static_cast<vk::Bool32>(true))
+                                 .setMaxAnisotropy(16.0F)
+                                 .setCompareEnable(static_cast<vk::Bool32>(false))
+                                 .setCompareOp(vk::CompareOp::eAlways)
+                                 .setMinLod(minLod)
+                                 .setMaxLod(maxLod)
+                                 .setBorderColor(vk::BorderColor::eIntOpaqueBlack)
+                                 .setUnnormalizedCoordinates(static_cast<vk::Bool32>(false));
 
     auto createSamplerResult = DeviceHandle().createSamplerUnique(samplerInfo);
     if (createSamplerResult.result != vk::Result::eSuccess)
