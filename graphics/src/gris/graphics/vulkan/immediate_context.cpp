@@ -20,7 +20,9 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
 
     m_graphicsQueue = DeviceHandle().getQueue(graphicsQueueFamily, 0);
 
-    auto const poolInfo = vk::CommandPoolCreateInfo(vk::CommandPoolCreateFlagBits::eTransient, graphicsQueueFamily);
+    auto const poolInfo = vk::CommandPoolCreateInfo{}
+                                   .setFlags(vk::CommandPoolCreateFlagBits::eTransient)
+                                   .setQueueFamilyIndex(graphicsQueueFamily);
 
     auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo);
     if (createCommandPoolResult.result != vk::Result::eSuccess)
@@ -219,7 +221,11 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
     std::array waitStages = { vk::PipelineStageFlags(vk::PipelineStageFlagBits::eColorAttachmentOutput) };
     std::array commandBuffers = { context->CommandBufferHandle() };
-    std::array submits = { vk::SubmitInfo(waitSemaphoreHandles, waitStages, commandBuffers, signalSemaphoreHandles) };
+    std::array submits = { vk::SubmitInfo{}
+                                    .setWaitSemaphores(waitSemaphoreHandles)
+                                    .setWaitDstStageMask(waitStages)
+                                    .setCommandBuffers(commandBuffers)
+                                    .setSignalSemaphores(signalSemaphoreHandles) };
 
     auto const submitResult = m_graphicsQueue.submit(submits, fence.FenceHandle());
     if (submitResult != vk::Result::eSuccess)
@@ -232,10 +238,10 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
 [[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::ImmediateContext::BeginSingleTimeCommands()
 {
-    auto const allocInfo = vk::CommandBufferAllocateInfo(
-             m_commandPool.get(),
-             vk::CommandBufferLevel::ePrimary,
-             1);
+    auto const allocInfo = vk::CommandBufferAllocateInfo{}
+                                    .setCommandPool(m_commandPool.get())
+                                    .setLevel(vk::CommandBufferLevel::ePrimary)
+                                    .setCommandBufferCount(1);
 
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
@@ -245,7 +251,7 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
     auto && commandBuffer = allocateCommandBuffersResult.value.front();
 
-    auto const beginInfo = vk::CommandBufferBeginInfo(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    auto const beginInfo = vk::CommandBufferBeginInfo{}.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
     auto const beginResult = commandBuffer->begin(beginInfo);
     if (beginResult != vk::Result::eSuccess)
@@ -267,7 +273,7 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
     }
 
     std::array commandBuffers = { commandBuffer };
-    std::array submits = { vk::SubmitInfo({}, {}, commandBuffers, {}) };
+    std::array submits = { vk::SubmitInfo{}.setCommandBuffers(commandBuffers) };
 
     auto const submitResult = m_graphicsQueue.submit(submits, vk::Fence());
     if (submitResult != vk::Result::eSuccess)

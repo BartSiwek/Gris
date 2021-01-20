@@ -81,11 +81,13 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
     queueCreateInfos.reserve(uniqueQueueFamilies.size());
     for (auto queueFamily : uniqueQueueFamilies)
     {
-        queueCreateInfos.emplace_back(vk::DeviceQueueCreateFlags{}, queueFamily, 1, queuePriority.data());
+        queueCreateInfos.emplace_back(vk::DeviceQueueCreateInfo{}
+                                               .setQueueFamilyIndex(queueFamily)
+                                               .setQueuePriorities(queuePriority));
     }
 
     vk::PhysicalDeviceFeatures deviceFeatures{};
-    deviceFeatures.samplerAnisotropy = static_cast<VkBool32>(true);
+    deviceFeatures.samplerAnisotropy = static_cast<vk::Bool32>(true);
 
     std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)
@@ -93,7 +95,11 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
         enabledLayers.insert(enabledLayers.end(), VALIDATION_LAYERS.begin(), VALIDATION_LAYERS.end());
     }
 
-    vk::DeviceCreateInfo createInfo({}, queueCreateInfos, enabledLayers, REQUIRED_EXTENSIONS, &deviceFeatures);
+    auto const createInfo = vk::DeviceCreateInfo{}
+                                     .setQueueCreateInfos(queueCreateInfos)
+                                     .setPEnabledLayerNames(enabledLayers)
+                                     .setPEnabledExtensionNames(REQUIRED_EXTENSIONS)
+                                     .setPEnabledFeatures(&deviceFeatures);
 
     auto createDeviceResult = m_physicalDevice.createDeviceUnique(createInfo);
     if (createDeviceResult.result != vk::Result::eSuccess)

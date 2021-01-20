@@ -6,7 +6,10 @@
 Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
 {
-    auto const bufferInfo = vk::BufferCreateInfo({}, size, usage, vk::SharingMode::eExclusive);
+    auto const bufferInfo = vk::BufferCreateInfo{}
+                                     .setSize(size)
+                                     .setUsage(usage)
+                                     .setSharingMode(vk::SharingMode::eExclusive);
 
     auto createBufferResult = DeviceHandle().createBufferUnique(bufferInfo);
     if (createBufferResult.result != vk::Result::eSuccess)

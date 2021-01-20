@@ -11,8 +11,13 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureV
 {
     std::array attachments = { colorImageView.ImageViewHandle(), depthImageView.ImageViewHandle(), swapChainImageView.ImageViewHandle() };
 
-    auto const framebufferInfo = vk::FramebufferCreateInfo({}, renderPass.RenderPassHandle(), attachments, width, height, 1);
-
+    auto const framebufferInfo = vk::FramebufferCreateInfo{}
+                                          .setRenderPass(renderPass.RenderPassHandle())
+                                          .setAttachments(attachments)
+                                          .setWidth(width)
+                                          .setHeight(height)
+                                          .setLayers(1);
+    
     auto createFramebufferResult = DeviceHandle().createFramebufferUnique(framebufferInfo);
     if (createFramebufferResult.result != vk::Result::eSuccess)
     {

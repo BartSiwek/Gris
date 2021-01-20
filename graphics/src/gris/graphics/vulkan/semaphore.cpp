@@ -7,7 +7,7 @@
 Gris::Graphics::Vulkan::Semaphore::Semaphore(Device * device)
     : DeviceResource(device)
 {
-    auto const semaphoreInfo = vk::SemaphoreCreateInfo();
+    auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 
     auto imageSemaphoreCreateResult = DeviceHandle().createSemaphoreUnique(semaphoreInfo);
     if (imageSemaphoreCreateResult.result != vk::Result::eSuccess)

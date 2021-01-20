@@ -59,7 +59,9 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
 {
     auto const layoutCount = m_textureViews.size();
     std::vector<vk::DescriptorSetLayout> layouts(layoutCount, ParentPipelineStateObject().DescriptorSetLayoutHandle());
-    auto const allocInfo = vk::DescriptorSetAllocateInfo(DescriptorPoolHandle(), layouts);
+    auto const allocInfo = vk::DescriptorSetAllocateInfo{}
+                                    .setDescriptorPool(DescriptorPoolHandle())
+                                    .setSetLayouts(layouts);
 
     auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo);
     if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
@@ -72,12 +74,28 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
     for (size_t i = 0; i < layoutCount; i++)
     {
         auto const & bufferView = m_bufferViews[i]["ubo"];
-        std::array bufferInfo = { vk::DescriptorBufferInfo(bufferView->BufferHandle(), bufferView->Offset(), bufferView->Size()) };
-        std::array imageInfo = { vk::DescriptorImageInfo(m_samplers[i]["texSampler"]->SamplerHandle(), m_textureViews[i]["texSampler"]->ImageViewHandle(), vk::ImageLayout::eShaderReadOnlyOptimal) };
+        std::array bufferInfo = { vk::DescriptorBufferInfo{}
+                                           .setBuffer(bufferView->BufferHandle())
+                                           .setOffset(bufferView->Offset())
+                                           .setRange(bufferView->Size()) };
+        std::array imageInfo = { vk::DescriptorImageInfo{}
+                                          .setSampler(m_samplers[i]["texSampler"]->SamplerHandle())
+                                          .setImageView(m_textureViews[i]["texSampler"]->ImageViewHandle())
+                                          .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal) };
 
         std::array descriptorWrites = {
-            vk::WriteDescriptorSet(m_descriptorSets[i], 0, 0, vk::DescriptorType::eUniformBuffer, {}, bufferInfo, {}),
-            vk::WriteDescriptorSet(m_descriptorSets[i], 1, 0, vk::DescriptorType::eCombinedImageSampler, imageInfo, {}, {})
+            vk::WriteDescriptorSet{}
+                     .setDstSet(m_descriptorSets[i])
+                     .setDstBinding(0)
+                     .setDstArrayElement(0)
+                     .setDescriptorType(vk::DescriptorType::eUniformBuffer)
+                     .setBufferInfo(bufferInfo),
+            vk::WriteDescriptorSet{}
+                     .setDstSet(m_descriptorSets[i])
+                     .setDstBinding(1)
+                     .setDstArrayElement(0)
+                     .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                     .setImageInfo(imageInfo),
         };
 
         DeviceHandle().updateDescriptorSets(descriptorWrites, {});

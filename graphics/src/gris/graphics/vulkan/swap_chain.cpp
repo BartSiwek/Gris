@@ -86,21 +86,21 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
         queueFamilyIndices.push_back(indices.presentFamily.value());
     }
 
-    auto const createInfo = vk::SwapchainCreateInfoKHR({},
-                                                       window.SurfaceHandle(),
-                                                       imageCount,
-                                                       surfaceFormat.format,
-                                                       surfaceFormat.colorSpace,
-                                                       extent,
-                                                       1,
-                                                       vk::ImageUsageFlagBits::eColorAttachment,
-                                                       imageSharingMode,
-                                                       queueFamilyIndices,
-                                                       swapChainSupport.capabilities.currentTransform,
-                                                       vk::CompositeAlphaFlagBitsKHR::eOpaque,
-                                                       presentMode,
-                                                       static_cast<VkBool32>(true),
-                                                       nullptr);
+    auto const createInfo = vk::SwapchainCreateInfoKHR{}
+                                     .setSurface(window.SurfaceHandle())
+                                     .setMinImageCount(imageCount)
+                                     .setImageFormat(surfaceFormat.format)
+                                     .setImageColorSpace(surfaceFormat.colorSpace)
+                                     .setImageExtent(extent)
+                                     .setImageArrayLayers(1)
+                                     .setImageUsage(vk::ImageUsageFlagBits::eColorAttachment)
+                                     .setImageSharingMode(imageSharingMode)
+                                     .setQueueFamilyIndices(queueFamilyIndices)
+                                     .setPreTransform(swapChainSupport.capabilities.currentTransform)
+                                     .setCompositeAlpha(vk::CompositeAlphaFlagBitsKHR::eOpaque)
+                                     .setPresentMode(presentMode)
+                                     .setClipped(static_cast<vk::Bool32>(true))
+                                     .setOldSwapchain({});
 
     auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo);
     if (createSwapChainResult.result != vk::Result::eSuccess)
@@ -186,7 +186,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     m_currentVirtualFrame = (m_currentVirtualFrame + 1) % m_virtualFrameCount;
 
     std::array fences = { m_renderFinishedFences[virtualFrameIndex].FenceHandle() };
-    auto const waitResult = DeviceHandle().waitForFences(fences, static_cast<VkBool32>(true), std::numeric_limits<uint64_t>::max());
+    auto const waitResult = DeviceHandle().waitForFences(fences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max());
     if (waitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Failed to wait for current frame fence!", waitResult);
@@ -211,7 +211,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     if (previousVirtualFrameIndex != virtualFrameIndex && previousVirtualFrameIndex != std::numeric_limits<uint32_t>::max())
     {
         std::array additionalFences = { m_renderFinishedFences[previousVirtualFrameIndex].FenceHandle() };
-        auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, static_cast<VkBool32>(true), std::numeric_limits<uint64_t>::max());
+        auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max());
         if (additionalFenceWaitResult != vk::Result::eSuccess)
         {
             throw VulkanEngineException("Failed to wait for image in flight fence!", additionalFenceWaitResult);
@@ -238,7 +238,10 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 {
     std::array swapChains = { m_swapChain.get() };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };
-    auto presentInfo = static_cast<VkPresentInfoKHR>(vk::PresentInfoKHR(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle(), swapChains, imageIndices));
+    auto presentInfo = static_cast<VkPresentInfoKHR>(vk::PresentInfoKHR{}
+                                                              .setWaitSemaphores(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle())
+                                                              .setSwapchains(swapChains)
+                                                              .setImageIndices(imageIndices));
 
     auto const presentResult = static_cast<vk::Result>(vkQueuePresentKHR(static_cast<VkQueue>(m_presentQueue), &presentInfo));
     if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR)

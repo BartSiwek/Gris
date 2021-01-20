@@ -16,7 +16,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
-    auto const poolInfo = vk::CommandPoolCreateInfo({}, graphicsQueueFamily);
+    auto const poolInfo = vk::CommandPoolCreateInfo{}.setQueueFamilyIndex(graphicsQueueFamily);
 
     auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo);
     if (createCommandPoolResult.result != vk::Result::eSuccess)
@@ -26,7 +26,11 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 
     m_commandPool = std::move(createCommandPoolResult.value);
 
-    auto const allocInfo = vk::CommandBufferAllocateInfo(m_commandPool.get(), vk::CommandBufferLevel::ePrimary, 1);
+    auto const allocInfo = vk::CommandBufferAllocateInfo{}
+                                    .setCommandPool(m_commandPool.get())
+                                    .setLevel(vk::CommandBufferLevel::ePrimary)
+                                    .setCommandBufferCount(1);
+    
     auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo);
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
     {
@@ -48,7 +52,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 
 void Gris::Graphics::Vulkan::DeferredContext::Begin()
 {
-    auto const beginInfo = vk::CommandBufferBeginInfo();
+    auto const beginInfo = vk::CommandBufferBeginInfo{};
 
     auto const beginResult = m_commandBuffers[m_frameIndex]->begin(beginInfo);
     if (beginResult != vk::Result::eSuccess)
@@ -66,7 +70,11 @@ void Gris::Graphics::Vulkan::DeferredContext::BeginRenderPass(const RenderPass &
         vk::ClearDepthStencilValue(1.0F, 0)
     };
 
-    auto const renderPassInfo = vk::RenderPassBeginInfo(renderPass.RenderPassHandle(), framebuffer.FramebufferHandle(), vk::Rect2D({ 0, 0 }, extent), clearValues);
+    auto const renderPassInfo = vk::RenderPassBeginInfo{}
+                                         .setRenderPass(renderPass.RenderPassHandle())
+                                         .setFramebuffer(framebuffer.FramebufferHandle())
+                                         .setRenderArea(vk::Rect2D({ 0, 0 }, extent))
+                                         .setClearValues(clearValues);
 
     m_commandBuffers[m_frameIndex]->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 }
