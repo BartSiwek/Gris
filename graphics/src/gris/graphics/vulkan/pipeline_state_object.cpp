@@ -167,10 +167,10 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
                                      .setSampleShadingEnable(static_cast<vk::Bool32>(false));
 
     auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo{}
-                                  .setDepthTestEnable(true)
-                                  .setDepthWriteEnable(true)
+                                  .setDepthTestEnable(static_cast<vk::Bool32>(true))
+                                  .setDepthWriteEnable(static_cast<vk::Bool32>(true))
                                   .setDepthCompareOp(vk::CompareOp::eLess)
-                                  .setStencilTestEnable(false);
+                                  .setStencilTestEnable(static_cast<vk::Bool32>(false));
 
     auto const colorBlendAttachments = std::array{
         vk::PipelineColorBlendAttachmentState{}
