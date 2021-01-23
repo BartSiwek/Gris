@@ -29,7 +29,7 @@ enable_testing()
 setup_standard_project_settings()
 
 add_library(Gris.ProjectOptions INTERFACE)
-target_compile_features(Gris.ProjectOptions INTERFACE cxx_std_17)
+target_compile_features(Gris.ProjectOptions INTERFACE cxx_std_20)
 
 add_library(Gris.ProjectWarnings INTERFACE)
 set_project_warnings(Gris.ProjectWarnings)
