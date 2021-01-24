@@ -29,6 +29,8 @@ struct MyLoggerImpl
     }
 };
 
+static_assert(LoggerLike<MyLoggerImpl>);  // This works too
+
 using MyLogger = Logger<MyLoggerImpl>;
 
 int main()
