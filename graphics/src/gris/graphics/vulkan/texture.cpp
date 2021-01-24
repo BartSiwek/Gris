@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
                                .setQueueFamilyIndices({})
                                .setInitialLayout(vk::ImageLayout::eUndefined);
 
-    auto createImageResult = DeviceHandle().createImageUnique(imageInfo);
+    auto createImageResult = DeviceHandle().createImageUnique(imageInfo, nullptr, Dispatch());
     if (createImageResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating image", createImageResult);

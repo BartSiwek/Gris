@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(Device * device)
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 
-    auto imageSemaphoreCreateResult = DeviceHandle().createSemaphoreUnique(semaphoreInfo);
+    auto imageSemaphoreCreateResult = DeviceHandle().createSemaphoreUnique(semaphoreInfo, nullptr, Dispatch());
     if (imageSemaphoreCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating frame image available semaphore", imageSemaphoreCreateResult);

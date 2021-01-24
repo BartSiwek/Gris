@@ -15,7 +15,7 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
 
     auto const fenceInfo = vk::FenceCreateInfo{}.setFlags(flags);
 
-    auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo);
+    auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo, nullptr, Dispatch());
     if (fenceCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating frame fence", fenceCreateResult);

@@ -102,7 +102,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
                                 .setClipped(static_cast<vk::Bool32>(true))
                                 .setOldSwapchain({});
 
-    auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo);
+    auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo, nullptr, Dispatch());
     if (createSwapChainResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating swap chain", createSwapChainResult);
@@ -110,14 +110,14 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 
     m_swapChain = std::move(createSwapChainResult.value);
 
-    auto swapChainImagesResult = DeviceHandle().getSwapchainImagesKHR(m_swapChain.get());
+    auto swapChainImagesResult = DeviceHandle().getSwapchainImagesKHR(m_swapChain.get(), Dispatch());
     if (swapChainImagesResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error getting swap chain images", swapChainImagesResult);
     }
 
     m_swapChainImages = std::move(swapChainImagesResult.value);
-    m_presentQueue = DeviceHandle().getQueue(device->QueueFamilies().presentFamily.value(), 0);
+    m_presentQueue = DeviceHandle().getQueue(device->QueueFamilies().presentFamily.value(), 0, Dispatch());
 
     m_swapChainImageFormat = surfaceFormat.format;
     m_swapChainExtent = extent;
@@ -186,7 +186,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     m_currentVirtualFrame = (m_currentVirtualFrame + 1) % m_virtualFrameCount;
 
     std::array fences = { m_renderFinishedFences[virtualFrameIndex].FenceHandle() };
-    auto const waitResult = DeviceHandle().waitForFences(fences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max());
+    auto const waitResult = DeviceHandle().waitForFences(fences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max(), Dispatch());
     if (waitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Failed to wait for current frame fence!", waitResult);
@@ -195,7 +195,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     ///
 
     uint32_t imageIndex = 0;
-    auto const acquireResult = static_cast<vk::Result>(vkAcquireNextImageKHR(static_cast<VkDevice>(DeviceHandle()), static_cast<VkSwapchainKHR>(m_swapChain.get()), std::numeric_limits<uint64_t>::max(), static_cast<VkSemaphore>(m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle()), VK_NULL_HANDLE, &imageIndex));
+    auto const acquireResult = static_cast<vk::Result>(Dispatch().vkAcquireNextImageKHR(static_cast<VkDevice>(DeviceHandle()), static_cast<VkSwapchainKHR>(m_swapChain.get()), std::numeric_limits<uint64_t>::max(), static_cast<VkSemaphore>(m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle()), VK_NULL_HANDLE, &imageIndex));
     if (acquireResult == vk::Result::eErrorOutOfDateKHR)
     {
         return {};
@@ -211,7 +211,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     if (previousVirtualFrameIndex != virtualFrameIndex && previousVirtualFrameIndex != std::numeric_limits<uint32_t>::max())
     {
         std::array additionalFences = { m_renderFinishedFences[previousVirtualFrameIndex].FenceHandle() };
-        auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max());
+        auto const additionalFenceWaitResult = DeviceHandle().waitForFences(additionalFences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max(), Dispatch());
         if (additionalFenceWaitResult != vk::Result::eSuccess)
         {
             throw VulkanEngineException("Failed to wait for image in flight fence!", additionalFenceWaitResult);
@@ -223,7 +223,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     ///
 
     fences = { m_renderFinishedFences[virtualFrameIndex].FenceHandle() };
-    auto const resetResult = DeviceHandle().resetFences(fences);
+    auto const resetResult = DeviceHandle().resetFences(fences, Dispatch());
     if (resetResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error resetting current frame fence", resetResult);
@@ -243,7 +243,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
                                                          .setSwapchains(swapChains)
                                                          .setImageIndices(imageIndices));
 
-    auto const presentResult = static_cast<vk::Result>(vkQueuePresentKHR(static_cast<VkQueue>(m_presentQueue), &presentInfo));
+    auto const presentResult = static_cast<vk::Result>(Dispatch().vkQueuePresentKHR(static_cast<VkQueue>(m_presentQueue), &presentInfo));
     if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR)
     {
         return false;

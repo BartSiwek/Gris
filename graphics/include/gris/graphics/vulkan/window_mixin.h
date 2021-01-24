@@ -26,7 +26,9 @@ public:
     }
 
 protected:
-    static vk::Instance InstanceHandle();
+    static vk::Instance & InstanceHandle();
+
+    static vk::DispatchLoaderDynamic & Dispatch();
 
     void SetSurfaceHandle(vk::UniqueSurfaceKHR surface)
     {

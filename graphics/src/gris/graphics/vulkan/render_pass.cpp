@@ -93,7 +93,7 @@ void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFo
                                     .setSubpasses(subpasses)
                                     .setDependencies(dependencies);
 
-    auto createRenderPassResult = DeviceHandle().createRenderPassUnique(renderPassInfo);
+    auto createRenderPassResult = DeviceHandle().createRenderPassUnique(renderPassInfo, nullptr, Dispatch());
     if (createRenderPassResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating render pass", createRenderPassResult);

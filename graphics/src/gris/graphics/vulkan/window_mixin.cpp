@@ -4,7 +4,14 @@
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Instance Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
+vk::Instance & Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
 {
-    return Instance::InstanceHandle({});
+    return Instance::Get().InstanceHandle({});
+}
+
+// -------------------------------------------------------------------------------------------------
+
+vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::WindowMixin::Dispatch()
+{
+    return Instance::Get().Dispatch();
 }

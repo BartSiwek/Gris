@@ -63,7 +63,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
                                .setDescriptorPool(DescriptorPoolHandle())
                                .setSetLayouts(layouts);
 
-    auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo);
+    auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
     if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error allocating descriptor sets", allocateDescriptorSetsResult);
@@ -98,6 +98,6 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets()
                 .setImageInfo(imageInfo),
         };
 
-        DeviceHandle().updateDescriptorSets(descriptorWrites, {});
+        DeviceHandle().updateDescriptorSets(descriptorWrites, {}, Dispatch());
     }
 }

@@ -75,28 +75,81 @@ void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter ge
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Instance Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */)
+Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
 {
-    return GetInstance().m_instance.get();
+    static Instance s_instance = {};
+    return s_instance;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] std::vector<vk::PhysicalDevice> Gris::Graphics::Vulkan::Instance::EnumeratePhysicalDevices()
+[[nodiscard]] const vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */) const
 {
-    auto const enumeratePhysicalDevicesResult = GetInstance().m_instance->enumeratePhysicalDevices();
-    if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error enumerating physical devices", enumeratePhysicalDevicesResult);
-    }
-
-    return enumeratePhysicalDevicesResult.value;
+    return m_instance.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::Instance::CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device)
+[[nodiscard]] vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */)
 {
+    return m_instance.get();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] const vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Instance::Dispatch() const
+{
+    return m_dispatch;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Instance::Dispatch()
+{
+    return m_dispatch;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::DispatchLoaderDynamic Gris::Graphics::Vulkan::Instance::CreateDispatch(const vk::Device & device)
+{
+    vk::DispatchLoaderDynamic result;
+    PFN_vkGetInstanceProcAddr getInstanceProcAddr = m_loader.template getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    PFN_vkGetDeviceProcAddr getDeviceProcAddr = m_loader.template getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
+    result.init(m_instance.get(), getInstanceProcAddr, device, getDeviceProcAddr);
+    return result;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::Instance::CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch)
+{
+    // Copy the function pointers from device dispatch to the VMA's internal structure
+    auto vulkanFunctions = VmaVulkanFunctions{};
+    vulkanFunctions.vkGetPhysicalDeviceProperties = dispatch.vkGetPhysicalDeviceProperties;
+    vulkanFunctions.vkGetPhysicalDeviceMemoryProperties = dispatch.vkGetPhysicalDeviceMemoryProperties;
+    vulkanFunctions.vkAllocateMemory = dispatch.vkAllocateMemory;
+    vulkanFunctions.vkFreeMemory = dispatch.vkFreeMemory;
+    vulkanFunctions.vkMapMemory = dispatch.vkMapMemory;
+    vulkanFunctions.vkUnmapMemory = dispatch.vkUnmapMemory;
+    vulkanFunctions.vkFlushMappedMemoryRanges = dispatch.vkFlushMappedMemoryRanges;
+    vulkanFunctions.vkInvalidateMappedMemoryRanges = dispatch.vkInvalidateMappedMemoryRanges;
+    vulkanFunctions.vkBindBufferMemory = dispatch.vkBindBufferMemory;
+    vulkanFunctions.vkBindImageMemory = dispatch.vkBindImageMemory;
+    vulkanFunctions.vkGetBufferMemoryRequirements = dispatch.vkGetBufferMemoryRequirements;
+    vulkanFunctions.vkGetImageMemoryRequirements = dispatch.vkGetImageMemoryRequirements;
+    vulkanFunctions.vkCreateBuffer = dispatch.vkCreateBuffer;
+    vulkanFunctions.vkDestroyBuffer = dispatch.vkDestroyBuffer;
+    vulkanFunctions.vkCreateImage = dispatch.vkCreateImage;
+    vulkanFunctions.vkDestroyImage = dispatch.vkDestroyImage;
+    vulkanFunctions.vkCmdCopyBuffer = dispatch.vkCmdCopyBuffer;
+    vulkanFunctions.vkGetBufferMemoryRequirements2KHR = dispatch.vkGetBufferMemoryRequirements2KHR;
+    vulkanFunctions.vkGetImageMemoryRequirements2KHR = dispatch.vkGetImageMemoryRequirements2KHR;
+    vulkanFunctions.vkBindBufferMemory2KHR = dispatch.vkBindBufferMemory2KHR;
+    vulkanFunctions.vkBindImageMemory2KHR = dispatch.vkBindImageMemory2KHR;
+    vulkanFunctions.vkGetPhysicalDeviceMemoryProperties2KHR = dispatch.vkGetPhysicalDeviceMemoryProperties2KHR;
+
+    // Create the VMA
     auto allocatorInfo = VmaAllocatorCreateInfo{};
     allocatorInfo.flags = {};
     allocatorInfo.physicalDevice = static_cast<VkPhysicalDevice>(physicalDevice);
@@ -106,9 +159,9 @@ void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter ge
     allocatorInfo.pDeviceMemoryCallbacks = nullptr;
     allocatorInfo.frameInUseCount = 0;  // TODO: Easy to set this correctly
     allocatorInfo.pHeapSizeLimit = nullptr;
-    allocatorInfo.pVulkanFunctions = nullptr;
+    allocatorInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorInfo.pRecordSettings = nullptr;
-    allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance.get());
+    allocatorInfo.instance = static_cast<VkInstance>(m_instance.get());
     allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_0;
 
     VmaAllocator allocator = {};
@@ -123,10 +176,15 @@ void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter ge
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::GetInstance()
+[[nodiscard]] std::vector<vk::PhysicalDevice> Gris::Graphics::Vulkan::Instance::EnumeratePhysicalDevices()
 {
-    static Instance s_instance = {};
-    return s_instance;
+    auto const enumeratePhysicalDevicesResult = m_instance->enumeratePhysicalDevices(m_dispatch);
+    if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
+    {
+        throw VulkanEngineException("Error enumerating physical devices", enumeratePhysicalDevicesResult);
+    }
+
+    return enumeratePhysicalDevicesResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -146,40 +204,6 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::GetInstance
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport()
-{
-    auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties();
-    if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error enumerating instance layer properties", enumerateInstanceLayerPropertiesResult);
-    }
-
-    auto const & availableLayers = enumerateInstanceLayerPropertiesResult.value;
-
-    for (auto const & layerName : VALIDATION_LAYERS)
-    {
-        auto layerFound = false;
-
-        for (auto const & layerProperties : availableLayers)
-        {
-            if (strcmp(layerName, layerProperties.layerName) == 0)
-            {
-                layerFound = true;
-                break;
-            }
-        }
-
-        if (!layerFound)
-        {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-// -------------------------------------------------------------------------------------------------
-
 Gris::Graphics::Vulkan::Instance::Instance()
 {
     CreateInstance();
@@ -190,6 +214,9 @@ Gris::Graphics::Vulkan::Instance::Instance()
 
 void Gris::Graphics::Vulkan::Instance::CreateInstance()
 {
+    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    m_dispatch.init(vkGetInstanceProcAddr);
+
     if constexpr (ENABLE_VALIDATION_LAYERS)
     {
         auto const validationLayerSupport = CheckValidationLayerSupport();
@@ -218,14 +245,14 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
                                 .setPEnabledLayerNames(enabledLayers)
                                 .setPEnabledExtensionNames(extensions);
 
-    auto createInstanceResult = vk::createInstanceUnique(createInfo);
+    auto createInstanceResult = vk::createInstanceUnique(createInfo, nullptr, m_dispatch);
     if (createInstanceResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating Vulkan instance", createInstanceResult);
     }
 
     m_instance = std::move(createInstanceResult.value);
-    m_dispatch = vk::DispatchLoaderDynamic(m_instance.get(), vkGetInstanceProcAddr);
+    m_dispatch.init(m_instance.get());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -249,4 +276,38 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
     }
 
     m_debugMessenger = std::move(createDebugUtilsMessengerResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport()
+{
+    auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties(m_dispatch);
+    if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)
+    {
+        throw VulkanEngineException("Error enumerating instance layer properties", enumerateInstanceLayerPropertiesResult);
+    }
+
+    auto const & availableLayers = enumerateInstanceLayerPropertiesResult.value;
+
+    for (auto const & layerName : VALIDATION_LAYERS)
+    {
+        auto layerFound = false;
+
+        for (auto const & layerProperties : availableLayers)
+        {
+            if (strcmp(layerName, layerProperties.layerName) == 0)
+            {
+                layerFound = true;
+                break;
+            }
+        }
+
+        if (!layerFound)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

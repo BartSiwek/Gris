@@ -1,3 +1,6 @@
 #pragma once
 
+#include "vulkan_headers.h"
+
+#define VMA_STATIC_VULKAN_FUNCTIONS 0
 #include <vk_mem_alloc.h>

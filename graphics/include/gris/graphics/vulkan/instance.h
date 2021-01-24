@@ -26,9 +26,7 @@ public:
 
     static void InstallExtensionGetter(ExtensionGetter getter);
 
-    [[nodiscard]] static vk::Instance InstanceHandle(InstanceHandleBadge badge);
-    [[nodiscard]] static std::vector<vk::PhysicalDevice> EnumeratePhysicalDevices();
-    [[nodiscard]] static Allocator CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device);
+    [[nodiscard]] static Instance & Get();
 
     ~Instance() = default;
 
@@ -38,11 +36,19 @@ public:
     Instance(Instance &&) noexcept = delete;
     Instance & operator=(Instance &&) noexcept = delete;
 
-private:
-    [[nodiscard]] static Instance & GetInstance();
+    [[nodiscard]] const vk::Instance & InstanceHandle(InstanceHandleBadge badge) const;
+    [[nodiscard]] vk::Instance & InstanceHandle(InstanceHandleBadge badge);
 
+    [[nodiscard]] const vk::DispatchLoaderDynamic & Dispatch() const;
+    [[nodiscard]] vk::DispatchLoaderDynamic & Dispatch();
+
+    [[nodiscard]] vk::DispatchLoaderDynamic CreateDispatch(const vk::Device & device);
+    [[nodiscard]] Allocator CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch);
+
+    [[nodiscard]] std::vector<vk::PhysicalDevice> EnumeratePhysicalDevices();
+
+private:
     [[nodiscard]] static std::vector<const char *> GetRequiredExtensions();
-    [[nodiscard]] static bool CheckValidationLayerSupport();
 
     static ExtensionGetter s_extensionGetter;
 
@@ -51,8 +57,11 @@ private:
     void CreateInstance();
     void SetupDebugMessenger();
 
+    [[nodiscard]] bool CheckValidationLayerSupport();
+
     vk::UniqueInstance m_instance = {};
-    vk::DispatchLoaderDynamic m_dispatch = {};
+    vk::DynamicLoader m_loader = {};
+    vk::DispatchLoaderDynamic m_dispatch;
     vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> m_debugMessenger = {};
 };
 

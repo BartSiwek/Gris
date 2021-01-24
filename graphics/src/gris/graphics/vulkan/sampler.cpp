@@ -24,7 +24,7 @@ Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float ma
                                  .setBorderColor(vk::BorderColor::eIntOpaqueBlack)
                                  .setUnnormalizedCoordinates(static_cast<vk::Bool32>(false));
 
-    auto createSamplerResult = DeviceHandle().createSamplerUnique(samplerInfo);
+    auto createSamplerResult = DeviceHandle().createSamplerUnique(samplerInfo, nullptr, Dispatch());
     if (createSamplerResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating sampler", createSamplerResult);

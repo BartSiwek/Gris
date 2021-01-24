@@ -36,7 +36,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
                                                        .setBaseArrayLayer(0)
                                                        .setLayerCount(1));
 
-    auto createImageViewResult = DeviceHandle().createImageViewUnique(viewInfo);
+    auto createImageViewResult = DeviceHandle().createImageViewUnique(viewInfo, nullptr, Dispatch());
     if (createImageViewResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating image view", createImageViewResult);

@@ -1,5 +1,6 @@
 #include <gris/graphics/vulkan/utils.h>
 
+#include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
@@ -9,19 +10,19 @@
 {
     using namespace Vulkan;
 
-    auto const surfaceCapabilitiesResult = physicalDevice.getSurfaceCapabilitiesKHR(surface);
+    auto const surfaceCapabilitiesResult = physicalDevice.getSurfaceCapabilitiesKHR(surface, Instance::Get().Dispatch());
     if (surfaceCapabilitiesResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error getting surface capabilities", surfaceCapabilitiesResult);
     }
 
-    auto const surfaceFormatsResult = physicalDevice.getSurfaceFormatsKHR(surface);
+    auto const surfaceFormatsResult = physicalDevice.getSurfaceFormatsKHR(surface, Instance::Get().Dispatch());
     if (surfaceFormatsResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error getting surface formats", surfaceFormatsResult);
     }
 
-    auto const surfacePresentModesResult = physicalDevice.getSurfacePresentModesKHR(surface);
+    auto const surfacePresentModesResult = physicalDevice.getSurfacePresentModesKHR(surface, Instance::Get().Dispatch());
     if (surfacePresentModesResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error getting surface present modes", surfacePresentModesResult);

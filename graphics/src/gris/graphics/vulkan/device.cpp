@@ -12,6 +12,7 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
+#include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
@@ -20,7 +21,8 @@ Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
     : m_physicalDevice(physicalDevice)
 {
     m_device = m_physicalDevice.CreateDevice();
-    m_allocator = m_physicalDevice.CreateAllocator(m_device.get());
+    m_dispatch = Instance::Get().CreateDispatch(m_device.get());
+    m_allocator = m_physicalDevice.CreateAllocator(m_device.get(), m_dispatch);
     m_context = std::make_unique<ImmediateContext>(this);
 }
 
@@ -63,7 +65,7 @@ Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
 
 void Gris::Graphics::Vulkan::Device::WaitIdle()
 {
-    auto const waitResult = m_device->waitIdle();
+    auto const waitResult = m_device->waitIdle(m_dispatch);
     if (waitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Idle wait failed", waitResult);
@@ -113,7 +115,7 @@ void Gris::Graphics::Vulkan::Device::CreateDescriptorPool(uint32_t imageCount)
                               .setMaxSets(imageCount)
                               .setPoolSizes(poolSizes);
 
-    auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo);
+    auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo, nullptr, m_dispatch);
     if (createDescriptorPoolResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);

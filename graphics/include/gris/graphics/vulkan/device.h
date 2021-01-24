@@ -74,6 +74,7 @@ private:
     PhysicalDevice m_physicalDevice;
 
     vk::UniqueDevice m_device = {};
+    vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
     vk::UniqueDescriptorPool m_descriptorPool = {};
     std::unique_ptr<ImmediateContext> m_context = {};

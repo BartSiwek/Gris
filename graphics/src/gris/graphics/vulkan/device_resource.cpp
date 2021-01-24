@@ -42,6 +42,20 @@ Gris::Graphics::Vulkan::DeviceResource::DeviceResource(Device * device)
 
 // -------------------------------------------------------------------------------------------------
 
+[[nodiscard]] const vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::DeviceResource::Dispatch() const
+{
+    return m_parentDevice->m_dispatch;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::DeviceResource::Dispatch()
+{
+    return m_parentDevice->m_dispatch;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::DeviceResource::AllocatorHandle() const
 {
     return m_parentDevice->AllocatorHandle();
