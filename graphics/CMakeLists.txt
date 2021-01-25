@@ -78,8 +78,8 @@ target_include_directories(Gris.Graphics PUBLIC
 )
 
 target_link_libraries(Gris.Graphics PUBLIC
-  Gris.Dependencies.Vulkan
   CONAN_PKG::vulkan-memory-allocator
+  CONAN_PKG::vulkan-headers
   CONAN_PKG::glfw
 )
 

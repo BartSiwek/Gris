@@ -18,7 +18,7 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureV
                                      .setHeight(height)
                                      .setLayers(1);
 
-    auto createFramebufferResult = DeviceHandle().createFramebufferUnique(framebufferInfo);
+    auto createFramebufferResult = DeviceHandle().createFramebufferUnique(framebufferInfo, nullptr, Dispatch());
     if (createFramebufferResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating framebuffer", createFramebufferResult);

@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
 {
     auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
-    auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo);
+    auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo, nullptr, Dispatch());
     if (createShaderModuleResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating shader module", createShaderModuleResult);

@@ -11,7 +11,7 @@ Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, con
                                 .setUsage(usage)
                                 .setSharingMode(vk::SharingMode::eExclusive);
 
-    auto createBufferResult = DeviceHandle().createBufferUnique(bufferInfo);
+    auto createBufferResult = DeviceHandle().createBufferUnique(bufferInfo, nullptr, Dispatch());
     if (createBufferResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating buffer", createBufferResult);

@@ -89,7 +89,7 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateDescriptorSetLayout()
     auto const bindings = std::array{ uboLayoutBinding, samplerLayoutBinding };
     auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings(bindings);
 
-    auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo);
+    auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo, nullptr, Dispatch());
     if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating descriptor set layout", createDescriptorSetLayoutResult);
@@ -193,7 +193,7 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     auto const descriptorSetLayouts = std::array{ m_descriptorSetLayout.get() };
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}.setSetLayouts(descriptorSetLayouts);
 
-    auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo);
+    auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo, nullptr, Dispatch());
     if (createPipelineLayoutResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating pipeline layout", createPipelineLayoutResult);
@@ -216,7 +216,7 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
                                   .setRenderPass(renderPass.RenderPassHandle())
                                   .setSubpass(0);
 
-    auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo);
+    auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo, nullptr, Dispatch());
     if (createGraphicsPipelineResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating graphics pipeline", createGraphicsPipelineResult);

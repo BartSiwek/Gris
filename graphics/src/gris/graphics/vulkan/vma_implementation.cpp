@@ -9,7 +9,7 @@
 #pragma warning(disable : 4324)
 #endif
 
-#include <vk_mem_alloc.h>
+#include <gris/graphics/vulkan/vma_headers.h>
 
 #ifdef _MSC_VER
 #pragma warning(pop)

@@ -28,6 +28,9 @@ protected:
     [[nodiscard]] const vk::Device & DeviceHandle() const;
     [[nodiscard]] vk::Device & DeviceHandle();
 
+    [[nodiscard]] const vk::DispatchLoaderDynamic & Dispatch() const;
+    [[nodiscard]] vk::DispatchLoaderDynamic & Dispatch();
+
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
