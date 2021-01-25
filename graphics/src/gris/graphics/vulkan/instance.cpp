@@ -114,8 +114,8 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
 [[nodiscard]] vk::DispatchLoaderDynamic Gris::Graphics::Vulkan::Instance::CreateDispatch(const vk::Device & device)
 {
     vk::DispatchLoaderDynamic result;
-    PFN_vkGetInstanceProcAddr getInstanceProcAddr = m_loader.template getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-    PFN_vkGetDeviceProcAddr getDeviceProcAddr = m_loader.template getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
+    auto getInstanceProcAddr = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    auto getDeviceProcAddr = m_loader.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
     result.init(m_instance.get(), getInstanceProcAddr, device, getDeviceProcAddr);
     return result;
 }
@@ -214,7 +214,7 @@ Gris::Graphics::Vulkan::Instance::Instance()
 
 void Gris::Graphics::Vulkan::Instance::CreateInstance()
 {
-    PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    auto vkGetInstanceProcAddr = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
     m_dispatch.init(vkGetInstanceProcAddr);
 
     if constexpr (ENABLE_VALIDATION_LAYERS)
