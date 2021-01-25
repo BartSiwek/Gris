@@ -1,16 +1,14 @@
-#include <gris/graphics/vulkan/glfw/extension_getters.h>
+#include "extension_getters.h"
 
 #include <GLFW/glfw3.h>
 
 // -------------------------------------------------------------------------------------------------
 
-std::vector<const char *> Gris::Graphics::Vulkan::Glfw::GetInstanceExtensionsFromGLFW()
+void Gris::Graphics::Vulkan::Glfw::GetInstanceExtensionsFromGLFW(std::vector<const char *> * extensions)
 {
     uint32_t glfwExtensionCount = 0;
     auto * const glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
-    return extensions;
+    extensions->insert(extensions->end(), glfwExtensions, glfwExtensions + glfwExtensionCount);
 }

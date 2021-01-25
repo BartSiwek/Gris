@@ -6,7 +6,6 @@
 #include <gris/graphics/vulkan/deferred_context.h>
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/framebuffer.h>
-#include <gris/graphics/vulkan/glfw/extension_getters.h>
 #include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/input_layout.h>
@@ -143,7 +142,6 @@ public:
     void run()
     {
         SetLogLevel(Gris::Log::Level::Trace);
-        InstallExtensionGetters();
         InitWindow();
         InitVulkan();
         MainLoop();
@@ -191,11 +189,6 @@ private:
     void WindowResized(uint32_t /* width */, uint32_t /* height */) override
     {
         m_framebufferResized = true;
-    }
-
-    static void InstallExtensionGetters()
-    {
-        Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(Gris::Graphics::Vulkan::Glfw::GetInstanceExtensionsFromGLFW);
     }
 
     void InitWindow()

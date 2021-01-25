@@ -17,6 +17,8 @@ include(conan)
 
 option(GRIS_ASSERT_COMPILATION_TESTS "Enable or disable Gris compilation assert tests" OFF)
 
+option(ENABLE_GLFW "Enable or disable use of GLFW for window management" ON)
+
 set(GRIS_LOG_LEVEL INFO CACHE STRING "Set minimum enabled logging level")
 set_property(CACHE GRIS_LOG_LEVEL PROPERTY STRINGS TRACE DEBUG INFO WARNING ERROR CRITICAL OFF)
 
@@ -47,10 +49,19 @@ set(CONAN_REQUIRES
   vulkan-headers/1.2.154.0
   vulkan-memory-allocator/2.3.0
 )
+
 set(CONAN_OPTIONS "")
+
 set(CONAN_IMPORTS
   "bin, *.dll -> ./bin"
 )
+
+if(ENABLE_GLFW)
+  list(APPEND CONAN_REQUIRES
+    glfw/3.3.2
+  )
+endif()
+
 run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}" "${CONAN_IMPORTS}")
 
 ########################################################################
