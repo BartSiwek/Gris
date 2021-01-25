@@ -9,6 +9,10 @@
 #include <gris/assert.h>
 #include <gris/log.h>
 
+#ifdef GRIS_CHRAPHICS_HAS_GLFW
+#include "glfw/extension_getters.h"
+#endif
+
 // -------------------------------------------------------------------------------------------------
 
 namespace
@@ -60,18 +64,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 }
 
 }  // namespace
-
-// -------------------------------------------------------------------------------------------------
-
-// NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
-Gris::Graphics::Vulkan::Instance::ExtensionGetter Gris::Graphics::Vulkan::Instance::s_extensionGetter = nullptr;
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::Instance::InstallExtensionGetter(ExtensionGetter getter)
-{
-    s_extensionGetter = getter;
-}
 
 // -------------------------------------------------------------------------------------------------
 
@@ -191,8 +183,11 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
 
 [[nodiscard]] std::vector<const char *> Gris::Graphics::Vulkan::Instance::GetRequiredExtensions()
 {
-    GRIS_ALWAYS_ASSERT(s_extensionGetter != nullptr, "Extension getter cannot be null");
-    auto extensions = s_extensionGetter();
+    auto extensions = std::vector<const char *>{};
+
+#ifdef GRIS_CHRAPHICS_HAS_GLFW
+    Glfw::GetInstanceExtensionsFromGLFW(&extensions);
+#endif
 
     if constexpr (ENABLE_VALIDATION_LAYERS)
     {

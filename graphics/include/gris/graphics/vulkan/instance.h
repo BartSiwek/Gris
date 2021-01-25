@@ -22,10 +22,6 @@ private:
 class Instance
 {
 public:
-    using ExtensionGetter = std::vector<const char *> (*)();
-
-    static void InstallExtensionGetter(ExtensionGetter getter);
-
     [[nodiscard]] static Instance & Get();
 
     ~Instance() = default;
@@ -49,8 +45,6 @@ public:
 
 private:
     [[nodiscard]] static std::vector<const char *> GetRequiredExtensions();
-
-    static ExtensionGetter s_extensionGetter;
 
     Instance();
 

@@ -6,8 +6,6 @@ add_library(Gris.Graphics)
 
 target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/window_observer.cpp"
-  "src/gris/graphics/glfw/instance.cpp"
-  "src/gris/graphics/glfw/window_mixin.cpp"
   "src/gris/graphics/vulkan/validation_layers.h"
   "src/gris/graphics/vulkan/allocation.cpp"
   "src/gris/graphics/vulkan/allocator.cpp"
@@ -35,11 +33,7 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/utils.cpp"
   "src/gris/graphics/vulkan/vma_implementation.cpp"
   "src/gris/graphics/vulkan/window_mixin.cpp"
-  "src/gris/graphics/vulkan/glfw/extension_getters.cpp"
-  "src/gris/graphics/vulkan/glfw/window.cpp"
   "include/gris/graphics/window_observer.h"
-  "include/gris/graphics/glfw/instance.h"
-  "include/gris/graphics/glfw/window_mixin.h"
   "include/gris/graphics/vulkan/allocation.h"
   "include/gris/graphics/vulkan/allocator.h"
   "include/gris/graphics/vulkan/buffer.h"
@@ -69,8 +63,6 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/vulkan/vma_headers.h"
   "include/gris/graphics/vulkan/vulkan_headers.h"
   "include/gris/graphics/vulkan/window_mixin.h"
-  "include/gris/graphics/vulkan/glfw/extension_getters.h"
-  "include/gris/graphics/vulkan/glfw/window.h"
 )
 
 target_include_directories(Gris.Graphics PUBLIC
@@ -88,6 +80,23 @@ target_link_libraries(Gris.Graphics PRIVATE
   Gris.ProjectWarnings
   Gris.Core
 )
+
+if(ENABLE_GLFW)
+  target_sources(Gris.Graphics PRIVATE
+    "src/gris/graphics/glfw/instance.cpp"
+    "src/gris/graphics/glfw/window_mixin.cpp"
+    "src/gris/graphics/vulkan/glfw/extension_getters.h"
+    "src/gris/graphics/vulkan/glfw/extension_getters.cpp"
+    "src/gris/graphics/vulkan/glfw/window.cpp"
+    "include/gris/graphics/glfw/instance.h"
+    "include/gris/graphics/glfw/window_mixin.h"
+    "include/gris/graphics/vulkan/glfw/window.h"
+  )
+
+  target_compile_definitions(Gris.Graphics PRIVATE
+    GRIS_CHRAPHICS_HAS_GLFW=1
+  )
+endif()
 
 ########################################################################
 
