@@ -6,7 +6,7 @@
 
 vk::Instance & Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
 {
-    return Instance::Get().InstanceHandle({});
+    return Instance::Get().InstanceHandle();
 }
 
 // -------------------------------------------------------------------------------------------------

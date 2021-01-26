@@ -8,17 +8,6 @@ namespace Gris::Graphics::Vulkan
 class Allocator;
 class WindowMixin;
 
-class InstanceHandleBadge
-{
-public:
-    friend class WindowMixin;
-
-private:
-    InstanceHandleBadge()
-    {
-    }
-};
-
 class Instance
 {
 public:
@@ -32,8 +21,8 @@ public:
     Instance(Instance &&) noexcept = delete;
     Instance & operator=(Instance &&) noexcept = delete;
 
-    [[nodiscard]] const vk::Instance & InstanceHandle(InstanceHandleBadge badge) const;
-    [[nodiscard]] vk::Instance & InstanceHandle(InstanceHandleBadge badge);
+    [[nodiscard]] const vk::Instance & InstanceHandle() const;
+    [[nodiscard]] vk::Instance & InstanceHandle();
 
     [[nodiscard]] const vk::DispatchLoaderDynamic & Dispatch() const;
     [[nodiscard]] vk::DispatchLoaderDynamic & Dispatch();

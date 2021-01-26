@@ -75,14 +75,14 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */) const
+[[nodiscard]] const vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle() const
 {
     return m_instance.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */)
+[[nodiscard]] vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle()
 {
     return m_instance.get();
 }
