@@ -12,7 +12,7 @@
 
 [[nodiscard]] Gris::Graphics::Vulkan::PhysicalDevice Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(const WindowMixin & window)
 {
-    auto devices = Instance::Get().EnumeratePhysicalDevices();
+    auto devices = Instance::EnumeratePhysicalDevices();
 
     for (auto const & device : devices)
     {
@@ -42,7 +42,7 @@
         swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
     }
 
-    auto supportedFeatures = device.getFeatures(Instance::Get().Dispatch());
+    auto supportedFeatures = device.getFeatures(Instance::Dispatch());
     auto isSuitable = queueFamilies.IsComplete() && extensionsSupported && swapChainAdequate && static_cast<bool>(supportedFeatures.samplerAnisotropy);
     return { isSuitable, queueFamilies };
 }
@@ -51,7 +51,7 @@
 
 [[nodiscard]] Gris::Graphics::Vulkan::DeviceQueueFamilyIndices Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindQueueFamilies(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
 {
-    auto queueFamilies = device.getQueueFamilyProperties(Instance::Get().Dispatch());
+    auto queueFamilies = device.getQueueFamilyProperties(Instance::Dispatch());
 
     DeviceQueueFamilyIndices indices;
     auto i = 0U;
@@ -62,7 +62,7 @@
             indices.graphicsFamily = i;
         }
 
-        auto const surfaceSupportResult = device.getSurfaceSupportKHR(i, surface, Instance::Get().Dispatch());
+        auto const surfaceSupportResult = device.getSurfaceSupportKHR(i, surface, Instance::Dispatch());
         if (surfaceSupportResult.result != vk::Result::eSuccess)
         {
             throw VulkanEngineException("Error getting surface support for physical device", surfaceSupportResult);
@@ -88,7 +88,7 @@
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::PhysicalDeviceFactory::CheckDeviceExtensionSupport(const vk::PhysicalDevice & device)
 {
-    auto availableExtensionsResult = device.enumerateDeviceExtensionProperties(nullptr, Instance::Get().Dispatch());
+    auto availableExtensionsResult = device.enumerateDeviceExtensionProperties(nullptr, Instance::Dispatch());
     if (availableExtensionsResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error enumerating physical device extension properties", availableExtensionsResult);
@@ -107,7 +107,7 @@
 
 [[nodiscard]] vk::SampleCountFlagBits Gris::Graphics::Vulkan::PhysicalDeviceFactory::GetMaxUsableSampleCount(const vk::PhysicalDevice & physicalDevice)
 {
-    auto const physicalDeviceProperties = physicalDevice.getProperties(Instance::Get().Dispatch());
+    auto const physicalDeviceProperties = physicalDevice.getProperties(Instance::Dispatch());
 
     auto const counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
     if (counts & vk::SampleCountFlagBits::e64)

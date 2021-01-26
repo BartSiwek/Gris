@@ -6,12 +6,12 @@
 
 vk::Instance & Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
 {
-    return Instance::Get().InstanceHandle();
+    return Instance::InstanceHandle();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::WindowMixin::Dispatch()
 {
-    return Instance::Get().Dispatch();
+    return Instance::Dispatch();
 }

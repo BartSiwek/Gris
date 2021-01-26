@@ -11,8 +11,6 @@ class WindowMixin;
 class Instance
 {
 public:
-    [[nodiscard]] static Instance & Get();
-
     ~Instance() = default;
 
     Instance(const Instance &) = delete;
@@ -21,19 +19,18 @@ public:
     Instance(Instance &&) noexcept = delete;
     Instance & operator=(Instance &&) noexcept = delete;
 
-    [[nodiscard]] const vk::Instance & InstanceHandle() const;
-    [[nodiscard]] vk::Instance & InstanceHandle();
+    [[nodiscard]] static vk::Instance & InstanceHandle();
+    [[nodiscard]] static vk::DispatchLoaderDynamic & Dispatch();
 
-    [[nodiscard]] const vk::DispatchLoaderDynamic & Dispatch() const;
-    [[nodiscard]] vk::DispatchLoaderDynamic & Dispatch();
+    [[nodiscard]] static vk::DispatchLoaderDynamic CreateDispatch(const vk::Device & device);
+    [[nodiscard]] static Allocator CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch);
 
-    [[nodiscard]] vk::DispatchLoaderDynamic CreateDispatch(const vk::Device & device);
-    [[nodiscard]] Allocator CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch);
-
-    [[nodiscard]] std::vector<vk::PhysicalDevice> EnumeratePhysicalDevices();
+    [[nodiscard]] static std::vector<vk::PhysicalDevice> EnumeratePhysicalDevices();
 
 private:
     [[nodiscard]] static std::vector<const char *> GetRequiredExtensions();
+
+    [[nodiscard]] static Instance & GetInstance();
 
     Instance();
 
