@@ -6,6 +6,7 @@
 #include <gris/graphics/vulkan/framebuffer.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/instance.h>
+#include <gris/graphics/vulkan/pipeline_resource_layout.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/semaphore.h>
@@ -181,7 +182,15 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 }
 
 // -------------------------------------------------------------------------------------------------
-[[nodiscard]] Gris::Graphics::Vulkan::Texture Gris::Graphics::Vulkan::Device::CreateTexture(uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
+[[nodiscard]] Gris::Graphics::Vulkan::Texture Gris::Graphics::Vulkan::Device::CreateTexture(
+    uint32_t width,
+    uint32_t height,
+    uint32_t mipLevels,
+    vk::SampleCountFlagBits numSamples,
+    vk::Format format,
+    vk::ImageTiling tiling,
+    const vk::ImageUsageFlags & usage,
+    const vk::MemoryPropertyFlags & properties)
 {
     return Texture(this, width, height, mipLevels, numSamples, format, tiling, usage, properties);
 }
@@ -202,14 +211,34 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::PipelineStateObject Gris::Graphics::Vulkan::Device::CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const RenderPass & renderPass, const InputLayout & inputLayout, const Shader & vertexShader, const Shader & fragmentShader)
+[[nodiscard]] Gris::Graphics::Vulkan::PipelineResourceLayout Gris::Graphics::Vulkan::Device::CreateResourceLayout()
 {
-    return PipelineStateObject(this, swapChainWidth, swapChainHeight, renderPass, inputLayout, vertexShader, fragmentShader);
+    return PipelineResourceLayout(this);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::Framebuffer Gris::Graphics::Vulkan::Device::CreateFramebuffer(const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
+[[nodiscard]] Gris::Graphics::Vulkan::PipelineStateObject Gris::Graphics::Vulkan::Device::CreatePipelineStateObject(
+    uint32_t swapChainWidth,
+    uint32_t swapChainHeight,
+    const RenderPass & renderPass,
+    const InputLayout & inputLayout,
+    const PipelineResourceLayout & resourceLayout,
+    const Shader & vertexShader,
+    const Shader & fragmentShader)
+{
+    return PipelineStateObject(this, swapChainWidth, swapChainHeight, renderPass, inputLayout, resourceLayout, vertexShader, fragmentShader);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::Framebuffer Gris::Graphics::Vulkan::Device::CreateFramebuffer(
+    const TextureView & colorImageView,
+    const TextureView & depthImageView,
+    const TextureView & swapChainImageView,
+    const RenderPass & renderPass,
+    uint32_t width,
+    uint32_t height)
 {
     return Framebuffer(this, colorImageView, depthImageView, swapChainImageView, renderPass, width, height);
 }

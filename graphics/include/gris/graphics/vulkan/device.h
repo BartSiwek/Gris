@@ -14,6 +14,7 @@ class Texture;
 class DeferredContext;
 class Shader;
 class InputLayout;
+class PipelineResourceLayout;
 class RenderPass;
 class PipelineStateObject;
 class TextureView;
@@ -56,11 +57,33 @@ public:
     [[nodiscard]] DeferredContext CreateDeferredContext();
     [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint);
     [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
-    [[nodiscard]] Texture CreateTexture(uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    [[nodiscard]] Texture CreateTexture(
+        uint32_t width,
+        uint32_t height,
+        uint32_t mipLevels,
+        vk::SampleCountFlagBits numSamples,
+        vk::Format format,
+        vk::ImageTiling tiling,
+        const vk::ImageUsageFlags & usage,
+        const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] PipelineStateObject CreatePipelineStateObject(uint32_t swapChainWidth, uint32_t swapChainHeight, const RenderPass & renderPass, const InputLayout & inputLayout, const Shader & vertexShader, const Shader & fragmentShader);
-    [[nodiscard]] Framebuffer CreateFramebuffer(const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
+    [[nodiscard]] PipelineResourceLayout CreateResourceLayout();
+    [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
+        uint32_t swapChainWidth,
+        uint32_t swapChainHeight,
+        const RenderPass & renderPass,
+        const InputLayout & inputLayout,
+        const PipelineResourceLayout & resourceLayout,
+        const Shader & vertexShader,
+        const Shader & fragmentShader);
+    [[nodiscard]] Framebuffer CreateFramebuffer(
+        const TextureView & colorImageView,
+        const TextureView & depthImageView,
+        const TextureView & swapChainImageView,
+        const RenderPass & renderPass,
+        uint32_t width,
+        uint32_t height);
     [[nodiscard]] Fence CreateFence(bool signaled);
     [[nodiscard]] Semaphore CreateSemaphore();
 

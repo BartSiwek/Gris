@@ -9,6 +9,7 @@
 #include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/input_layout.h>
+#include <gris/graphics/vulkan/pipeline_resource_layout.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/physical_device_factory.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
@@ -157,6 +158,7 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::RenderPass> m_renderPass = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::PipelineResourceLayout> m_resourceLayout = {};
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
     std::vector<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBindings = {};
 
@@ -229,7 +231,9 @@ private:
 
         m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main"));
 
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
+        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceLayout>(m_device->CreateResourceLayout());
+
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -254,7 +258,7 @@ private:
             newBindings.SetImageView("texSampler", *m_textureImageView);
             newBindings.SetSampler("texSampler", *m_textureSampler);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            newBindings.CreateDescriptorSets();
+            newBindings.CreateDescriptorSets(*m_resourceLayout);
         }
 
         createCommandBuffers(m_indexCount);
@@ -280,7 +284,7 @@ private:
         m_swapChain.reset();
         m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
         m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -306,7 +310,7 @@ private:
             m_shaderResourceBindings[i].SetImageView("texSampler", *m_textureImageView);
             m_shaderResourceBindings[i].SetSampler("texSampler", *m_textureSampler);
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            m_shaderResourceBindings[i].CreateDescriptorSets();
+            m_shaderResourceBindings[i].CreateDescriptorSets(*m_resourceLayout);
         }
 
         createCommandBuffers(m_indexCount);

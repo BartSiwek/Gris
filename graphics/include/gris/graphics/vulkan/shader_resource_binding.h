@@ -9,6 +9,7 @@ namespace Gris::Graphics::Vulkan
 class Sampler;
 class TextureView;
 class Buffer;
+class PipelineResourceLayout;
 
 class ShaderResourceBinding : PipelineStateObjectResource
 {
@@ -23,7 +24,7 @@ public:
     void SetImageView(const std::string & imageName, const TextureView & textureView);
     void SetUniformBuffer(const std::string & bufferName, const BufferView & bufferView);
 
-    void CreateDescriptorSets();
+    void CreateDescriptorSets(const PipelineResourceLayout & resourceLayout);
 
 private:
     std::unordered_map<std::string, const Sampler *> m_samplers = {};
