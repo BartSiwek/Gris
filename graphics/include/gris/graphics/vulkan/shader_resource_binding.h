@@ -1,20 +1,20 @@
 ﻿#pragma once
 
-#include <gris/graphics/vulkan/buffer_view.h>
-#include <gris/graphics/vulkan/pipeline_state_object_resource.h>
+#include <gris/graphics/vulkan/device_resource.h>
 
 namespace Gris::Graphics::Vulkan
 {
 
 class Sampler;
 class TextureView;
+class BufferView;
 class Buffer;
 class PipelineResourceLayout;
 
-class ShaderResourceBinding : PipelineStateObjectResource
+class ShaderResourceBinding : DeviceResource
 {
 public:
-    ShaderResourceBinding(PipelineStateObject * pso);
+    ShaderResourceBinding(Device * device);
 
     // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle() const;

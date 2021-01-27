@@ -254,7 +254,7 @@ private:
         m_shaderResourceBindings.reserve(m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            auto & newBindings = m_shaderResourceBindings.emplace_back(m_pso.get());
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBinding());
             newBindings.SetImageView("texSampler", *m_textureImageView);
             newBindings.SetSampler("texSampler", *m_textureSampler);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
@@ -306,7 +306,7 @@ private:
 
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_shaderResourceBindings[i] = Gris::Graphics::Vulkan::ShaderResourceBinding(m_pso.get());
+            m_shaderResourceBindings[i] = m_device->CreateShaderResourceBinding();
             m_shaderResourceBindings[i].SetImageView("texSampler", *m_textureImageView);
             m_shaderResourceBindings[i].SetSampler("texSampler", *m_textureSampler);
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);

@@ -52,7 +52,6 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/vulkan/physical_device_factory.h"
   "include/gris/graphics/vulkan/pipeline_resource_layout.h"
   "include/gris/graphics/vulkan/pipeline_state_object.h"
-  "include/gris/graphics/vulkan/pipeline_state_object_resource.h"
   "include/gris/graphics/vulkan/render_pass.h"
   "include/gris/graphics/vulkan/sampler.h"
   "include/gris/graphics/vulkan/semaphore.h"

@@ -8,8 +8,8 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(PipelineStateObject * pso)
-    : PipelineStateObjectResource(pso)
+Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * device)
+    : DeviceResource(device)
 {
 }
 

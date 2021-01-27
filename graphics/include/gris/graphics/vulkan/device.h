@@ -15,6 +15,7 @@ class DeferredContext;
 class Shader;
 class InputLayout;
 class PipelineResourceLayout;
+class ShaderResourceBinding;
 class RenderPass;
 class PipelineStateObject;
 class TextureView;
@@ -77,6 +78,7 @@ public:
         const PipelineResourceLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
+    [[nodiscard]] ShaderResourceBinding CreateShaderResourceBinding();
     [[nodiscard]] Framebuffer CreateFramebuffer(
         const TextureView & colorImageView,
         const TextureView & depthImageView,

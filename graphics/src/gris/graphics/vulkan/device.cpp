@@ -8,6 +8,7 @@
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/pipeline_resource_layout.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
+#include <gris/graphics/vulkan/shader_resource_binding.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/semaphore.h>
 #include <gris/graphics/vulkan/shader.h>
@@ -228,6 +229,13 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
     const Shader & fragmentShader)
 {
     return PipelineStateObject(this, swapChainWidth, swapChainHeight, renderPass, inputLayout, resourceLayout, vertexShader, fragmentShader);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBinding Gris::Graphics::Vulkan::Device::CreateShaderResourceBinding()
+{
+    return ShaderResourceBinding(this);
 }
 
 // -------------------------------------------------------------------------------------------------
