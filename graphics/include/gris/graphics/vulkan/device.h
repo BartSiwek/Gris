@@ -54,7 +54,7 @@ public:
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
 
     [[nodiscard]] DeferredContext CreateDeferredContext();
-    [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code);
+    [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint);
     [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] Texture CreateTexture(uint32_t width, uint32_t height, uint32_t mipLevels, vk::SampleCountFlagBits numSamples, vk::Format format, vk::ImageTiling tiling, const vk::ImageUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);

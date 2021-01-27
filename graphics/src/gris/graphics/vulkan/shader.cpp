@@ -4,8 +4,9 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code)
+Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code, std::string entryPoint)
     : DeviceResource(device)
+    , m_entryPoint(std::move(entryPoint))
 {
     auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
@@ -32,4 +33,11 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
 [[nodiscard]] vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle()
 {
     return m_shaderModule.get();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] const std::string & Gris::Graphics::Vulkan::Shader::EntryPoint() const
+{
+    return m_entryPoint;
 }

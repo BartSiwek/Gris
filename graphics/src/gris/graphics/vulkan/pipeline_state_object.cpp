@@ -115,11 +115,11 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
         vk::PipelineShaderStageCreateInfo{}
             .setStage(vk::ShaderStageFlagBits::eVertex)
             .setModule(vertexShader.ModuleHandle())
-            .setPName("main"),
+            .setPName(vertexShader.EntryPoint().c_str()),
         vk::PipelineShaderStageCreateInfo{}
             .setStage(vk::ShaderStageFlagBits::eFragment)
             .setModule(fragmentShader.ModuleHandle())
-            .setPName("main"),
+            .setPName(fragmentShader.EntryPoint().c_str()),
     };
 
     auto const & bindingDescriptors = inputLayout.BindingDescription();
