@@ -42,7 +42,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
 {
     for (auto const & format : candidates)
     {
-        const auto props = m_physicalDevice.getFormatProperties(format, Instance::Get().Dispatch());
+        const auto props = m_physicalDevice.getFormatProperties(format, Instance::Dispatch());
         if ((tiling == vk::ImageTiling::eLinear && (props.linearTilingFeatures & features) == features)
             || (tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features))
         {
@@ -57,7 +57,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
 
 [[nodiscard]] vk::FormatProperties Gris::Graphics::Vulkan::PhysicalDevice::GetFormatProperties(vk::Format format) const
 {
-    return m_physicalDevice.getFormatProperties(format, Instance::Get().Dispatch());
+    return m_physicalDevice.getFormatProperties(format, Instance::Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
                                 .setPEnabledExtensionNames(REQUIRED_EXTENSIONS)
                                 .setPEnabledFeatures(&deviceFeatures);
 
-    auto createDeviceResult = m_physicalDevice.createDeviceUnique(createInfo, nullptr, Instance::Get().Dispatch());
+    auto createDeviceResult = m_physicalDevice.createDeviceUnique(createInfo, nullptr, Instance::Dispatch());
     if (createDeviceResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating logical device", createDeviceResult);
@@ -114,5 +114,5 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
 
 [[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::PhysicalDevice::CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic dispatch) const
 {
-    return Instance::Get().CreateAllocator(m_physicalDevice, device, dispatch);
+    return Instance::CreateAllocator(m_physicalDevice, device, dispatch);
 }

@@ -21,7 +21,7 @@ Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
     : m_physicalDevice(physicalDevice)
 {
     m_device = m_physicalDevice.CreateDevice();
-    m_dispatch = Instance::Get().CreateDispatch(m_device.get());
+    m_dispatch = Instance::CreateDispatch(m_device.get());
     m_allocator = m_physicalDevice.CreateAllocator(m_device.get(), m_dispatch);
     m_context = std::make_unique<ImmediateContext>(this);
 }

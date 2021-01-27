@@ -67,48 +67,28 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
+[[nodiscard]] vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle()
 {
-    static Instance s_instance = {};
-    return s_instance;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */) const
-{
-    return m_instance.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle(InstanceHandleBadge /* badge */)
-{
-    return m_instance.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Instance::Dispatch() const
-{
-    return m_dispatch;
+    return GetInstance().m_instance.get();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Instance::Dispatch()
 {
-    return m_dispatch;
+    return GetInstance().m_dispatch;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::DispatchLoaderDynamic Gris::Graphics::Vulkan::Instance::CreateDispatch(const vk::Device & device)
 {
+    auto & instance = GetInstance();
+
     vk::DispatchLoaderDynamic result;
-    auto getInstanceProcAddr = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-    auto getDeviceProcAddr = m_loader.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
-    result.init(m_instance.get(), getInstanceProcAddr, device, getDeviceProcAddr);
+    auto getInstanceProcAddr = instance.m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    auto getDeviceProcAddr = instance.m_loader.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
+    result.init(instance.m_instance.get(), getInstanceProcAddr, device, getDeviceProcAddr);
     return result;
 }
 
@@ -153,7 +133,7 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
     allocatorInfo.pHeapSizeLimit = nullptr;
     allocatorInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorInfo.pRecordSettings = nullptr;
-    allocatorInfo.instance = static_cast<VkInstance>(m_instance.get());
+    allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance.get());
     allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_0;
 
     VmaAllocator allocator = {};
@@ -170,7 +150,9 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
 
 [[nodiscard]] std::vector<vk::PhysicalDevice> Gris::Graphics::Vulkan::Instance::EnumeratePhysicalDevices()
 {
-    auto const enumeratePhysicalDevicesResult = m_instance->enumeratePhysicalDevices(m_dispatch);
+    auto & instance = GetInstance();
+
+    auto const enumeratePhysicalDevicesResult = instance.m_instance->enumeratePhysicalDevices(instance.m_dispatch);
     if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error enumerating physical devices", enumeratePhysicalDevicesResult);
@@ -196,6 +178,15 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::Get()
 
     return extensions;
 }
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::GetInstance()
+{
+    static Instance s_instance = {};
+    return s_instance;
+}
+
 
 // -------------------------------------------------------------------------------------------------
 
