@@ -32,8 +32,7 @@ public:
 
 private:
     vk::UniqueCommandPool m_commandPool = {};
-    std::vector<vk::UniqueCommandBuffer> m_commandBuffers = {};
-    uint32_t m_frameIndex = 0;
+    vk::UniqueCommandBuffer m_commandBuffer = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

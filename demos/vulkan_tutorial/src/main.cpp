@@ -158,7 +158,7 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBinding = {};
+    std::vector<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBindings = {};
 
     std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};
     std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_colorImageView = {};
@@ -247,14 +247,15 @@ private:
             m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
         }
 
-        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
+        m_shaderResourceBindings.reserve(m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_shaderResourceBinding->SetImageView(i, "texSampler", *m_textureImageView);
-            m_shaderResourceBinding->SetSampler(i, "texSampler", *m_textureSampler);
-            m_shaderResourceBinding->SetUniformBuffer(i, "ubo", m_uniformBufferViews[i]);
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_pso.get());
+            newBindings.SetImageView("texSampler", *m_textureImageView);
+            newBindings.SetSampler("texSampler", *m_textureSampler);
+            newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
+            newBindings.CreateDescriptorSets();
         }
-        m_shaderResourceBinding->CreateDescriptorSets();
 
         createCommandBuffers(m_indexCount);
 
@@ -299,14 +300,14 @@ private:
             m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
         }
 
-        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_shaderResourceBinding->SetImageView(i, "texSampler", *m_textureImageView);
-            m_shaderResourceBinding->SetSampler(i, "texSampler", *m_textureSampler);
-            m_shaderResourceBinding->SetUniformBuffer(i, "ubo", m_uniformBufferViews[i]);
+            m_shaderResourceBindings[i] = Gris::Graphics::Vulkan::ShaderResourceBinding(m_pso.get());
+            m_shaderResourceBindings[i].SetImageView("texSampler", *m_textureImageView);
+            m_shaderResourceBindings[i].SetSampler("texSampler", *m_textureSampler);
+            m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
+            m_shaderResourceBindings[i].CreateDescriptorSets();
         }
-        m_shaderResourceBinding->CreateDescriptorSets();
 
         createCommandBuffers(m_indexCount);
     }
@@ -476,7 +477,7 @@ private:
             commandBuffer.BindPipeline(*m_pso);
             commandBuffer.BindVertexBuffer(*m_vertexBufferView);
             commandBuffer.BindIndexBuffer(*m_indexBufferView);
-            commandBuffer.BindDescriptorSet(*m_pso, *m_shaderResourceBinding);
+            commandBuffer.BindDescriptorSet(*m_pso, m_shaderResourceBindings[i]);
             commandBuffer.DrawIndexed(indexCount);
             commandBuffer.EndRenderPass();
             commandBuffer.End();

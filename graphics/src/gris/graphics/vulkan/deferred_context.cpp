@@ -37,7 +37,8 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
         throw VulkanEngineException("Error allocating command buffers", allocateCommandBuffersResult);
     }
 
-    m_commandBuffers = std::move(allocateCommandBuffersResult.value);
+    GRIS_ALWAYS_ASSERT(allocateCommandBuffersResult.value.size() == 1, "Number of allocated command buffers should be one");
+    m_commandBuffer = std::move(allocateCommandBuffersResult.value.front());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -45,7 +46,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 // TODO: Do this better
 [[nodiscard]] vk::CommandBuffer & Gris::Graphics::Vulkan::DeferredContext::CommandBufferHandle()
 {
-    return m_commandBuffers[m_frameIndex].get();
+    return m_commandBuffer.get();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -54,7 +55,7 @@ void Gris::Graphics::Vulkan::DeferredContext::Begin()
 {
     auto const beginInfo = vk::CommandBufferBeginInfo{};
 
-    auto const beginResult = m_commandBuffers[m_frameIndex]->begin(beginInfo, Dispatch());
+    auto const beginResult = m_commandBuffer->begin(beginInfo, Dispatch());
     if (beginResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error beginning command buffer", beginResult);
@@ -76,14 +77,14 @@ void Gris::Graphics::Vulkan::DeferredContext::BeginRenderPass(const RenderPass &
                                     .setRenderArea(vk::Rect2D({ 0, 0 }, extent))
                                     .setClearValues(clearValues);
 
-    m_commandBuffers[m_frameIndex]->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline, Dispatch());
+    m_commandBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::BindPipeline(const PipelineStateObject & pso)
 {
-    m_commandBuffers[m_frameIndex]->bindPipeline(vk::PipelineBindPoint::eGraphics, pso.GraphicsPipelineHandle(), Dispatch());
+    m_commandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pso.GraphicsPipelineHandle(), Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -92,43 +93,43 @@ void Gris::Graphics::Vulkan::DeferredContext::BindVertexBuffer(const BufferView 
 {
     std::array vertexBuffers = { bufferView.BufferHandle() };
     std::array offsets = { static_cast<vk::DeviceSize>(bufferView.Offset()) };
-    m_commandBuffers[m_frameIndex]->bindVertexBuffers(0, vertexBuffers, offsets, Dispatch());
+    m_commandBuffer->bindVertexBuffers(0, vertexBuffers, offsets, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView & bufferView)
 {
-    m_commandBuffers[m_frameIndex]->bindIndexBuffer(bufferView.BufferHandle(), bufferView.Offset(), vk::IndexType::eUint32, Dispatch());
+    m_commandBuffer->bindIndexBuffer(bufferView.BufferHandle(), bufferView.Offset(), vk::IndexType::eUint32, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBinding & srb)
 {
-    std::array descriptorSets = { srb.DescriptorSetHandle(m_frameIndex) };
-    m_commandBuffers[m_frameIndex]->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {}, Dispatch());
+    std::array descriptorSets = { srb.DescriptorSetHandle() };
+    m_commandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {}, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::DrawIndexed(uint32_t indexCount)
 {
-    m_commandBuffers[m_frameIndex]->drawIndexed(indexCount, 1, 0, 0, 0, Dispatch());
+    m_commandBuffer->drawIndexed(indexCount, 1, 0, 0, 0, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::EndRenderPass()
 {
-    m_commandBuffers[m_frameIndex]->endRenderPass(Dispatch());
+    m_commandBuffer->endRenderPass(Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::End()
 {
-    auto const endResult = m_commandBuffers[m_frameIndex]->end(Dispatch());
+    auto const endResult = m_commandBuffer->end(Dispatch());
     if (endResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error ending command buffer", endResult);
