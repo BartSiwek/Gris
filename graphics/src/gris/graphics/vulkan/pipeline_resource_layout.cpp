@@ -5,23 +5,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::PipelineResourceLayout::PipelineResourceLayout(Device * device)
+Gris::Graphics::Vulkan::PipelineResourceLayout::PipelineResourceLayout(Device * device, const Span<const vk::DescriptorSetLayoutBinding> & bindings)
     : DeviceResource(device)
 {
-    auto const uboLayoutBinding = vk::DescriptorSetLayoutBinding(0,
-                                                                 vk::DescriptorType::eUniformBuffer,
-                                                                 1,
-                                                                 vk::ShaderStageFlagBits::eVertex,
-                                                                 nullptr);
-
-    auto const samplerLayoutBinding = vk::DescriptorSetLayoutBinding(1,
-                                                                     vk::DescriptorType::eCombinedImageSampler,
-                                                                     1,
-                                                                     vk::ShaderStageFlagBits::eFragment,
-                                                                     nullptr);
-
-    auto const bindings = std::array{ uboLayoutBinding, samplerLayoutBinding };
-    auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings(bindings);
+    auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings({ static_cast<uint32_t>(bindings.size()), bindings.data() });
 
     auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo, nullptr, Dispatch());
     if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)

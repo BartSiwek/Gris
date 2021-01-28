@@ -231,7 +231,19 @@ private:
 
         m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main"));
 
-        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceLayout>(m_device->CreateResourceLayout());
+        auto const bindings = std::array{ 
+            vk::DescriptorSetLayoutBinding{}
+                .setBinding(0)
+                .setDescriptorType(vk::DescriptorType::eUniformBuffer)
+                .setDescriptorCount(1)
+                .setStageFlags(vk::ShaderStageFlagBits::eVertex),
+            vk::DescriptorSetLayoutBinding{}
+                .setBinding(1)
+                .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                .setDescriptorCount(1)
+                .setStageFlags(vk::ShaderStageFlagBits::eFragment)
+        };
+        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceLayout>(m_device->CreateResourceLayout(bindings));
 
         m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();

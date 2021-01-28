@@ -4,6 +4,8 @@
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/physical_device.h>
 
+#include <gris/span.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
@@ -69,7 +71,7 @@ public:
         const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] PipelineResourceLayout CreateResourceLayout();
+    [[nodiscard]] PipelineResourceLayout CreateResourceLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings);
     [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
