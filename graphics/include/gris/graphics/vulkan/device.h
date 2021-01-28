@@ -16,7 +16,7 @@ class Texture;
 class DeferredContext;
 class Shader;
 class InputLayout;
-class PipelineResourceLayout;
+class PipelineResourceGroupLayout;
 class ShaderResourceBinding;
 class RenderPass;
 class PipelineStateObject;
@@ -71,13 +71,13 @@ public:
         const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] PipelineResourceLayout CreateResourceLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings);
+    [[nodiscard]] PipelineResourceGroupLayout CreateResourceGroupLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings);
     [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        const PipelineResourceLayout & resourceLayout,
+        const PipelineResourceGroupLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
     [[nodiscard]] ShaderResourceBinding CreateShaderResourceBinding();

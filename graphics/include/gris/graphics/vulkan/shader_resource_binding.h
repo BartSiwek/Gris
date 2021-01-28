@@ -9,7 +9,7 @@ class Sampler;
 class TextureView;
 class BufferView;
 class Buffer;
-class PipelineResourceLayout;
+class PipelineResourceGroupLayout;
 
 class ShaderResourceBinding : DeviceResource
 {
@@ -24,7 +24,7 @@ public:
     void SetImageView(const std::string & imageName, const TextureView & textureView);
     void SetUniformBuffer(const std::string & bufferName, const BufferView & bufferView);
 
-    void CreateDescriptorSets(const PipelineResourceLayout & resourceLayout);
+    void CreateDescriptorSets(const PipelineResourceGroupLayout & resourceLayout);
 
 private:
     std::unordered_map<std::string, const Sampler *> m_samplers = {};

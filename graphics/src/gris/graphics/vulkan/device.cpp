@@ -6,7 +6,7 @@
 #include <gris/graphics/vulkan/framebuffer.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/instance.h>
-#include <gris/graphics/vulkan/pipeline_resource_layout.h>
+#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
 #include <gris/graphics/vulkan/shader_resource_binding.h>
 #include <gris/graphics/vulkan/sampler.h>
@@ -212,9 +212,9 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::PipelineResourceLayout Gris::Graphics::Vulkan::Device::CreateResourceLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings)
+[[nodiscard]] Gris::Graphics::Vulkan::PipelineResourceGroupLayout Gris::Graphics::Vulkan::Device::CreateResourceGroupLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings)
 {
-    return PipelineResourceLayout(this, bindings);
+    return PipelineResourceGroupLayout(this, bindings);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    const PipelineResourceLayout & resourceLayout,
+    const PipelineResourceGroupLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
 {

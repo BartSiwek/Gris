@@ -9,7 +9,7 @@
 #include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/input_layout.h>
-#include <gris/graphics/vulkan/pipeline_resource_layout.h>
+#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/physical_device_factory.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
@@ -158,7 +158,7 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::RenderPass> m_renderPass = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::PipelineResourceLayout> m_resourceLayout = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::PipelineResourceGroupLayout> m_resourceLayout = {};
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
     std::vector<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBindings = {};
 
@@ -243,7 +243,7 @@ private:
                 .setDescriptorCount(1)
                 .setStageFlags(vk::ShaderStageFlagBits::eFragment)
         };
-        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceLayout>(m_device->CreateResourceLayout(bindings));
+        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceGroupLayout>(m_device->CreateResourceGroupLayout(bindings));
 
         m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();

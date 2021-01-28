@@ -3,7 +3,7 @@
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/texture_view.h>
-#include <gris/graphics/vulkan/pipeline_resource_layout.h>
+#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetUniformBuffer(const std::
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Cook descriptor pool into device
-void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets(const PipelineResourceLayout & resourceLayout)
+void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets(const PipelineResourceGroupLayout & resourceLayout)
 {
     auto layouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
     auto const allocInfo = vk::DescriptorSetAllocateInfo{}

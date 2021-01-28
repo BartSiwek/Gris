@@ -1,11 +1,11 @@
-﻿#include <gris/graphics/vulkan/pipeline_resource_layout.h>
+﻿#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
 
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::PipelineResourceLayout::PipelineResourceLayout(Device * device, const Span<const vk::DescriptorSetLayoutBinding> & bindings)
+Gris::Graphics::Vulkan::PipelineResourceGroupLayout::PipelineResourceGroupLayout(Device * device, const Span<const vk::DescriptorSetLayoutBinding> & bindings)
     : DeviceResource(device)
 {
     auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings({ static_cast<uint32_t>(bindings.size()), bindings.data() });
@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::PipelineResourceLayout::PipelineResourceLayout(Device * 
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] const vk::DescriptorSetLayout & Gris::Graphics::Vulkan::PipelineResourceLayout::DescriptorSetLayoutHandle() const
+[[nodiscard]] const vk::DescriptorSetLayout & Gris::Graphics::Vulkan::PipelineResourceGroupLayout::DescriptorSetLayoutHandle() const
 {
     return m_descriptorSetLayout.get();
 }
@@ -30,7 +30,7 @@ Gris::Graphics::Vulkan::PipelineResourceLayout::PipelineResourceLayout(Device * 
 // -------------------------------------------------------------------------------------------------
 
 // TODO: Do this better
-[[nodiscard]] vk::DescriptorSetLayout & Gris::Graphics::Vulkan::PipelineResourceLayout::DescriptorSetLayoutHandle()
+[[nodiscard]] vk::DescriptorSetLayout & Gris::Graphics::Vulkan::PipelineResourceGroupLayout::DescriptorSetLayoutHandle()
 {
     return m_descriptorSetLayout.get();
 }

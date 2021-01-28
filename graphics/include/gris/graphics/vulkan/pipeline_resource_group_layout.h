@@ -7,10 +7,10 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class PipelineResourceLayout : public DeviceResource
+class PipelineResourceGroupLayout : public DeviceResource
 {
 public:
-    PipelineResourceLayout(Device * device, const Span<const vk::DescriptorSetLayoutBinding> & bindings);
+    PipelineResourceGroupLayout(Device * device, const Span<const vk::DescriptorSetLayoutBinding> & bindings);
 
     // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSetLayout & DescriptorSetLayoutHandle() const;
