@@ -16,16 +16,17 @@ class ShaderResourceBinding : DeviceResource
 public:
     ShaderResourceBinding(Device * device);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle() const;
     [[nodiscard]] vk::DescriptorSet & DescriptorSetHandle();
+
+    void ForeceRebuild();
 
     void SetSampler(std::string_view semantic, const Sampler & sampler);
     void SetImageView(std::string_view semantic, const TextureView & textureView);
     void SetUniformBuffer(std::string_view semantic, const BufferView & bufferView);
     void SetCombinedSamplerAndImageView(std::string_view semantic, const Sampler & sampler, const TextureView & textureView);
 
-    void CreateDescriptorSets(const PipelineResourceGroupLayout & resourceLayout);
+    void PrepareBindings(const PipelineResourceGroupLayout & resourceLayout);
 
 private:
     struct CombinedSampler

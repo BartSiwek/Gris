@@ -17,7 +17,6 @@ Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * de
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::DescriptorSet & Gris::Graphics::Vulkan::ShaderResourceBinding::DescriptorSetHandle() const
 {
     return m_descriptorSet;
@@ -25,10 +24,16 @@ Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * de
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::DescriptorSet & Gris::Graphics::Vulkan::ShaderResourceBinding::DescriptorSetHandle()
 {
     return m_descriptorSet;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBinding::ForeceRebuild()
+{
+    m_needsRebuilding = true;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -65,8 +70,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetCombinedSamplerAndImageVi
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Cook descriptor pool into device
-void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets(const PipelineResourceGroupLayout & resourceLayout)
+void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings(const PipelineResourceGroupLayout & resourceLayout)
 {
     if (!m_needsRebuilding)
         return;
