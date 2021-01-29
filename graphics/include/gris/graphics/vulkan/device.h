@@ -87,7 +87,7 @@ public:
         const PipelineResourceGroupLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
-    [[nodiscard]] ShaderResourceBinding CreateShaderResourceBinding();
+    [[nodiscard]] ShaderResourceBinding CreateShaderResourceBinding(const PipelineResourceGroupLayout * resourceLayout);
     [[nodiscard]] Framebuffer CreateFramebuffer(
         const TextureView & colorImageView,
         const TextureView & depthImageView,

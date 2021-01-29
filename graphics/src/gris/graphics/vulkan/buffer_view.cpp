@@ -4,7 +4,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::BufferView::BufferView(Buffer * buffer, uint32_t offset, uint32_t size)
+Gris::Graphics::Vulkan::BufferView::BufferView(const Buffer * buffer, uint32_t offset, uint32_t size)
     : m_buffer(buffer)
     , m_offset(offset)
     , m_size(size)
@@ -15,14 +15,6 @@ Gris::Graphics::Vulkan::BufferView::BufferView(Buffer * buffer, uint32_t offset,
 
 // TODO: Do this better
 [[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::BufferView::BufferHandle() const
-{
-    return m_buffer->BufferHandle();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] vk::Buffer & Gris::Graphics::Vulkan::BufferView::BufferHandle()
 {
     return m_buffer->BufferHandle();
 }

@@ -233,9 +233,9 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBinding Gris::Graphics::Vulkan::Device::CreateShaderResourceBinding()
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBinding Gris::Graphics::Vulkan::Device::CreateShaderResourceBinding(const PipelineResourceGroupLayout * resourceLayout)
 {
-    return ShaderResourceBinding(this);
+    return ShaderResourceBinding(this, resourceLayout);
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ class Buffer;
 class BufferView
 {
 public:
-    BufferView(Buffer * buffer, uint32_t offset, uint32_t size);
+    BufferView(const Buffer * buffer, uint32_t offset, uint32_t size);
 
     // TODO: Do this better
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
@@ -23,7 +23,7 @@ public:
     uint32_t Size() const;
 
 private:
-    Buffer * m_buffer = nullptr;
+    const Buffer * m_buffer = nullptr;
     uint32_t m_offset = 0;
     uint32_t m_size = 0;
 };

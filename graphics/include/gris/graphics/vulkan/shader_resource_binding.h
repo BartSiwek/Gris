@@ -14,7 +14,7 @@ class PipelineResourceGroupLayout;
 class ShaderResourceBinding : DeviceResource
 {
 public:
-    ShaderResourceBinding(Device * device);
+    ShaderResourceBinding(Device * device, const PipelineResourceGroupLayout * resourceLayout);
 
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle() const;
     [[nodiscard]] vk::DescriptorSet & DescriptorSetHandle();
@@ -26,7 +26,7 @@ public:
     void SetUniformBuffer(std::string_view semantic, const BufferView & bufferView);
     void SetCombinedSamplerAndImageView(std::string_view semantic, const Sampler & sampler, const TextureView & textureView);
 
-    void PrepareBindings(const PipelineResourceGroupLayout & resourceLayout);
+    void PrepareBindings();
 
 private:
     struct CombinedSampler
@@ -35,14 +35,15 @@ private:
         const TextureView * TextureView;
     };
 
+    const PipelineResourceGroupLayout * m_layout = nullptr;
+    bool m_needsRebuilding = true;
+
     std::unordered_map<std::string, const Sampler *> m_samplers = {};
     std::unordered_map<std::string, const TextureView *> m_textureViews = {};
     std::unordered_map<std::string, const BufferView *> m_bufferViews = {};
     std::unordered_map<std::string, CombinedSampler> m_combinedSamplers = {};
 
     vk::DescriptorSet m_descriptorSet = {};
-
-    bool m_needsRebuilding = true;
 };
 
 }  // namespace Gris::Graphics::Vulkan

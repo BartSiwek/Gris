@@ -10,8 +10,9 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * device)
+Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * device, const PipelineResourceGroupLayout * resourceLayout)
     : DeviceResource(device)
+    , m_layout(resourceLayout)
 {
 }
 
@@ -70,12 +71,12 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetCombinedSamplerAndImageVi
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings(const PipelineResourceGroupLayout & resourceLayout)
+void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings()
 {
     if (!m_needsRebuilding)
         return;
 
-    auto layouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
+    auto layouts = std::array{ m_layout->DescriptorSetLayoutHandle() };
     auto const allocInfo = vk::DescriptorSetAllocateInfo{}
                                .setDescriptorPool(DescriptorPoolHandle())
                                .setSetLayouts(layouts);
@@ -99,7 +100,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings(const Pipeli
                               .setOffset(bufferView->Offset())
                               .setRange(bufferView->Size());
 
-        auto const & binding = resourceLayout.NameToBinding(name);
+        auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
@@ -114,7 +115,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings(const Pipeli
     {
         vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}.setSampler(sampler->SamplerHandle());
 
-        auto const & binding = resourceLayout.NameToBinding(name);
+        auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
@@ -131,7 +132,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings(const Pipeli
                                                 .setImageView(textureView->ImageViewHandle())
                                                 .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
 
-        auto const & binding = resourceLayout.NameToBinding(name);
+        auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
@@ -149,7 +150,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings(const Pipeli
                                                 .setImageView(samperAndTextureView.TextureView->ImageViewHandle())
                                                 .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
 
-        auto const & binding = resourceLayout.NameToBinding(name);
+        auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}

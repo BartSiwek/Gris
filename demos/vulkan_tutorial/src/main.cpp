@@ -260,21 +260,13 @@ private:
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
-        }
+            auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
-        }
-
-        m_shaderResourceBindings.reserve(m_swapChain->ImageCount());
-        for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBinding());
-            newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, * m_textureImageView);
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBinding(m_resourceLayout.get()));
+            newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            newBindings.PrepareBindings(*m_resourceLayout);
+            newBindings.PrepareBindings();
         }
 
         createCommandBuffers(m_indexCount);
@@ -312,20 +304,10 @@ private:
         m_uniformBufferViews.clear();
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
-        }
-
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
-        }
-
-        for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_shaderResourceBindings[i] = m_device->CreateShaderResourceBinding();
-            m_shaderResourceBindings[i].SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
-            m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            m_shaderResourceBindings[i].PrepareBindings(*m_resourceLayout);
+            auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            auto const & newView = m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+            m_shaderResourceBindings[i].SetUniformBuffer("ubo", newView);
+            m_shaderResourceBindings[i].PrepareBindings();
         }
 
         createCommandBuffers(m_indexCount);
