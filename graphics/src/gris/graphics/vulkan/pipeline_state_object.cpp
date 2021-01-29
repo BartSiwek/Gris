@@ -4,6 +4,7 @@
 #include <gris/graphics/vulkan/input_layout.h>
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/shader.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
@@ -14,112 +15,20 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
+    const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
     : DeviceResource(device)
 {
-    CreateDescriptorSetLayout();
-    CreateGraphicsPipeline(swapChainWidth, swapChainHeight, renderPass, inputLayout, vertexShader, fragmentShader);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] const vk::DescriptorSetLayout & Gris::Graphics::Vulkan::PipelineStateObject::DescriptorSetLayoutHandle() const
-{
-    return m_descriptorSetLayout.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] vk::DescriptorSetLayout & Gris::Graphics::Vulkan::PipelineStateObject::DescriptorSetLayoutHandle()
-{
-    return m_descriptorSetLayout.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle() const
-{
-    return m_pipelineLayout.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle()
-{
-    return m_pipelineLayout.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle() const
-{
-    return m_graphicsPipeline.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-// TODO: Do this better
-[[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle()
-{
-    return m_graphicsPipeline.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::PipelineStateObject::CreateDescriptorSetLayout()
-{
-    auto const uboLayoutBinding = vk::DescriptorSetLayoutBinding(0,
-                                                                 vk::DescriptorType::eUniformBuffer,
-                                                                 1,
-                                                                 vk::ShaderStageFlagBits::eVertex,
-                                                                 nullptr);
-
-    auto const samplerLayoutBinding = vk::DescriptorSetLayoutBinding(1,
-                                                                     vk::DescriptorType::eCombinedImageSampler,
-                                                                     1,
-                                                                     vk::ShaderStageFlagBits::eFragment,
-                                                                     nullptr);
-
-    auto const bindings = std::array{ uboLayoutBinding, samplerLayoutBinding };
-    auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings(bindings);
-
-    auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo, nullptr, Dispatch());
-    if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error creating descriptor set layout", createDescriptorSetLayoutResult);
-    }
-
-    m_descriptorSetLayout = std::move(createDescriptorSetLayoutResult.value);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
-    uint32_t swapChainWidth,
-    uint32_t swapChainHeight,
-    const RenderPass & renderPass,
-    const InputLayout & inputLayout,
-    const Shader & vertexShader,
-    const Shader & fragmentShader)
-{
-    m_graphicsPipeline.reset();
-    m_pipelineLayout.reset();
-
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo{}
             .setStage(vk::ShaderStageFlagBits::eVertex)
             .setModule(vertexShader.ModuleHandle())
-            .setPName("main"),
+            .setPName(vertexShader.EntryPoint().c_str()),
         vk::PipelineShaderStageCreateInfo{}
             .setStage(vk::ShaderStageFlagBits::eFragment)
             .setModule(fragmentShader.ModuleHandle())
-            .setPName("main"),
+            .setPName(fragmentShader.EntryPoint().c_str()),
     };
 
     auto const & bindingDescriptors = inputLayout.BindingDescription();
@@ -190,7 +99,7 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
                                    .setAttachments(colorBlendAttachments)
                                    .setBlendConstants({ 0.0F, 0.0F, 0.0F, 0.0F });
 
-    auto const descriptorSetLayouts = std::array{ m_descriptorSetLayout.get() };
+    auto const descriptorSetLayouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}.setSetLayouts(descriptorSetLayouts);
 
     auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo, nullptr, Dispatch());
@@ -223,4 +132,36 @@ void Gris::Graphics::Vulkan::PipelineStateObject::CreateGraphicsPipeline(
     }
 
     m_graphicsPipeline = std::move(createGraphicsPipelineResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// TODO: Do this better
+[[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle() const
+{
+    return m_pipelineLayout.get();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// TODO: Do this better
+[[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle()
+{
+    return m_pipelineLayout.get();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// TODO: Do this better
+[[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle() const
+{
+    return m_graphicsPipeline.get();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+// TODO: Do this better
+[[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle()
+{
+    return m_graphicsPipeline.get();
 }

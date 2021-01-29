@@ -27,10 +27,13 @@ target_sources(Gris.Core PRIVATE
   "src/gris/assert.cpp"
   "src/gris/directory_registry.cpp"
   "include/gris/assert.h"
+  "include/gris/casts.h"
   "include/gris/directory_registry.h"
+  "include/gris/engine_exception.h"
   "include/gris/log.h"
   "include/gris/macros.h"
-  "include/gris/engine_exception.h"
+  "include/gris/span.h"
+  "include/gris/utils.h"
 )
 
 target_include_directories(Gris.Core PUBLIC
@@ -45,6 +48,7 @@ target_link_libraries(Gris.Core PRIVATE
 target_link_libraries(Gris.Core PUBLIC
   CONAN_PKG::fmt
   CONAN_PKG::spdlog
+  CONAN_PKG::span-lite
 )
 
 target_compile_definitions(Gris.Core PUBLIC

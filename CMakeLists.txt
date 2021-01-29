@@ -42,6 +42,7 @@ set(CONAN_REQUIRES
   fmt/7.1.2
   spdlog/1.8.2
   catch2/2.13.2
+  span-lite/0.9.0
   glfw/3.3.2
   glm/0.9.9.8
   stb/20200203

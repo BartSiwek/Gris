@@ -15,7 +15,8 @@
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/shader.h>
-#include <gris/graphics/vulkan/shader_resource_binding.h>
+#include <gris/graphics/vulkan/shader_resource_bindings.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
@@ -157,8 +158,9 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::RenderPass> m_renderPass = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout> m_resourceLayout = {};
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBinding = {};
+    std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
 
     std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};
     std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_colorImageView = {};
@@ -219,7 +221,7 @@ private:
             throw Gris::EngineException("Error resolving vertex shader path", VERTEX_SHADER_PATH);
         }
 
-        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*vertexShaderPath)));
+        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*vertexShaderPath), "main"));
 
         auto const fragmentShaderPath = Gris::DirectoryRegistry::TryResolvePath(FRAGMENT_SHADER_PATH);
         if (!fragmentShaderPath)
@@ -227,9 +229,28 @@ private:
             throw Gris::EngineException("Error resolving fragment shader path", FRAGMENT_SHADER_PATH);
         }
 
-        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath)));
+        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main"));
 
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
+        auto const resourceLayouts = std::array{
+            Gris::Graphics::Backend::ShaderResourceBindingLayout{
+                "ubo",
+                0,
+                Gris::Graphics::Backend::ShaderResourceType::UniformBuffer,
+                1,
+                Gris::Graphics::Backend::ShaderStageFlags::Vertex,
+            },
+            Gris::Graphics::Backend::ShaderResourceBindingLayout{
+                "texSampler",
+                1,
+                Gris::Graphics::Backend::ShaderResourceType::CombinedImageSampler,
+                1,
+                Gris::Graphics::Backend::ShaderStageFlags::Fragment,
+            },
+        };
+        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout>(m_device->CreateShaderResourceBindingsLayout(bindingsLayout));
+
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -239,22 +260,14 @@ private:
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
-        }
+            auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBindings(m_resourceLayout.get()));
+            newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
+            newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
+            newBindings.PrepareBindings();
         }
-
-        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
-        for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_shaderResourceBinding->SetImageView(i, "texSampler", *m_textureImageView);
-            m_shaderResourceBinding->SetSampler(i, "texSampler", *m_textureSampler);
-            m_shaderResourceBinding->SetUniformBuffer(i, "ubo", m_uniformBufferViews[i]);
-        }
-        m_shaderResourceBinding->CreateDescriptorSets();
 
         createCommandBuffers(m_indexCount);
 
@@ -279,7 +292,7 @@ private:
         m_swapChain.reset();
         m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
         m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_vertexShader, *m_fragmentShader));
+        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
@@ -291,22 +304,11 @@ private:
         m_uniformBufferViews.clear();
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
-            m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            auto const & newView = m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+            m_shaderResourceBindings[i].SetUniformBuffer("ubo", newView);
+            m_shaderResourceBindings[i].PrepareBindings();
         }
-
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_uniformBufferViews.emplace_back(&m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
-        }
-
-        m_shaderResourceBinding = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBinding>(m_pso.get(), m_swapChain->ImageCount());
-        for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
-        {
-            m_shaderResourceBinding->SetImageView(i, "texSampler", *m_textureImageView);
-            m_shaderResourceBinding->SetSampler(i, "texSampler", *m_textureSampler);
-            m_shaderResourceBinding->SetUniformBuffer(i, "ubo", m_uniformBufferViews[i]);
-        }
-        m_shaderResourceBinding->CreateDescriptorSets();
 
         createCommandBuffers(m_indexCount);
     }
@@ -476,7 +478,7 @@ private:
             commandBuffer.BindPipeline(*m_pso);
             commandBuffer.BindVertexBuffer(*m_vertexBufferView);
             commandBuffer.BindIndexBuffer(*m_indexBufferView);
-            commandBuffer.BindDescriptorSet(*m_pso, *m_shaderResourceBinding);
+            commandBuffer.BindDescriptorSet(*m_pso, m_shaderResourceBindings[i]);
             commandBuffer.DrawIndexed(indexCount);
             commandBuffer.EndRenderPass();
             commandBuffer.End();
