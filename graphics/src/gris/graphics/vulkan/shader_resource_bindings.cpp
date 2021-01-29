@@ -2,8 +2,8 @@
 
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/sampler.h>
-#include <gris/graphics/vulkan/texture_view.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
+#include <gris/graphics/vulkan/texture_view.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/utils.h>

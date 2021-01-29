@@ -9,6 +9,7 @@
 #include <gris/graphics/vulkan/window_mixin.h>
 
 #include <gris/assert.h>
+#include <gris/utils.h>
 
 #include <set>
 
@@ -77,8 +78,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physic
     };
 
     std::array<float, 1> queuePriority = { 1.0F };
-    std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos;
-    queueCreateInfos.reserve(uniqueQueueFamilies.size());
+    auto queueCreateInfos = Gris::MakeReservedVector<vk::DeviceQueueCreateInfo>(uniqueQueueFamilies.size());
     for (auto queueFamily : uniqueQueueFamilies)
     {
         queueCreateInfos.emplace_back(vk::DeviceQueueCreateInfo{}

@@ -63,7 +63,6 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::DescriptorSetLayout & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::DescriptorSetLayoutHandle() const
 {
     return m_descriptorSetLayout.get();
@@ -71,7 +70,6 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::DescriptorSetLayout & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::DescriptorSetLayoutHandle()
 {
     return m_descriptorSetLayout.get();
