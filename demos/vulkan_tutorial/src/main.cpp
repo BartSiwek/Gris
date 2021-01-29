@@ -272,8 +272,7 @@ private:
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
             auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBinding());
-            newBindings.SetImageView("texSampler", *m_textureImageView);
-            newBindings.SetSampler("texSampler", *m_textureSampler);
+            newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, * m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
             newBindings.CreateDescriptorSets(*m_resourceLayout);
         }
@@ -324,8 +323,7 @@ private:
         for (uint32_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
             m_shaderResourceBindings[i] = m_device->CreateShaderResourceBinding();
-            m_shaderResourceBindings[i].SetImageView("texSampler", *m_textureImageView);
-            m_shaderResourceBindings[i].SetSampler("texSampler", *m_textureSampler);
+            m_shaderResourceBindings[i].SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, * m_textureImageView);
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
             m_shaderResourceBindings[i].CreateDescriptorSets(*m_resourceLayout);
         }

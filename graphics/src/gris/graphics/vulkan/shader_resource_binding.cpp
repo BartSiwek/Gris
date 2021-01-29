@@ -6,6 +6,8 @@
 #include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
+#include <gris/utils.h>
+
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * device)
@@ -31,23 +33,34 @@ Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * de
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetSampler(const std::string & samplerName, const Sampler & sampler)
+void Gris::Graphics::Vulkan::ShaderResourceBinding::SetSampler(std::string_view semantic, const Sampler & sampler)
 {
-    m_samplers[samplerName] = &sampler;
+    m_samplers[std::string{ semantic }] = &sampler;
+    m_needsRebuilding = true;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetImageView(const std::string & imageName, const TextureView & textureView)
+void Gris::Graphics::Vulkan::ShaderResourceBinding::SetImageView(std::string_view semantic, const TextureView & textureView)
 {
-    m_textureViews[imageName] = &textureView;
+    m_textureViews[std::string{ semantic }] = &textureView;
+    m_needsRebuilding = true;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetUniformBuffer(const std::string & bufferName, const BufferView & bufferView)
+void Gris::Graphics::Vulkan::ShaderResourceBinding::SetUniformBuffer(std::string_view semantic, const BufferView & bufferView)
 {
-    m_bufferViews[bufferName] = &bufferView;
+    m_bufferViews[std::string{ semantic }] = &bufferView;
+    m_needsRebuilding = true;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBinding::SetCombinedSamplerAndImageView(std::string_view semantic, const Sampler & sampler, const TextureView & textureView)
+{
+    m_combinedSamplers[std::string{ semantic }] = CombinedSampler{ &sampler, &textureView };
+    m_needsRebuilding = true;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -55,6 +68,9 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetUniformBuffer(const std::
 // TODO: Cook descriptor pool into device
 void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets(const PipelineResourceGroupLayout & resourceLayout)
 {
+    if (!m_needsRebuilding)
+        return;
+
     auto layouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
     auto const allocInfo = vk::DescriptorSetAllocateInfo{}
                                .setDescriptorPool(DescriptorPoolHandle())
@@ -69,30 +85,78 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::CreateDescriptorSets(const P
     GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Number of allocated descriptor sets should be one");
     m_descriptorSet = std::move(allocateDescriptorSetsResult.value.front());
 
-    auto const & bufferView = m_bufferViews["ubo"];
-    std::array bufferInfo = { vk::DescriptorBufferInfo{}
-                                    .setBuffer(bufferView->BufferHandle())
-                                    .setOffset(bufferView->Offset())
-                                    .setRange(bufferView->Size()) };
-    std::array imageInfo = { vk::DescriptorImageInfo{}
-                                    .setSampler(m_samplers["texSampler"]->SamplerHandle())
-                                    .setImageView(m_textureViews["texSampler"]->ImageViewHandle())
-                                    .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal) };
+    auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
+    auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);
 
-    std::array descriptorWrites = {
-        vk::WriteDescriptorSet{}
-            .setDstSet(m_descriptorSet)
-            .setDstBinding(0)
-            .setDstArrayElement(0)
-            .setDescriptorType(vk::DescriptorType::eUniformBuffer)
-            .setBufferInfo(bufferInfo),
-        vk::WriteDescriptorSet{}
-            .setDstSet(m_descriptorSet)
-            .setDstBinding(1)
-            .setDstArrayElement(0)
-            .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-            .setImageInfo(imageInfo),
-    };
+    for (auto const & [name, bufferView] : m_bufferViews)
+    {
+        auto bufferInfo = vk::DescriptorBufferInfo{}
+                              .setBuffer(bufferView->BufferHandle())
+                              .setOffset(bufferView->Offset())
+                              .setRange(bufferView->Size());
+
+        auto const & binding = resourceLayout.NameToBinding(name);
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+
+        descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
+                                          .setDstSet(m_descriptorSet)
+                                          .setDstBinding(binding.binding)
+                                          .setDstArrayElement(0)
+                                          .setDescriptorType(vk::DescriptorType::eUniformBuffer)
+                                          .setBufferInfo(bufferInfo));
+    }
+
+    for (auto const & [name, sampler] : m_samplers)
+    {
+        vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}.setSampler(sampler->SamplerHandle());
+
+        auto const & binding = resourceLayout.NameToBinding(name);
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+
+        descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
+                                          .setDstSet(m_descriptorSet)
+                                          .setDstBinding(binding.binding)
+                                          .setDstArrayElement(0)
+                                          .setDescriptorType(vk::DescriptorType::eSampler)
+                                          .setImageInfo(imageInfo));
+    }
+
+    for (auto const & [name, textureView] : m_textureViews)
+    {
+        vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}
+                                                .setImageView(textureView->ImageViewHandle())
+                                                .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+
+        auto const & binding = resourceLayout.NameToBinding(name);
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+
+        descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
+                                          .setDstSet(m_descriptorSet)
+                                          .setDstBinding(binding.binding)
+                                          .setDstArrayElement(0)
+                                          .setDescriptorType(vk::DescriptorType::eSampledImage)
+                                          .setImageInfo(imageInfo));
+    }
+
+    for (auto const & [name, samperAndTextureView] : m_combinedSamplers)
+    {
+        vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}
+                                                .setSampler(samperAndTextureView.Sampler->SamplerHandle())
+                                                .setImageView(samperAndTextureView.TextureView->ImageViewHandle())
+                                                .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+
+        auto const & binding = resourceLayout.NameToBinding(name);
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+
+        descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
+                                          .setDstSet(m_descriptorSet)
+                                          .setDstBinding(binding.binding)
+                                          .setDstArrayElement(0)
+                                          .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
+                                          .setImageInfo(imageInfo));
+    }
 
     DeviceHandle().updateDescriptorSets(descriptorWrites, {}, Dispatch());
+
+    m_needsRebuilding = false;
 }
