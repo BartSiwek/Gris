@@ -16,4 +16,4 @@ constexpr const SpanExtent DynamicExtent = nonstd::dynamic_extent;
 template<class T, SpanExtent Extent = DynamicExtent>
 using Span = nonstd::span<T, Extent>;
 
-}
+}  // namespace Gris

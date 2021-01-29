@@ -2,9 +2,9 @@
 
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/input_layout.h>
-#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/shader.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
