@@ -2,21 +2,18 @@
 
 #include <gris/graphics/vulkan/device_resource.h>
 
-#include <gris/graphics/backend/pipeline_resource_layout.h>
-
-#include <gris/span.h>
+#include <gris/graphics/backend/shader_resource_bindings_layout.h>
 
 #include <map>
 
 namespace Gris::Graphics::Vulkan
 {
 
-class PipelineResourceGroupLayout : public DeviceResource
+class ShaderResourceBindingsLayout : public DeviceResource
 {
 public:
-    PipelineResourceGroupLayout(Device * device, const Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc & desc);
+    ShaderResourceBindingsLayout(Device * device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::DescriptorSetLayout & DescriptorSetLayoutHandle() const;
     [[nodiscard]] vk::DescriptorSetLayout & DescriptorSetLayoutHandle();
 

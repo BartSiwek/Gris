@@ -1,16 +1,16 @@
-﻿#include <gris/graphics/vulkan/shader_resource_binding.h>
+﻿#include <gris/graphics/vulkan/shader_resource_bindings.h>
 
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/texture_view.h>
-#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/utils.h>
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * device, const PipelineResourceGroupLayout * resourceLayout)
+Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings(Device * device, const ShaderResourceBindingsLayout * resourceLayout)
     : DeviceResource(device)
     , m_layout(resourceLayout)
 {
@@ -18,28 +18,28 @@ Gris::Graphics::Vulkan::ShaderResourceBinding::ShaderResourceBinding(Device * de
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const vk::DescriptorSet & Gris::Graphics::Vulkan::ShaderResourceBinding::DescriptorSetHandle() const
+[[nodiscard]] const vk::DescriptorSet & Gris::Graphics::Vulkan::ShaderResourceBindings::DescriptorSetHandle() const
 {
     return m_descriptorSet;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::DescriptorSet & Gris::Graphics::Vulkan::ShaderResourceBinding::DescriptorSetHandle()
+[[nodiscard]] vk::DescriptorSet & Gris::Graphics::Vulkan::ShaderResourceBindings::DescriptorSetHandle()
 {
     return m_descriptorSet;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::ForeceRebuild()
+void Gris::Graphics::Vulkan::ShaderResourceBindings::ForeceRebuild()
 {
     m_needsRebuilding = true;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetSampler(std::string_view semantic, const Sampler & sampler)
+void Gris::Graphics::Vulkan::ShaderResourceBindings::SetSampler(std::string_view semantic, const Sampler & sampler)
 {
     m_samplers[std::string{ semantic }] = &sampler;
     m_needsRebuilding = true;
@@ -47,7 +47,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetSampler(std::string_view 
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetImageView(std::string_view semantic, const TextureView & textureView)
+void Gris::Graphics::Vulkan::ShaderResourceBindings::SetImageView(std::string_view semantic, const TextureView & textureView)
 {
     m_textureViews[std::string{ semantic }] = &textureView;
     m_needsRebuilding = true;
@@ -55,7 +55,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetImageView(std::string_vie
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetUniformBuffer(std::string_view semantic, const BufferView & bufferView)
+void Gris::Graphics::Vulkan::ShaderResourceBindings::SetUniformBuffer(std::string_view semantic, const BufferView & bufferView)
 {
     m_bufferViews[std::string{ semantic }] = &bufferView;
     m_needsRebuilding = true;
@@ -63,7 +63,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetUniformBuffer(std::string
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::SetCombinedSamplerAndImageView(std::string_view semantic, const Sampler & sampler, const TextureView & textureView)
+void Gris::Graphics::Vulkan::ShaderResourceBindings::SetCombinedSamplerAndImageView(std::string_view semantic, const Sampler & sampler, const TextureView & textureView)
 {
     m_combinedSamplers[std::string{ semantic }] = CombinedSampler{ &sampler, &textureView };
     m_needsRebuilding = true;
@@ -71,7 +71,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBinding::SetCombinedSamplerAndImageVi
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBinding::PrepareBindings()
+void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings()
 {
     if (!m_needsRebuilding)
         return;

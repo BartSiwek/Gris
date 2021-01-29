@@ -9,14 +9,14 @@
 #include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/input_layout.h>
-#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/physical_device_factory.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/shader.h>
-#include <gris/graphics/vulkan/shader_resource_binding.h>
+#include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
@@ -158,9 +158,9 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::RenderPass> m_renderPass = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::PipelineResourceGroupLayout> m_resourceLayout = {};
+    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout> m_resourceLayout = {};
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
-    std::vector<Gris::Graphics::Vulkan::ShaderResourceBinding> m_shaderResourceBindings = {};
+    std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
 
     std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};
     std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_colorImageView = {};
@@ -232,23 +232,23 @@ private:
         m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main"));
 
         auto const resourceLayouts = std::array{ 
-            Gris::Graphics::Backend::PipelineResourceLayoutDesc{
+            Gris::Graphics::Backend::ShaderResourceBindingLayout{
                 "ubo",
                 0,
-                Gris::Graphics::Backend::PipelineResourceType::UniformBuffer,
+                Gris::Graphics::Backend::ShaderResourceType::UniformBuffer,
                 1,
-                Gris::Graphics::Backend::PipelineStageFlags::Vertex,
+                Gris::Graphics::Backend::ShaderStageFlags::Vertex,
             },
-            Gris::Graphics::Backend::PipelineResourceLayoutDesc{
+            Gris::Graphics::Backend::ShaderResourceBindingLayout{
                 "texSampler",
                 1,
-                Gris::Graphics::Backend::PipelineResourceType::CombinedImageSampler,
+                Gris::Graphics::Backend::ShaderResourceType::CombinedImageSampler,
                 1,
-                Gris::Graphics::Backend::PipelineStageFlags::Fragment,
+                Gris::Graphics::Backend::ShaderStageFlags::Fragment,
             },
         };
-        Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc resourceGroupLayout{ resourceLayouts };
-        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceGroupLayout>(m_device->CreateResourceGroupLayout(resourceGroupLayout));
+        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout>(m_device->CreateShaderResourceBindingsLayout(bindingsLayout));
 
         m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();
@@ -263,7 +263,7 @@ private:
             auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
             m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBinding(m_resourceLayout.get()));
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBindings(m_resourceLayout.get()));
             newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
             newBindings.PrepareBindings();

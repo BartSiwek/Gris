@@ -9,7 +9,7 @@
 namespace Gris::Graphics::Backend
 {
 
-struct PipelineResourceGroupLayoutDesc; 
+struct ShaderResourceBindingsLayout;
 
 }
 
@@ -23,8 +23,8 @@ class Texture;
 class DeferredContext;
 class Shader;
 class InputLayout;
-class PipelineResourceGroupLayout;
-class ShaderResourceBinding;
+class ShaderResourceBindingsLayout;
+class ShaderResourceBindings;
 class RenderPass;
 class PipelineStateObject;
 class TextureView;
@@ -78,16 +78,16 @@ public:
         const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] PipelineResourceGroupLayout CreateResourceGroupLayout(const Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc & bindings);
+    [[nodiscard]] ShaderResourceBindingsLayout CreateShaderResourceBindingsLayout(const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindings);
     [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        const PipelineResourceGroupLayout & resourceLayout,
+        const ShaderResourceBindingsLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
-    [[nodiscard]] ShaderResourceBinding CreateShaderResourceBinding(const PipelineResourceGroupLayout * resourceLayout);
+    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ShaderResourceBindingsLayout * resourceLayout);
     [[nodiscard]] Framebuffer CreateFramebuffer(
         const TextureView & colorImageView,
         const TextureView & depthImageView,

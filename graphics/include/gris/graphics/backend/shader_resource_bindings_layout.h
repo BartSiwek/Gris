@@ -8,7 +8,7 @@
 namespace Gris::Graphics::Backend
 {
 
-enum class PipelineResourceType
+enum class ShaderResourceType
 {
     Sampler = 0,
     CombinedImageSampler = 1,
@@ -23,7 +23,7 @@ enum class PipelineResourceType
     InputAttachment = 10,
 };
 
-enum class PipelineStageFlags : uint32_t
+enum class ShaderStageFlags : uint32_t
 {
     Vertex = 0x00000001,
     Hull = 0x00000002,
@@ -33,18 +33,20 @@ enum class PipelineStageFlags : uint32_t
     Compute = 0x00000020,
 };
 
-struct PipelineResourceLayoutDesc
+// TODO: Add bitwise operators for flags
+
+struct ShaderResourceBindingLayout
 {
     std::string_view Semantic = {};
     uint32_t Binding = 0;
-    PipelineResourceType ResourceType = {};
+    ShaderResourceType Type = {};
     uint32_t Count = 0;
-    PipelineStageFlags Stages = {};
+    ShaderStageFlags Stages = {};
 };
 
-struct PipelineResourceGroupLayoutDesc
+struct ShaderResourceBindingsLayout
 {
-    Gris::Span<const PipelineResourceLayoutDesc> ResourceLayouts;
+    Gris::Span<const ShaderResourceBindingLayout> Layouts;
 };
 
 }  // namespace Gris::Graphics::Backend

@@ -5,7 +5,7 @@
 #include <gris/graphics/vulkan/framebuffer.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
 #include <gris/graphics/vulkan/render_pass.h>
-#include <gris/graphics/vulkan/shader_resource_binding.h>
+#include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 // -------------------------------------------------------------------------------------------------
@@ -105,7 +105,7 @@ void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView &
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBinding & srb)
+void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBindings & srb)
 {
     std::array descriptorSets = { srb.DescriptorSetHandle() };
     m_commandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {}, Dispatch());

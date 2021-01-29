@@ -7,7 +7,7 @@ namespace Gris::Graphics::Vulkan
 
 class InputLayout;
 class RenderPass;
-class PipelineResourceGroupLayout;
+class ShaderResourceBindingsLayout;
 class Shader;
 
 class PipelineStateObject : public DeviceResource
@@ -19,7 +19,7 @@ public:
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        const PipelineResourceGroupLayout & resourceLayout,
+        const ShaderResourceBindingsLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
 

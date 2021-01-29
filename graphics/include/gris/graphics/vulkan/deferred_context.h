@@ -10,7 +10,7 @@ class Texture;
 class Framebuffer;
 class PipelineStateObject;
 class BufferView;
-class ShaderResourceBinding;
+class ShaderResourceBindings;
 
 class DeferredContext : public DeviceResource
 {
@@ -25,7 +25,7 @@ public:
     void BindPipeline(const PipelineStateObject & pso);
     void BindVertexBuffer(const BufferView & bufferView);
     void BindIndexBuffer(const BufferView & bufferView);
-    void BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBinding & srb);
+    void BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBindings & srb);
     void DrawIndexed(uint32_t indexCount);
     void EndRenderPass();
     void End();

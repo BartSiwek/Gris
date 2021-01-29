@@ -9,12 +9,12 @@ class Sampler;
 class TextureView;
 class BufferView;
 class Buffer;
-class PipelineResourceGroupLayout;
+class ShaderResourceBindingsLayout;
 
-class ShaderResourceBinding : DeviceResource
+class ShaderResourceBindings : DeviceResource
 {
 public:
-    ShaderResourceBinding(Device * device, const PipelineResourceGroupLayout * resourceLayout);
+    ShaderResourceBindings(Device * device, const ShaderResourceBindingsLayout * resourceLayout);
 
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle() const;
     [[nodiscard]] vk::DescriptorSet & DescriptorSetHandle();
@@ -35,7 +35,7 @@ private:
         const TextureView * TextureView;
     };
 
-    const PipelineResourceGroupLayout * m_layout = nullptr;
+    const ShaderResourceBindingsLayout * m_layout = nullptr;
     bool m_needsRebuilding = true;
 
     std::unordered_map<std::string, const Sampler *> m_samplers = {};

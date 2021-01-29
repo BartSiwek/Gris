@@ -6,9 +6,9 @@
 #include <gris/graphics/vulkan/framebuffer.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/instance.h>
-#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
-#include <gris/graphics/vulkan/shader_resource_binding.h>
+#include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/semaphore.h>
 #include <gris/graphics/vulkan/shader.h>
@@ -212,9 +212,9 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::PipelineResourceGroupLayout Gris::Graphics::Vulkan::Device::CreateResourceGroupLayout(const Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc & bindings)
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsLayout Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsLayout(const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindings)
 {
-    return PipelineResourceGroupLayout(this, bindings);
+    return ShaderResourceBindingsLayout(this, bindings);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -224,7 +224,7 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    const PipelineResourceGroupLayout & resourceLayout,
+    const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
 {
@@ -233,9 +233,9 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBinding Gris::Graphics::Vulkan::Device::CreateShaderResourceBinding(const PipelineResourceGroupLayout * resourceLayout)
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindings Gris::Graphics::Vulkan::Device::CreateShaderResourceBindings(const ShaderResourceBindingsLayout * resourceLayout)
 {
-    return ShaderResourceBinding(this, resourceLayout);
+    return ShaderResourceBindings(this, resourceLayout);
 }
 
 // -------------------------------------------------------------------------------------------------

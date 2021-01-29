@@ -2,7 +2,7 @@
 
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/input_layout.h>
-#include <gris/graphics/vulkan/pipeline_resource_group_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/shader.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
@@ -15,7 +15,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    const PipelineResourceGroupLayout & resourceLayout,
+    const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
     : DeviceResource(device)
