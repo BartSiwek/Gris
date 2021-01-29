@@ -31,8 +31,8 @@ public:
 private:
     struct CombinedSampler
     {
-        const Sampler * Sampler;
-        const TextureView * TextureView;
+        const Sampler * SamplerPart;
+        const TextureView * TextureViewPart;
     };
 
     const ShaderResourceBindingsLayout * m_layout = nullptr;

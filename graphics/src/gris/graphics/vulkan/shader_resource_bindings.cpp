@@ -74,7 +74,9 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::SetCombinedSamplerAndImageV
 void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings()
 {
     if (!m_needsRebuilding)
+    {
         return;
+    }
 
     auto layouts = std::array{ m_layout->DescriptorSetLayoutHandle() };
     auto const allocInfo = vk::DescriptorSetAllocateInfo{}
@@ -88,7 +90,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings()
     }
 
     GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Number of allocated descriptor sets should be one");
-    m_descriptorSet = std::move(allocateDescriptorSetsResult.value.front());
+    m_descriptorSet = allocateDescriptorSetsResult.value.front();
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);
@@ -146,8 +148,8 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings()
     for (auto const & [name, samperAndTextureView] : m_combinedSamplers)
     {
         vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}
-                                                .setSampler(samperAndTextureView.Sampler->SamplerHandle())
-                                                .setImageView(samperAndTextureView.TextureView->ImageViewHandle())
+                                                .setSampler(samperAndTextureView.SamplerPart->SamplerHandle())
+                                                .setImageView(samperAndTextureView.TextureViewPart->ImageViewHandle())
                                                 .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
 
         auto const & binding = m_layout->NameToBinding(name);
