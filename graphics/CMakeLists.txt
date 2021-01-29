@@ -34,6 +34,7 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/utils.cpp"
   "src/gris/graphics/vulkan/vma_implementation.cpp"
   "src/gris/graphics/vulkan/window_mixin.cpp"
+  "include/gris/graphics/backend/pipeline_resource_layout.h"
   "include/gris/graphics/window_observer.h"
   "include/gris/graphics/vulkan/allocation.h"
   "include/gris/graphics/vulkan/allocator.h"

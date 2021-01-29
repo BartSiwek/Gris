@@ -6,6 +6,13 @@
 
 #include <gris/span.h>
 
+namespace Gris::Graphics::Backend
+{
+
+struct PipelineResourceGroupLayoutDesc; 
+
+}
+
 namespace Gris::Graphics::Vulkan
 {
 
@@ -71,7 +78,7 @@ public:
         const vk::MemoryPropertyFlags & properties);
     [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] PipelineResourceGroupLayout CreateResourceGroupLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings);
+    [[nodiscard]] PipelineResourceGroupLayout CreateResourceGroupLayout(const Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc & bindings);
     [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,

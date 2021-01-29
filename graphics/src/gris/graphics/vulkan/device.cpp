@@ -212,7 +212,7 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::PipelineResourceGroupLayout Gris::Graphics::Vulkan::Device::CreateResourceGroupLayout(const Span<const vk::DescriptorSetLayoutBinding> & bindings)
+[[nodiscard]] Gris::Graphics::Vulkan::PipelineResourceGroupLayout Gris::Graphics::Vulkan::Device::CreateResourceGroupLayout(const Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc & bindings)
 {
     return PipelineResourceGroupLayout(this, bindings);
 }

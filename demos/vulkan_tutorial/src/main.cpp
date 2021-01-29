@@ -231,19 +231,24 @@ private:
 
         m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main"));
 
-        auto const bindings = std::array{ 
-            vk::DescriptorSetLayoutBinding{}
-                .setBinding(0)
-                .setDescriptorType(vk::DescriptorType::eUniformBuffer)
-                .setDescriptorCount(1)
-                .setStageFlags(vk::ShaderStageFlagBits::eVertex),
-            vk::DescriptorSetLayoutBinding{}
-                .setBinding(1)
-                .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-                .setDescriptorCount(1)
-                .setStageFlags(vk::ShaderStageFlagBits::eFragment)
+        auto const resourceLayouts = std::array{ 
+            Gris::Graphics::Backend::PipelineResourceLayoutDesc{
+                "ubo",
+                0,
+                Gris::Graphics::Backend::PipelineResourceType::UniformBuffer,
+                1,
+                Gris::Graphics::Backend::PipelineStageFlags::Vertex,
+            },
+            Gris::Graphics::Backend::PipelineResourceLayoutDesc{
+                "texSampler",
+                1,
+                Gris::Graphics::Backend::PipelineResourceType::CombinedImageSampler,
+                1,
+                Gris::Graphics::Backend::PipelineStageFlags::Fragment,
+            },
         };
-        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceGroupLayout>(m_device->CreateResourceGroupLayout(bindings));
+        Gris::Graphics::Backend::PipelineResourceGroupLayoutDesc resourceGroupLayout{ resourceLayouts };
+        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::PipelineResourceGroupLayout>(m_device->CreateResourceGroupLayout(resourceGroupLayout));
 
         m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();

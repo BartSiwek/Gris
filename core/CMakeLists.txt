@@ -27,11 +27,13 @@ target_sources(Gris.Core PRIVATE
   "src/gris/assert.cpp"
   "src/gris/directory_registry.cpp"
   "include/gris/assert.h"
+  "include/gris/casts.h"
   "include/gris/directory_registry.h"
   "include/gris/engine_exception.h"
   "include/gris/log.h"
   "include/gris/macros.h"
   "include/gris/span.h"
+  "include/gris/utils.h"
 )
 
 target_include_directories(Gris.Core PUBLIC
