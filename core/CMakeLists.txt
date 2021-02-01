@@ -33,6 +33,7 @@ target_sources(Gris.Core PRIVATE
   "include/gris/log.h"
   "include/gris/macros.h"
   "include/gris/span.h"
+  "include/gris/strong_type.h"
   "include/gris/utils.h"
 )
 

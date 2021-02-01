@@ -17,12 +17,4 @@ std::vector<T, Allocator> MakeReservedVector(size_t reservedSize)
     return result;
 }
 
-template<class T, class Allocator = std::allocator<T>>
-std::vector<T, Allocator> MakeResizedVector(size_t size)
-{
-    auto result = std::vector<T, Allocator>{};
-    result.resize(size);
-    return result;
-}
-
 }  // namespace Gris

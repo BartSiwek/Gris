@@ -90,6 +90,21 @@ void Gris::Graphics::Vulkan::Device::WaitIdle()
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::Device::RegisterShaderResourceBindingsPoolCategory(
+    Backend::ShaderResourceBindingsPoolCategory category,
+    const Backend::ShaderResourceBindingsPoolSizes & sizes)
+{
+    auto emplaceResult = m_poolManagers.try_emplace(category, this, sizes);
+    if(!emplaceResult.second)
+    {
+        emplaceResult.first->second = ShaderResourceBindingsPoolManager(this, sizes);
+    }
+    // TODO: Reconsider this from the point of view of resizing pools at runtime
+    //  GRIS_ALWAYS_ASSERT(emplaceResult.second, "Registering an already registered pool category");
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // TODO: Do this better
 const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 {
@@ -102,28 +117,6 @@ const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 {
     return m_device.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::Device::CreateDescriptorPool(uint32_t imageCount)
-{
-    std::array poolSizes = {
-        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, imageCount),
-        vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, imageCount)
-    };
-
-    auto const poolInfo = vk::DescriptorPoolCreateInfo{}
-                              .setMaxSets(imageCount)
-                              .setPoolSizes(poolSizes);
-
-    auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo, nullptr, m_dispatch);
-    if (createDescriptorPoolResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);
-    }
-
-    m_descriptorPool = std::move(createDescriptorPoolResult.value);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -142,16 +135,20 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const vk::DescriptorPool & Gris::Graphics::Vulkan::Device::DescriptorPoolHandle() const
+[[nodiscard]] const Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::Device::PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const
 {
-    return m_descriptorPool.get();
+    auto it = m_poolManagers.find(category);
+    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Requested an unknown descriptor pool");
+    return it->second;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::DescriptorPool & Gris::Graphics::Vulkan::Device::DescriptorPoolHandle()
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::Device::PoolManager(Backend::ShaderResourceBindingsPoolCategory category)
 {
-    return m_descriptorPool.get();
+    auto it = m_poolManagers.find(category);
+    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Requested an unknown descriptor pool");
+    return it->second;
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -256,7 +256,14 @@ private:
         createFramebuffers();
 
         // TODO: This has to be removed
-        m_device->CreateDescriptorPool(m_swapChain->ImageCount());
+        auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
+        sizes.ShaderResourceBindingsCount = m_swapChain->ImageCount();
+        sizes.CombinedImageSamplerCount = m_swapChain->ImageCount();
+        sizes.UniformBufferCount = m_swapChain->ImageCount();
+
+        auto tutorialPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory (0);
+        
+        m_device->RegisterShaderResourceBindingsPoolCategory(tutorialPoolCategory, sizes);
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
@@ -266,7 +273,7 @@ private:
             auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBindings(m_resourceLayout.get()));
             newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            newBindings.PrepareBindings();
+            newBindings.PrepareBindings(tutorialPoolCategory);
         }
 
         createCommandBuffers(m_indexCount);
@@ -298,7 +305,14 @@ private:
         createFramebuffers();
 
         // TODO: This has to be removed
-        m_device->CreateDescriptorPool(m_swapChain->ImageCount());
+        auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
+        sizes.ShaderResourceBindingsCount = m_swapChain->ImageCount();
+        sizes.CombinedImageSamplerCount = m_swapChain->ImageCount();
+        sizes.UniformBufferCount = m_swapChain->ImageCount();
+
+        auto tutorialPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory (0);
+
+        m_device->RegisterShaderResourceBindingsPoolCategory(tutorialPoolCategory, sizes);
 
         m_uniformBuffers.clear();
         m_uniformBufferViews.clear();
@@ -307,7 +321,7 @@ private:
             auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
             auto const & newView = m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", newView);
-            m_shaderResourceBindings[i].PrepareBindings();
+            m_shaderResourceBindings[i].PrepareBindings(tutorialPoolCategory);
         }
 
         createCommandBuffers(m_indexCount);

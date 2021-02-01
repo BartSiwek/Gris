@@ -70,14 +70,14 @@ Gris::Graphics::Vulkan::DeviceResource::DeviceResource(Device * device)
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] const vk::DescriptorPool & Gris::Graphics::Vulkan::DeviceResource::DescriptorPoolHandle() const
+[[nodiscard]] const Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::DeviceResource::PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const
 {
-    return m_parentDevice->DescriptorPoolHandle();
+    return m_parentDevice->PoolManager(category);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::DescriptorPool & Gris::Graphics::Vulkan::DeviceResource::DescriptorPoolHandle()
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::DeviceResource::PoolManager(Backend::ShaderResourceBindingsPoolCategory category)
 {
-    return m_parentDevice->DescriptorPoolHandle();
+    return m_parentDevice->PoolManager(category);
 }

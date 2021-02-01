@@ -2,11 +2,14 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
+#include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
 class Device;
 class Allocator;
+class ShaderResourceBindingsPoolManager;
 
 class DeviceResource
 {
@@ -34,8 +37,8 @@ protected:
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
-    [[nodiscard]] const vk::DescriptorPool & DescriptorPoolHandle() const;
-    [[nodiscard]] vk::DescriptorPool & DescriptorPoolHandle();
+    [[nodiscard]] const ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const;
+    [[nodiscard]] ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category);
 
 private:
     Device * m_parentDevice = nullptr;

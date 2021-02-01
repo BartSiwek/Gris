@@ -3,6 +3,7 @@
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
 #include <gris/graphics/vulkan/texture_view.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
@@ -71,26 +72,15 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::SetCombinedSamplerAndImageV
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings()
+void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::ShaderResourceBindingsPoolCategory catregory)
 {
     if (!m_needsRebuilding)
     {
         return;
     }
 
-    auto layouts = std::array{ m_layout->DescriptorSetLayoutHandle() };
-    auto const allocInfo = vk::DescriptorSetAllocateInfo{}
-                               .setDescriptorPool(DescriptorPoolHandle())
-                               .setSetLayouts(layouts);
-
-    auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
-    if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error allocating descriptor sets", allocateDescriptorSetsResult);
-    }
-
-    GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Number of allocated descriptor sets should be one");
-    m_descriptorSet = allocateDescriptorSetsResult.value.front();
+    auto & poolManger = PoolManager(catregory);
+    m_descriptorSet = poolManger.Allocate(m_layout->DescriptorSetLayoutHandle());
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);

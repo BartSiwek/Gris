@@ -3,6 +3,7 @@
 #include <gris/graphics/vulkan/allocator.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/physical_device.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
 
 #include <gris/span.h>
 
@@ -55,12 +56,11 @@ public:
 
     [[nodiscard]] vk::FormatProperties GetFormatProperties(vk::Format format) const;
 
+    void RegisterShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
+
     // TODO: Do this better
     [[nodiscard]] const vk::Device & DeviceHandle() const;
     [[nodiscard]] vk::Device & DeviceHandle();
-
-    // TODO: Make device independent of frame count
-    void CreateDescriptorPool(uint32_t imageCount);
 
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
 
@@ -102,15 +102,15 @@ private:
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
-    [[nodiscard]] const vk::DescriptorPool & DescriptorPoolHandle() const;
-    [[nodiscard]] vk::DescriptorPool & DescriptorPoolHandle();
+    [[nodiscard]] const ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const;
+    [[nodiscard]] ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category);
 
     PhysicalDevice m_physicalDevice;
 
     vk::UniqueDevice m_device = {};
     vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
-    vk::UniqueDescriptorPool m_descriptorPool = {};
+    std::unordered_map<Backend::ShaderResourceBindingsPoolCategory, ShaderResourceBindingsPoolManager> m_poolManagers;
     std::unique_ptr<ImmediateContext> m_context = {};
 };
 
