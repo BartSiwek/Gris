@@ -3,6 +3,8 @@
 #include <gris/graphics/vulkan/allocator.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Texture::Texture(Device * device,
                                          uint32_t width,
                                          uint32_t height,
@@ -49,13 +51,15 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
     AllocatorHandle().Bind(m_image.get(), m_imageMemory);
 }
 
-// TODO: Do this better
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle() const
 {
     return m_image.get();
 }
 
-// TODO: Do this better
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle()
 {
     return m_image.get();

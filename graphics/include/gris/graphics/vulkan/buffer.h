@@ -18,7 +18,6 @@ public:
     Buffer(Buffer && other) = default;
     Buffer & operator=(Buffer && other) = default;
 
-    // TODO: Do this via context
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
     [[nodiscard]] vk::Buffer & BufferHandle();
 

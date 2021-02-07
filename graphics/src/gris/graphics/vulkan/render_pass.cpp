@@ -13,7 +13,6 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapC
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle() const
 {
     return m_renderPass.get();
@@ -21,7 +20,6 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapC
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle()
 {
     return m_renderPass.get();

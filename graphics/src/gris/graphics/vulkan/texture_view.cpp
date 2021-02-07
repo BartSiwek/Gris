@@ -47,7 +47,6 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle() const
 {
     return m_imageView.get();
@@ -55,7 +54,6 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle()
 {
     return m_imageView.get();

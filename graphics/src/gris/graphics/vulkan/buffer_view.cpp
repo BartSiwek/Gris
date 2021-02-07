@@ -13,7 +13,6 @@ Gris::Graphics::Vulkan::BufferView::BufferView(const Buffer * buffer, uint32_t o
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::BufferView::BufferHandle() const
 {
     return m_buffer->BufferHandle();

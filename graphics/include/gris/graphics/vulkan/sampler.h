@@ -10,7 +10,6 @@ class Sampler : public DeviceResource
 public:
     Sampler(Device * device, float minLod, float maxLod);
 
-    // TODO: Do this better
     const vk::Sampler & SamplerHandle() const;
     vk::Sampler & SamplerHandle();
 

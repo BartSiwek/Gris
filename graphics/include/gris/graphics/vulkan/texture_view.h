@@ -22,7 +22,6 @@ public:
                 const vk::ImageAspectFlags & aspectFlags,
                 uint32_t mipLevels);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::ImageView & ImageViewHandle() const;
     [[nodiscard]] vk::ImageView & ImageViewHandle();
 

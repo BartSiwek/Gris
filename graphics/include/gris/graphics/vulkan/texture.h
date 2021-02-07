@@ -24,7 +24,6 @@ public:
         return m_mipLevels;
     }
 
-    // TODO: Do this better via context
     [[nodiscard]] const vk::Image & ImageHandle() const;
     [[nodiscard]] vk::Image & ImageHandle();
 

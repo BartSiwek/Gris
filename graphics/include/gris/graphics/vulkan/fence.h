@@ -10,7 +10,6 @@ class Fence : public DeviceResource
 public:
     Fence(Device * device, bool signaled);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::Fence & FenceHandle() const;
     [[nodiscard]] vk::Fence & FenceHandle();
 

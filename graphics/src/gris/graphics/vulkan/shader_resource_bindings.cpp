@@ -80,7 +80,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
         return;
     }
 
-    // TODO: Since the layout does not change during the lifetime of this object
+    // Since the layout does not change during the lifetime of this object
     // the descriptor set is constant as well - only the contents may need updating
     m_descriptorSet = pools->Allocate(category, m_layout->DescriptorSetLayoutHandle());
 
@@ -95,7 +95,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                               .setRange(bufferView->Size());
 
         auto const & binding = m_layout->NameToBinding(name);
-        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
                                           .setDstSet(m_descriptorSet)
@@ -110,7 +110,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
         vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}.setSampler(sampler->SamplerHandle());
 
         auto const & binding = m_layout->NameToBinding(name);
-        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
                                           .setDstSet(m_descriptorSet)
@@ -127,7 +127,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                                 .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
 
         auto const & binding = m_layout->NameToBinding(name);
-        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
                                           .setDstSet(m_descriptorSet)
@@ -145,7 +145,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                                 .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
 
         auto const & binding = m_layout->NameToBinding(name);
-        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");  // TODO: Support arrays
+        GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
                                           .setDstSet(m_descriptorSet)

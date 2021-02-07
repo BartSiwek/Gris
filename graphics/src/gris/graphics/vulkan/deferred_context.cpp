@@ -43,7 +43,6 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::CommandBuffer & Gris::Graphics::Vulkan::DeferredContext::CommandBufferHandle()
 {
     return m_commandBuffer.get();

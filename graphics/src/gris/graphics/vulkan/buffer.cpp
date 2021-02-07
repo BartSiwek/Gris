@@ -3,6 +3,8 @@
 #include <gris/graphics/vulkan/allocator.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
 {
@@ -32,17 +34,21 @@ Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, con
     AllocatorHandle().Bind(m_buffer.get(), m_bufferMemory);
 }
 
-// TODO: Do this via context
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::Buffer::BufferHandle() const
 {
     return m_buffer.get();
 }
 
-// TODO: Do this via context
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] vk::Buffer & Gris::Graphics::Vulkan::Buffer::BufferHandle()
 {
     return m_buffer.get();
 }
+
+// -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::Buffer::SetData(const void * const data, size_t size)
 {

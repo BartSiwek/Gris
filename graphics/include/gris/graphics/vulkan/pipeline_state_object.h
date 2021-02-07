@@ -23,11 +23,9 @@ public:
         const Shader & vertexShader,
         const Shader & fragmentShader);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::PipelineLayout & PipelineLayoutHandle() const;
     [[nodiscard]] vk::PipelineLayout & PipelineLayoutHandle();
 
-    // TODO: Do this better
     [[nodiscard]] const vk::Pipeline & GraphicsPipelineHandle() const;
     [[nodiscard]] vk::Pipeline & GraphicsPipelineHandle();
 

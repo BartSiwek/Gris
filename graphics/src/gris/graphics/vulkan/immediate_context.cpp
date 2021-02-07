@@ -281,7 +281,6 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
         throw VulkanEngineException("Error submitting the command buffer", submitResult);
     }
 
-    // TODO: There has to be a better way to do this
     auto const waitResult = m_graphicsQueue.waitIdle(Dispatch());
     if (waitResult != vk::Result::eSuccess)
     {

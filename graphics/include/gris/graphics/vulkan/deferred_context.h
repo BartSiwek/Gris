@@ -17,7 +17,6 @@ class DeferredContext : public DeviceResource
 public:
     DeferredContext(Device * device);
 
-    // TODO: Do this better
     [[nodiscard]] vk::CommandBuffer & CommandBufferHandle();
 
     void Begin();

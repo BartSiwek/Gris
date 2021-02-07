@@ -14,9 +14,7 @@ class BufferView
 public:
     BufferView(const Buffer * buffer, uint32_t offset, uint32_t size);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
-    [[nodiscard]] vk::Buffer & BufferHandle();
 
     uint32_t Offset() const;
 

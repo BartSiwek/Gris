@@ -21,7 +21,6 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle() const
 {
     return m_shaderModule.get();
@@ -29,7 +28,6 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle()
 {
     return m_shaderModule.get();

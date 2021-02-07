@@ -10,7 +10,6 @@ class Shader : public DeviceResource
 public:
     Shader(Device * device, const std::vector<uint32_t> & code, std::string entryPoint);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::ShaderModule & ModuleHandle() const;
     [[nodiscard]] vk::ShaderModule & ModuleHandle();
 

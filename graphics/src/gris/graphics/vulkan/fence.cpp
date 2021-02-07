@@ -26,7 +26,6 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle() const
 {
     return m_fence.get();
@@ -34,7 +33,6 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle()
 {
     return m_fence.get();

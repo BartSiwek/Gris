@@ -136,7 +136,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle() const
 {
     return m_pipelineLayout.get();
@@ -144,7 +143,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle()
 {
     return m_pipelineLayout.get();
@@ -152,7 +150,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle() const
 {
     return m_graphicsPipeline.get();
@@ -160,7 +157,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle()
 {
     return m_graphicsPipeline.get();

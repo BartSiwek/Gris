@@ -10,7 +10,6 @@ class RenderPass : public DeviceResource
 public:
     RenderPass(Device * device, vk::Format swapChainFormat, vk::Format depthFormat);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::RenderPass & RenderPassHandle() const;
     [[nodiscard]] vk::RenderPass & RenderPassHandle();
 

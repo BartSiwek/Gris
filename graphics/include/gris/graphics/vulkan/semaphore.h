@@ -12,7 +12,6 @@ class Semaphore : public DeviceResource
 public:
     explicit Semaphore(Device * device);
 
-    // TODO: Do this better
     const vk::Semaphore & SemaphoreHandle() const;
     vk::Semaphore & SemaphoreHandle();
 

@@ -35,7 +35,6 @@ Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float ma
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 {
     return m_sampler.get();
@@ -43,7 +42,6 @@ const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
 {
     return m_sampler.get();

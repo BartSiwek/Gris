@@ -116,7 +116,6 @@ void Gris::Graphics::Vulkan::Device::UpdateShaderResourceBindingsPoolCategory(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 {
     return m_device.get();
@@ -124,7 +123,6 @@ const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 {
     return m_device.get();
