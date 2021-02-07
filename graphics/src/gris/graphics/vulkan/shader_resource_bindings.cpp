@@ -1,8 +1,10 @@
 ﻿#include <gris/graphics/vulkan/shader_resource_bindings.h>
 
 #include <gris/graphics/vulkan/buffer_view.h>
+#include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_collection.h>
 #include <gris/graphics/vulkan/texture_view.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
@@ -71,26 +73,16 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::SetCombinedSamplerAndImageV
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings()
+void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::ShaderResourceBindingsPoolCategory category, ShaderResourceBindingsPoolCollection * pools)
 {
     if (!m_needsRebuilding)
     {
         return;
     }
 
-    auto layouts = std::array{ m_layout->DescriptorSetLayoutHandle() };
-    auto const allocInfo = vk::DescriptorSetAllocateInfo{}
-                               .setDescriptorPool(DescriptorPoolHandle())
-                               .setSetLayouts(layouts);
-
-    auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
-    if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error allocating descriptor sets", allocateDescriptorSetsResult);
-    }
-
-    GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Number of allocated descriptor sets should be one");
-    m_descriptorSet = allocateDescriptorSetsResult.value.front();
+    // TODO: Since the layout does not change during the lifetime of this object
+    // the descriptor set is constant as well - only the contents may need updating
+    m_descriptorSet = pools->Allocate(category, m_layout->DescriptorSetLayoutHandle());
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);

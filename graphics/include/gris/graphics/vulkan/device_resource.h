@@ -2,6 +2,8 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
+#include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
@@ -33,9 +35,6 @@ protected:
 
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
-
-    [[nodiscard]] const vk::DescriptorPool & DescriptorPoolHandle() const;
-    [[nodiscard]] vk::DescriptorPool & DescriptorPoolHandle();
 
 private:
     Device * m_parentDevice = nullptr;

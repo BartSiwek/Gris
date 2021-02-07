@@ -7,11 +7,13 @@
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
+#include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/semaphore.h>
 #include <gris/graphics/vulkan/shader.h>
 #include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_collection.h>
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
@@ -90,6 +92,30 @@ void Gris::Graphics::Vulkan::Device::WaitIdle()
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::Device::RegisterShaderResourceBindingsPoolCategory(
+    Backend::ShaderResourceBindingsPoolCategory category,
+    const Backend::ShaderResourceBindingsPoolSizes & sizes)
+{
+    GRIS_FAST_ASSERT(std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
+                                  { return entry.Category == category; }),
+                     "Registering an already registered pool category ");
+    m_poolManagers.emplace_back(CategoryAndPoolManager{ category, { this, category, sizes } });
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Device::UpdateShaderResourceBindingsPoolCategory(
+    Backend::ShaderResourceBindingsPoolCategory category,
+    const Backend::ShaderResourceBindingsPoolSizes & sizes)
+{
+    auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
+                           { return entry.Category == category; });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Updating an non-existent pool category");
+    it->PoolManager.Update(sizes);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 // TODO: Do this better
 const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 {
@@ -102,56 +128,6 @@ const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 {
     return m_device.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::Device::CreateDescriptorPool(uint32_t imageCount)
-{
-    std::array poolSizes = {
-        vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, imageCount),
-        vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, imageCount)
-    };
-
-    auto const poolInfo = vk::DescriptorPoolCreateInfo{}
-                              .setMaxSets(imageCount)
-                              .setPoolSizes(poolSizes);
-
-    auto createDescriptorPoolResult = m_device->createDescriptorPoolUnique(poolInfo, nullptr, m_dispatch);
-    if (createDescriptorPoolResult.result != vk::Result::eSuccess)
-    {
-        throw VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);
-    }
-
-    m_descriptorPool = std::move(createDescriptorPoolResult.value);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
-{
-    return m_allocator;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle() const
-{
-    return m_allocator;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const vk::DescriptorPool & Gris::Graphics::Vulkan::Device::DescriptorPoolHandle() const
-{
-    return m_descriptorPool.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] vk::DescriptorPool & Gris::Graphics::Vulkan::Device::DescriptorPoolHandle()
-{
-    return m_descriptorPool.get();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -183,6 +159,7 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 }
 
 // -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] Gris::Graphics::Vulkan::Texture Gris::Graphics::Vulkan::Device::CreateTexture(
     uint32_t width,
     uint32_t height,
@@ -263,4 +240,52 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 [[nodiscard]] Gris::Graphics::Vulkan::Semaphore Gris::Graphics::Vulkan::Device::CreateSemaphore()
 {
     return Semaphore(this);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::RenderPass Gris::Graphics::Vulkan::Device::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
+{
+    return RenderPass(this, swapChainFormat, depthFormat);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPoolCollection()
+{
+    return ShaderResourceBindingsPoolCollection(this);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category)
+{
+    auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
+                           { return entry.Category == category; });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Allocating a pool from an unknown descriptor pool category");
+    return it->PoolManager.AllocatePool();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool)
+{
+    auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&pool](const auto & entry)
+                           { return entry.Category == pool.Category(); });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Deallocating a pool with a unknown descriptor pool category");
+    it->PoolManager.DeallocatePool(std::move(pool));
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
+{
+    return m_allocator;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle() const
+{
+    return m_allocator;
 }

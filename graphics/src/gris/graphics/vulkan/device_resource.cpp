@@ -67,17 +67,3 @@ Gris::Graphics::Vulkan::DeviceResource::DeviceResource(Device * device)
 {
     return m_parentDevice->AllocatorHandle();
 }
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const vk::DescriptorPool & Gris::Graphics::Vulkan::DeviceResource::DescriptorPoolHandle() const
-{
-    return m_parentDevice->DescriptorPoolHandle();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] vk::DescriptorPool & Gris::Graphics::Vulkan::DeviceResource::DescriptorPoolHandle()
-{
-    return m_parentDevice->DescriptorPoolHandle();
-}
