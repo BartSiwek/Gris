@@ -17,7 +17,21 @@ public:
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
 
+    PhysicalDevice();
+
     PhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies);
+
+    PhysicalDevice(const PhysicalDevice &) = default;
+    PhysicalDevice& operator=(const PhysicalDevice &) = default;
+
+    PhysicalDevice(PhysicalDevice &&) noexcept = default;
+    PhysicalDevice & operator=(PhysicalDevice &&) noexcept = default;
+
+    ~PhysicalDevice() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] const vk::SampleCountFlagBits & MsaaSamples() const;
     [[nodiscard]] const DeviceQueueFamilyIndices & QueueFamilies() const;

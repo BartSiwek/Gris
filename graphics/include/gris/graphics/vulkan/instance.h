@@ -16,8 +16,8 @@ public:
     Instance(const Instance &) = delete;
     Instance & operator=(const Instance &) = delete;
 
-    Instance(Instance &&) noexcept = delete;
-    Instance & operator=(Instance &&) noexcept = delete;
+    Instance(Instance &&) noexcept = default;
+    Instance & operator=(Instance &&) noexcept = default;
 
     [[nodiscard]] static vk::Instance & InstanceHandle();
     [[nodiscard]] static vk::DispatchLoaderDynamic & Dispatch();
@@ -41,7 +41,7 @@ private:
 
     vk::UniqueInstance m_instance = {};
     vk::DynamicLoader m_loader = {};
-    vk::DispatchLoaderDynamic m_dispatch;
+    vk::DispatchLoaderDynamic m_dispatch = {};
     vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> m_debugMessenger = {};
 };
 

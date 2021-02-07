@@ -5,6 +5,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Buffer::Buffer() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
 {
@@ -32,6 +36,20 @@ Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, con
     m_bufferMemory = AllocatorHandle().AllocateMemory(m_buffer.get(), allocationInfo);
 
     AllocatorHandle().Bind(m_buffer.get(), m_bufferMemory);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Buffer::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Buffer::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_buffer) && m_bufferMemory.IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------

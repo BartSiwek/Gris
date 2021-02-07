@@ -4,6 +4,8 @@
 
 #include <gris/utils.h>
 
+// -------------------------------------------------------------------------------------------------
+
 namespace
 {
 
@@ -79,6 +81,10 @@ vk::UniqueDescriptorPool CreateNewPool(
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(
     Device * device,
     Backend::ShaderResourceBindingsPoolCategory category,
@@ -87,6 +93,20 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBinding
     , m_category(category)
     , m_sizes(sizes)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::IsValid() const
+{
+    return DeviceResource::IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------

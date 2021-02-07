@@ -12,7 +12,21 @@ namespace Gris::Graphics::Vulkan
 class ShaderResourceBindingsLayout : public DeviceResource
 {
 public:
+    ShaderResourceBindingsLayout();
+
     ShaderResourceBindingsLayout(Device * device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout);
+
+    ShaderResourceBindingsLayout(const ShaderResourceBindingsLayout &) = delete;
+    ShaderResourceBindingsLayout & operator=(const ShaderResourceBindingsLayout &) = delete;
+
+    ShaderResourceBindingsLayout(ShaderResourceBindingsLayout &&) noexcept = default;
+    ShaderResourceBindingsLayout & operator=(ShaderResourceBindingsLayout &&) noexcept = default;
+
+    ~ShaderResourceBindingsLayout() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] const vk::DescriptorSetLayout & DescriptorSetLayoutHandle() const;
     [[nodiscard]] vk::DescriptorSetLayout & DescriptorSetLayoutHandle();

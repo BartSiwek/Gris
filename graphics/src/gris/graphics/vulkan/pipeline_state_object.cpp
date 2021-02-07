@@ -9,6 +9,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     Device * device,
     uint32_t swapChainWidth,
@@ -132,6 +136,20 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     }
 
     m_graphicsPipeline = std::move(createGraphicsPipelineResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::PipelineStateObject::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_graphicsPipeline);
 }
 
 // -------------------------------------------------------------------------------------------------

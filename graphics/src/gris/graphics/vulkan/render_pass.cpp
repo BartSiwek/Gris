@@ -5,10 +5,28 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::RenderPass::RenderPass() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapChainFormat, vk::Format depthFormat)
     : DeviceResource(device)
 {
     CreateRenderPass(swapChainFormat, depthFormat);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::RenderPass::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_renderPass);
 }
 
 // -------------------------------------------------------------------------------------------------

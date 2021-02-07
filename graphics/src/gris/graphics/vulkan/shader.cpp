@@ -4,10 +4,16 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Shader::Shader() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code, std::string entryPoint)
     : DeviceResource(device)
     , m_entryPoint(std::move(entryPoint))
 {
+    GRIS_ALWAYS_ASSERT(!m_entryPoint.empty(), "Shader entry point is empty");
+
     auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
     auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo, nullptr, Dispatch());
@@ -17,6 +23,20 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
     }
 
     m_shaderModule = std::move(createShaderModuleResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Shader::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Shader::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_shaderModule);
 }
 
 // -------------------------------------------------------------------------------------------------

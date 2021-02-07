@@ -21,13 +21,32 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Device::Device() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
     : m_physicalDevice(physicalDevice)
 {
+    GRIS_ALWAYS_ASSERT(m_physicalDevice.IsValid(), "Invalid physical device");
     m_device = m_physicalDevice.CreateDevice();
     m_dispatch = Instance::CreateDispatch(m_device.get());
     m_allocator = m_physicalDevice.CreateAllocator(m_device.get(), m_dispatch);
     m_context = std::make_unique<ImmediateContext>(this);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Device::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Device::IsValid() const
+{
+    return m_physicalDevice.IsValid() && static_cast<bool>(m_device);
 }
 
 // -------------------------------------------------------------------------------------------------

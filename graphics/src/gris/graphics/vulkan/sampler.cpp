@@ -4,6 +4,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Sampler::Sampler() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float maxLod)
     : DeviceResource(device)
 {
@@ -31,6 +35,20 @@ Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float ma
     }
 
     m_sampler = std::move(createSamplerResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Sampler::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Sampler::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_sampler);
 }
 
 // -------------------------------------------------------------------------------------------------

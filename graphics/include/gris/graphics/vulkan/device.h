@@ -41,7 +41,21 @@ class Device
 public:
     friend class DeviceResource;
 
+    Device();
+
     explicit Device(PhysicalDevice physicalDevice);
+
+    Device(const Device &) = delete;
+    Device& operator=(const Device &) = delete;
+
+    Device(Device &&) noexcept = default;
+    Device & operator=(Device &&) noexcept = default;
+
+    ~Device() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] const ImmediateContext * Context() const;
     [[nodiscard]] ImmediateContext * Context();
@@ -114,7 +128,7 @@ private:
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
-    PhysicalDevice m_physicalDevice;
+    PhysicalDevice m_physicalDevice = {};
 
     vk::UniqueDevice m_device = {};
     vk::DispatchLoaderDynamic m_dispatch = {};

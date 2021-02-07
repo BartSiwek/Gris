@@ -44,9 +44,23 @@ Gris::Graphics::Vulkan::Allocation::~Allocation()
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Allocation::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Allocation::IsValid() const
+{
+    return m_owner != nullptr && m_allocation != VK_NULL_HANDLE;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void Gris::Graphics::Vulkan::Allocation::Reset()
 {
-    if (m_owner != nullptr)
+    if (IsValid())
     {
         m_owner->FreeMemory(m_allocation);
         m_allocation = VK_NULL_HANDLE;

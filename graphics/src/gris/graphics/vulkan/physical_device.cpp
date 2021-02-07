@@ -15,12 +15,31 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::PhysicalDevice::PhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies)
     : m_physicalDevice(physicalDevice)
     , m_msaaSamples(msaaSamples)
     , m_queueFamilies(queueFamilies)
 {
     GRIS_ALWAYS_ASSERT(m_physicalDevice, "Physical device must be valid");
+    GRIS_ALWAYS_ASSERT(m_queueFamilies.IsComplete(), "Queue family indices must be complete");
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::PhysicalDevice::IsValid() const
+{
+    return static_cast<bool>(m_physicalDevice);
 }
 
 // -------------------------------------------------------------------------------------------------

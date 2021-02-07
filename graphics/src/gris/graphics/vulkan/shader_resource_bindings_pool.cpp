@@ -4,6 +4,12 @@
 
 #include <gris/utils.h>
 
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(
     Device * device,
     Backend::ShaderResourceBindingsPoolCategory category,
@@ -12,6 +18,20 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(
     , m_category(category)
     , m_pool(std::move(pool))
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPool::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::ShaderResourceBindingsPool::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_pool);
 }
 
 // -------------------------------------------------------------------------------------------------

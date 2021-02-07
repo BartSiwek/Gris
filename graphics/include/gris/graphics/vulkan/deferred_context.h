@@ -15,7 +15,21 @@ class ShaderResourceBindings;
 class DeferredContext : public DeviceResource
 {
 public:
-    DeferredContext(Device * device);
+    DeferredContext();
+
+    explicit DeferredContext(Device * device);
+
+    DeferredContext(const DeferredContext &) = delete;
+    DeferredContext & operator=(const DeferredContext &) = delete;
+
+    DeferredContext(DeferredContext &&) noexcept = default;
+    DeferredContext & operator=(DeferredContext &&) noexcept = default;
+
+    ~DeferredContext() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] vk::CommandBuffer & CommandBufferHandle();
 

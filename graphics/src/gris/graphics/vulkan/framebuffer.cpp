@@ -6,6 +6,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Framebuffer::Framebuffer() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
     : DeviceResource(device)
 {
@@ -25,6 +29,20 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureV
     }
 
     m_framebuffer = std::move(createFramebufferResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Framebuffer::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Framebuffer::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_framebuffer);
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -5,6 +5,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Texture::Texture() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Texture::Texture(Device * device,
                                          uint32_t width,
                                          uint32_t height,
@@ -49,6 +53,20 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
     m_imageMemory = AllocatorHandle().AllocateMemory(m_image.get(), allocationInfo);
 
     AllocatorHandle().Bind(m_image.get(), m_imageMemory);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Texture::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Texture::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_image) && m_imageMemory.IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------

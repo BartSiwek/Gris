@@ -8,7 +8,21 @@ namespace Gris::Graphics::Vulkan
 class Shader : public DeviceResource
 {
 public:
+    Shader();
+
     Shader(Device * device, const std::vector<uint32_t> & code, std::string entryPoint);
+
+    Shader(const Shader &) = delete;
+    Shader & operator=(const Shader &) = delete;
+
+    Shader(Shader &&) noexcept = default;
+    Shader & operator=(Shader &&) noexcept = default;
+
+    ~Shader() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] const vk::ShaderModule & ModuleHandle() const;
     [[nodiscard]] vk::ShaderModule & ModuleHandle();

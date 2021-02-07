@@ -10,6 +10,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
     : DeviceResource(device)
 {
@@ -39,6 +43,20 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 
     GRIS_ALWAYS_ASSERT(allocateCommandBuffersResult.value.size() == 1, "Number of allocated command buffers should be one");
     m_commandBuffer = std::move(allocateCommandBuffersResult.value.front());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::DeferredContext::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool) && static_cast<bool>(m_commandBuffer);
 }
 
 // -------------------------------------------------------------------------------------------------

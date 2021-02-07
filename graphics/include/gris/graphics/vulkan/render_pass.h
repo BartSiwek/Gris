@@ -8,7 +8,21 @@ namespace Gris::Graphics::Vulkan
 class RenderPass : public DeviceResource
 {
 public:
+    RenderPass();
+
     RenderPass(Device * device, vk::Format swapChainFormat, vk::Format depthFormat);
+
+    RenderPass(const RenderPass &) = delete;
+    RenderPass & operator=(const RenderPass &) = delete;
+
+    RenderPass(RenderPass &&) noexcept = default;
+    RenderPass & operator=(RenderPass &&) noexcept = default;
+
+    ~RenderPass() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] const vk::RenderPass & RenderPassHandle() const;
     [[nodiscard]] vk::RenderPass & RenderPassHandle();
@@ -16,7 +30,7 @@ public:
 private:
     void CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
 
-    vk::UniqueRenderPass m_renderPass;
+    vk::UniqueRenderPass m_renderPass = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

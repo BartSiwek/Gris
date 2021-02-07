@@ -6,6 +6,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::TextureView::TextureView() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
                                                  const Texture & image,
                                                  vk::Format format,
@@ -43,6 +47,20 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
     }
 
     m_imageView = std::move(createImageViewResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::TextureView::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::TextureView::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_imageView);
 }
 
 // -------------------------------------------------------------------------------------------------

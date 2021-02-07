@@ -9,6 +9,8 @@ namespace Gris::Graphics::Vulkan
 class Texture : public DeviceResource
 {
 public:
+    Texture();
+
     Texture(Device * device,
             uint32_t width,
             uint32_t height,
@@ -18,6 +20,18 @@ public:
             vk::ImageTiling tiling,
             const vk::ImageUsageFlags & usage,
             const vk::MemoryPropertyFlags & properties);
+
+    Texture(const Texture &) = delete;
+    Texture & operator=(const Texture &) = delete;
+
+    Texture(Texture &&) noexcept = default;
+    Texture & operator=(Texture &&) noexcept = default;
+
+    ~Texture() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] uint32_t MipLevels() const
     {

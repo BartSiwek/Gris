@@ -12,10 +12,28 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings(Device * device, const ShaderResourceBindingsLayout * resourceLayout)
     : DeviceResource(device)
     , m_layout(resourceLayout)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindings::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::ShaderResourceBindings::IsValid() const
+{
+    return DeviceResource::IsValid() && m_layout != nullptr && m_layout->IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -12,6 +12,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
     : DeviceResource(device)
 {
@@ -31,6 +35,20 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
     }
 
     m_commandPool = std::move(createCommandPoolResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::ImmediateContext::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
 }
 
 // -------------------------------------------------------------------------------------------------

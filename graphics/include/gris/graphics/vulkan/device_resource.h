@@ -16,13 +16,19 @@ public:
     virtual ~DeviceResource() = default;
 
 protected:
+    DeviceResource();
+
     explicit DeviceResource(Device * device);
 
-    DeviceResource(const DeviceResource & other) = default;
-    DeviceResource & operator=(const DeviceResource & other) = default;
+    DeviceResource(const DeviceResource &) = default;
+    DeviceResource & operator=(const DeviceResource &) = default;
 
-    DeviceResource(DeviceResource && other) = default;
-    DeviceResource & operator=(DeviceResource && other) = default;
+    DeviceResource(DeviceResource &&) noexcept = default;
+    DeviceResource & operator=(DeviceResource &&) noexcept = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] const Device & ParentDevice() const;
     [[nodiscard]] Device & ParentDevice();

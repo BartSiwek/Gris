@@ -14,13 +14,17 @@ public:
 
     explicit Allocator(VmaAllocator allocator);
 
-    Allocator(const Allocator & other) = delete;
-    Allocator & operator=(const Allocator & other) = delete;
+    Allocator(const Allocator &) = delete;
+    Allocator & operator=(const Allocator &) = delete;
 
     Allocator(Allocator && other) noexcept;
     Allocator & operator=(Allocator && other) noexcept;
 
     ~Allocator();
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     [[nodiscard]] Allocation AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo);
     [[nodiscard]] Allocation AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo);

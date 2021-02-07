@@ -61,6 +61,10 @@ vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities, u
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::SwapChain::SwapChain() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
     : DeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
@@ -139,6 +143,20 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     }
 
     m_swapChainImageToVirtualFrame.resize(m_swapChainImages.size(), std::numeric_limits<uint32_t>::max());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::SwapChain::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::SwapChain::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_swapChain);
 }
 
 // -------------------------------------------------------------------------------------------------

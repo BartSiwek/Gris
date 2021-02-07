@@ -6,10 +6,28 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::DeviceResource::DeviceResource() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::DeviceResource::DeviceResource(Device * device)
     : m_parentDevice(device)
 {
     GRIS_ALWAYS_ASSERT(m_parentDevice != nullptr, "Parent device cannot be null");
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::DeviceResource::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::DeviceResource::IsValid() const
+{
+    return m_parentDevice != nullptr;
 }
 
 // -------------------------------------------------------------------------------------------------

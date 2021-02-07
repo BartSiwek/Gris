@@ -5,9 +5,29 @@
 
 #include <gris/utils.h>
 
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(Device * device)
     : DeviceResource(device)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::IsValid() const
+{
+    return DeviceResource::IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------

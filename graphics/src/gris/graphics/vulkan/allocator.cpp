@@ -44,6 +44,20 @@ Gris::Graphics::Vulkan::Allocator::~Allocator()
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Allocator::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Allocator::IsValid() const
+{
+    return m_allocator != VK_NULL_HANDLE;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] Gris::Graphics::Vulkan::Allocation Gris::Graphics::Vulkan::Allocator::AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo)
 {
     VmaAllocation allocation = VK_NULL_HANDLE;

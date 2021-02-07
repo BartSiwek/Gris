@@ -4,6 +4,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Fence::Fence() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
     : DeviceResource(device)
 {
@@ -22,6 +26,20 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
     }
 
     m_fence = std::move(fenceCreateResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Fence::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::Fence::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_fence);
 }
 
 // -------------------------------------------------------------------------------------------------

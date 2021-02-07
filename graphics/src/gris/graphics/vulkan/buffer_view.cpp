@@ -4,11 +4,29 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::BufferView::BufferView() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::BufferView::BufferView(const Buffer * buffer, uint32_t offset, uint32_t size)
     : m_buffer(buffer)
     , m_offset(offset)
     , m_size(size)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::BufferView::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::BufferView::IsValid() const
+{
+    return m_buffer != nullptr && m_size > 0;
 }
 
 // -------------------------------------------------------------------------------------------------

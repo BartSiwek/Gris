@@ -32,6 +32,8 @@ template<typename T, typename TagT, template<typename> class... MixinTs>
 class StrongType : public MixinTs<StrongType<T, TagT, MixinTs...>>...
 {
 public:
+    using UnderlyingType = T;
+
     explicit StrongType(const T & value)
         : m_value(value)
     {
@@ -68,7 +70,6 @@ namespace StrongTypeMixins
 template<typename T>
 struct Comparable : Detail::Crpt<T, Comparable>
 {
-
     friend bool operator==(const T & lhs, const T & rhs)
     {
         return lhs.Underlying().Get() == rhs.Underlying().Get();

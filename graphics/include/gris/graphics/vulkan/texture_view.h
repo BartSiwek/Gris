@@ -10,6 +10,8 @@ class Texture;
 class TextureView : public DeviceResource
 {
 public:
+    TextureView();
+
     TextureView(Device * device,
                 const Texture & image,
                 vk::Format format,
@@ -22,11 +24,23 @@ public:
                 const vk::ImageAspectFlags & aspectFlags,
                 uint32_t mipLevels);
 
+    TextureView(const TextureView &) = delete;
+    TextureView & operator=(const TextureView &) = delete;
+
+    TextureView(TextureView &&) noexcept = default;
+    TextureView & operator=(TextureView &&) noexcept = default;
+
+    ~TextureView() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
+
     [[nodiscard]] const vk::ImageView & ImageViewHandle() const;
     [[nodiscard]] vk::ImageView & ImageViewHandle();
 
 private:
-    vk::UniqueImageView m_imageView;
+    vk::UniqueImageView m_imageView = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

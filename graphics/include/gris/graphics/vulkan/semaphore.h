@@ -10,7 +10,21 @@ class Device;
 class Semaphore : public DeviceResource
 {
 public:
+    Semaphore();
+
     explicit Semaphore(Device * device);
+
+    Semaphore(const Semaphore &) = delete;
+    Semaphore & operator=(const Semaphore &) = delete;
+
+    Semaphore(Semaphore &&) noexcept = default;
+    Semaphore & operator=(Semaphore &&) noexcept = default;
+
+    ~Semaphore() = default;
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     const vk::Semaphore & SemaphoreHandle() const;
     vk::Semaphore & SemaphoreHandle();

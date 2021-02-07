@@ -14,13 +14,17 @@ public:
 
     Allocation(VmaAllocation allocation, Allocator * owner);
 
-    Allocation(const Allocation & other) = delete;
-    Allocation & operator=(const Allocation & other) = delete;
+    Allocation(const Allocation &) = delete;
+    Allocation & operator=(const Allocation &) = delete;
 
     Allocation(Allocation && other) noexcept;
     Allocation & operator=(Allocation && other) noexcept;
 
     ~Allocation();
+
+    explicit operator bool() const;
+
+    bool IsValid() const;
 
     void Reset();
 
