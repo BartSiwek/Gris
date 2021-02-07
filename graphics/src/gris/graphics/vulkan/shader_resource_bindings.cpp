@@ -3,8 +3,9 @@
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
-#include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_collection.h>
 #include <gris/graphics/vulkan/texture_view.h>
+#include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/utils.h>
@@ -72,15 +73,16 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::SetCombinedSamplerAndImageV
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::ShaderResourceBindingsPoolCategory catregory)
+void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::ShaderResourceBindingsPoolCategory category, ShaderResourceBindingsPoolCollection * pools)
 {
     if (!m_needsRebuilding)
     {
         return;
     }
 
-    auto & poolManger = PoolManager(catregory);
-    m_descriptorSet = poolManger.Allocate(m_layout->DescriptorSetLayoutHandle());
+    // TODO: Since the layout does not change during the lifetime of this object
+    // the descriptor set is constant as well - only the contents may need updating
+    m_descriptorSet = pools->Allocate(category, m_layout->DescriptorSetLayoutHandle());
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);

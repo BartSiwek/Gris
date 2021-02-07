@@ -67,17 +67,3 @@ Gris::Graphics::Vulkan::DeviceResource::DeviceResource(Device * device)
 {
     return m_parentDevice->AllocatorHandle();
 }
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::DeviceResource::PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const
-{
-    return m_parentDevice->PoolManager(category);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::DeviceResource::PoolManager(Backend::ShaderResourceBindingsPoolCategory category)
-{
-    return m_parentDevice->PoolManager(category);
-}

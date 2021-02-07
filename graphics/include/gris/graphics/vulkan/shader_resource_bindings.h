@@ -12,6 +12,7 @@ class TextureView;
 class BufferView;
 class Buffer;
 class ShaderResourceBindingsLayout;
+class ShaderResourceBindingsPoolCollection;
 
 class ShaderResourceBindings : DeviceResource
 {
@@ -28,7 +29,7 @@ public:
     void SetUniformBuffer(std::string_view semantic, const BufferView & bufferView);
     void SetCombinedSamplerAndImageView(std::string_view semantic, const Sampler & sampler, const TextureView & textureView);
 
-    void PrepareBindings(Backend::ShaderResourceBindingsPoolCategory catregory);
+    void PrepareBindings(Backend::ShaderResourceBindingsPoolCategory category, ShaderResourceBindingsPoolCollection * pools);
 
 private:
     struct CombinedSampler

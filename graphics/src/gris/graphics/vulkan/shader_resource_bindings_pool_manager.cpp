@@ -15,47 +15,47 @@ vk::UniqueDescriptorPool CreateNewPool(
 {
     auto poolSizes = Gris::MakeReservedVector<vk::DescriptorPoolSize>(Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes::FactorCount);
 
-    if(sizes.SamplerCount > 0)
+    if (sizes.SamplerCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eSampler, sizes.SamplerCount);
     }
-    if(sizes.CombinedImageSamplerCount > 0)
+    if (sizes.CombinedImageSamplerCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eCombinedImageSampler, sizes.CombinedImageSamplerCount);
     }
-    if(sizes.SampledImageCount > 0)
+    if (sizes.SampledImageCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eSampledImage, sizes.SampledImageCount);
     }
-    if(sizes.StorageImageCount > 0)
+    if (sizes.StorageImageCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eStorageImage, sizes.StorageImageCount);
     }
-    if(sizes.UniformTexelBufferCount > 0)
+    if (sizes.UniformTexelBufferCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eUniformTexelBuffer, sizes.UniformTexelBufferCount);
     }
-    if(sizes.StorageTexelBufferCount > 0)
+    if (sizes.StorageTexelBufferCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eStorageTexelBuffer, sizes.StorageTexelBufferCount);
     }
-    if(sizes.UniformBufferCount > 0)
+    if (sizes.UniformBufferCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eUniformBuffer, sizes.UniformBufferCount);
     }
-    if(sizes.StorageBufferCount > 0)
+    if (sizes.StorageBufferCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eStorageBuffer, sizes.StorageBufferCount);
     }
-    if(sizes.DynamicUniformBufferCount > 0)
+    if (sizes.DynamicUniformBufferCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eUniformBufferDynamic, sizes.DynamicUniformBufferCount);
     }
-    if(sizes.DynamicStorageBufferCount > 0)
+    if (sizes.DynamicStorageBufferCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eStorageBufferDynamic, sizes.DynamicStorageBufferCount);
     }
-    if(sizes.InputAttachmentCount > 0)
+    if (sizes.InputAttachmentCount > 0)
     {
         poolSizes.emplace_back(vk::DescriptorType::eInputAttachment, sizes.InputAttachmentCount);
     }
@@ -72,7 +72,6 @@ vk::UniqueDescriptorPool CreateNewPool(
         throw Gris::Graphics::Vulkan::VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);
     }
 
-
     return std::move(createDescriptorPoolResult.value);
 }
 
@@ -80,79 +79,34 @@ vk::UniqueDescriptorPool CreateNewPool(
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(Device * device, const Backend::ShaderResourceBindingsPoolSizes & sizes)
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(
+    Device * device,
+    Backend::ShaderResourceBindingsPoolCategory category,
+    const Backend::ShaderResourceBindingsPoolSizes & sizes)
     : DeviceResource(device)
+    , m_category(category)
     , m_sizes(sizes)
 {
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::DescriptorSet Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Allocate(const vk::DescriptorSetLayout & layout)
+[[nodiscard]] Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Category() const
 {
-    if (!m_currentPool)
-    {
-        m_usedPools.push_back(GetPool());
-        m_currentPool = m_usedPools.back().get();
-    }
-
-    auto layouts = std::array{ layout };
-    auto allocInfo = vk::DescriptorSetAllocateInfo{}
-                         .setSetLayouts(layouts)
-                         .setDescriptorPool(m_currentPool)
-                         .setDescriptorSetCount(1);
-
-    auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
-
-    bool needNewPool = false;
-    switch (allocateDescriptorSetsResult.result)
-    {
-    case vk::Result::eSuccess:
-        GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Allocate descriptor sets allocated more than one");
-        return std::move(allocateDescriptorSetsResult.value.front());
-    case vk::Result::eErrorFragmentedPool:
-    case vk::Result::eErrorOutOfPoolMemory:
-        needNewPool = true;
-        break;
-    default:
-        throw VulkanEngineException("Error allocating descriptor sets", allocateDescriptorSetsResult);
-    }
-
-    if (needNewPool)
-    {
-        m_usedPools.push_back(GetPool());
-        m_currentPool = m_usedPools.back().get();
-
-        allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
-
-        if (allocateDescriptorSetsResult.result != vk::Result::eSuccess)
-        {
-            throw VulkanEngineException("Error allocating descriptor sets", allocateDescriptorSetsResult);
-        }
-    }
-
-    GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Allocate descriptor sets allocated more than one");
-    return std::move(allocateDescriptorSetsResult.value.front());
+    return m_category;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ResetPools()
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Backend::ShaderResourceBindingsPoolSizes & sizes)
 {
-    for (auto & pool : m_usedPools)
-    {
-        DeviceHandle().resetDescriptorPool(pool.get(), {}, Dispatch());
-    }
-
-    std::move(m_usedPools.begin(), m_usedPools.end(), std::back_inserter(m_freePools));
-    m_usedPools.clear();
-
-    m_currentPool = nullptr;
+    m_freePools.clear();
+    m_sizes = sizes;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-vk::UniqueDescriptorPool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::GetPool()
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::AllocatePool()
 {
     if (!m_freePools.empty())
     {
@@ -162,6 +116,16 @@ vk::UniqueDescriptorPool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManag
     }
     else
     {
-        return CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
+        auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
+        return ShaderResourceBindingsPool(&ParentDevice(), m_category, std::move(descriptorPool));
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::DeallocatePool(ShaderResourceBindingsPool pool)
+{
+    GRIS_ALWAYS_ASSERT(pool.Category() == m_category, "Pool deallocated with incompatible category");
+    pool.Reset();
+    m_freePools.emplace_back(std::move(pool));
 }

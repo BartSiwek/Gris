@@ -9,7 +9,6 @@ namespace Gris::Graphics::Vulkan
 
 class Device;
 class Allocator;
-class ShaderResourceBindingsPoolManager;
 
 class DeviceResource
 {
@@ -36,9 +35,6 @@ protected:
 
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
-
-    [[nodiscard]] const ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const;
-    [[nodiscard]] ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category);
 
 private:
     Device * m_parentDevice = nullptr;

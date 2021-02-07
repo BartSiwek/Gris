@@ -3,6 +3,7 @@
 #include <gris/graphics/vulkan/device_resource.h>
 
 #include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool.h>
 
 namespace Gris::Graphics::Vulkan
 {
@@ -10,26 +11,30 @@ namespace Gris::Graphics::Vulkan
 class ShaderResourceBindingsPoolManager : DeviceResource
 {
 public:
-    ShaderResourceBindingsPoolManager(Device * device, const Backend::ShaderResourceBindingsPoolSizes & sizes);
+    ShaderResourceBindingsPoolManager(
+        Device * device,
+        Backend::ShaderResourceBindingsPoolCategory category,
+        const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
     ShaderResourceBindingsPoolManager(const ShaderResourceBindingsPoolManager &) = delete;
-    ShaderResourceBindingsPoolManager& operator=(const ShaderResourceBindingsPoolManager &) = delete;
+    ShaderResourceBindingsPoolManager & operator=(const ShaderResourceBindingsPoolManager &) = delete;
 
     ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager &&) = default;
     ShaderResourceBindingsPoolManager & operator=(ShaderResourceBindingsPoolManager &&) = default;
 
     ~ShaderResourceBindingsPoolManager() = default;
 
-    [[nodiscard]] vk::DescriptorSet Allocate(const vk::DescriptorSetLayout & layout);
-    void ResetPools();
+    [[nodiscard]] Backend::ShaderResourceBindingsPoolCategory Category() const;
+
+    void Update(const Backend::ShaderResourceBindingsPoolSizes & sizes);
+
+    [[nodiscard]] ShaderResourceBindingsPool AllocatePool();
+    void DeallocatePool(ShaderResourceBindingsPool pool);
 
 private:
-    vk::UniqueDescriptorPool GetPool();
-
-    vk::DescriptorPool m_currentPool = {};
-    Backend::ShaderResourceBindingsPoolSizes m_sizes = {};
-    std::vector<vk::UniqueDescriptorPool> m_usedPools = {};
-    std::vector<vk::UniqueDescriptorPool> m_freePools = {};
+    Backend::ShaderResourceBindingsPoolCategory m_category;
+    Backend::ShaderResourceBindingsPoolSizes m_sizes;
+    std::vector<ShaderResourceBindingsPool> m_freePools = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

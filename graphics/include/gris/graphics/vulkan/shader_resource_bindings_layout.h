@@ -20,8 +20,14 @@ public:
     const vk::DescriptorSetLayoutBinding & NameToBinding(const std::string_view & name) const;
 
 private:
+    struct NameAndBinding
+    {
+        std::string Name;
+        vk::DescriptorSetLayoutBinding Binding;
+    };
+
     vk::UniqueDescriptorSetLayout m_descriptorSetLayout = {};
-    std::map<std::string, vk::DescriptorSetLayoutBinding, std::less<>> m_nameToBinding = {};
+    std::vector<NameAndBinding> m_nameToBinding = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

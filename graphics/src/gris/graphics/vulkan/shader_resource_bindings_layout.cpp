@@ -46,7 +46,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
                            .setDescriptorType(static_cast<vk::DescriptorType>(resourceLayout.Type))
                            .setDescriptorCount(resourceLayout.Count)
                            .setStageFlags(static_cast<vk::ShaderStageFlagBits>(resourceLayout.Stages));
-        m_nameToBinding[std::string{ resourceLayout.Semantic }] = binding;
+        m_nameToBinding.emplace_back(NameAndBinding{ std::string(resourceLayout.Semantic), binding });
         bindings.emplace_back(std::move(binding));
     }
 
@@ -79,6 +79,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
 const vk::DescriptorSetLayoutBinding & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::NameToBinding(const std::string_view & name) const
 {
-    auto it = m_nameToBinding.find(name);
-    return it->second;
+    auto it = std::find_if(std::begin(m_nameToBinding), std::end(m_nameToBinding), [&name](const auto & entry) { return entry.Name == name; });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_nameToBinding), "Request binding was not found in the layout");
+    return it->Binding;
 }

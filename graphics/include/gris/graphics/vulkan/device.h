@@ -26,6 +26,7 @@ class Shader;
 class InputLayout;
 class ShaderResourceBindingsLayout;
 class ShaderResourceBindings;
+class ShaderResourceBindingsPoolCollection;
 class RenderPass;
 class PipelineStateObject;
 class TextureView;
@@ -33,6 +34,7 @@ class Sampler;
 class Framebuffer;
 class Fence;
 class Semaphore;
+class RenderPass;
 
 class Device
 {
@@ -57,6 +59,7 @@ public:
     [[nodiscard]] vk::FormatProperties GetFormatProperties(vk::Format format) const;
 
     void RegisterShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
+    void UpdateShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
     // TODO: Do this better
     [[nodiscard]] const vk::Device & DeviceHandle() const;
@@ -97,13 +100,14 @@ public:
         uint32_t height);
     [[nodiscard]] Fence CreateFence(bool signaled);
     [[nodiscard]] Semaphore CreateSemaphore();
+    [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
+    [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection();
+    [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
+    [[nodiscard]] void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
 private:
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
-
-    [[nodiscard]] const ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const;
-    [[nodiscard]] ShaderResourceBindingsPoolManager & PoolManager(Backend::ShaderResourceBindingsPoolCategory category);
 
     PhysicalDevice m_physicalDevice;
 

@@ -17,6 +17,7 @@
 #include <gris/graphics/vulkan/shader.h>
 #include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_collection.h>
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
@@ -160,6 +161,9 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
     std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout> m_resourceLayout = {};
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
+
+    Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ 0 };
+    std::unique_ptr < Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection> m_shaderResourceBindingsPools;
     std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
 
     std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};
@@ -213,7 +217,7 @@ private:
         createIndexBuffer(indices);
 
         m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
-        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
+        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device->CreateRenderPass(m_swapChain->Format(), findDepthFormat()));
 
         auto const vertexShaderPath = Gris::DirectoryRegistry::TryResolvePath(VERTEX_SHADER_PATH);
         if (!vertexShaderPath)
@@ -255,15 +259,14 @@ private:
         createDepthResources();
         createFramebuffers();
 
-        // TODO: This has to be removed
         auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
         sizes.ShaderResourceBindingsCount = m_swapChain->ImageCount();
         sizes.CombinedImageSamplerCount = m_swapChain->ImageCount();
         sizes.UniformBufferCount = m_swapChain->ImageCount();
 
-        auto tutorialPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory (0);
-        
-        m_device->RegisterShaderResourceBindingsPoolCategory(tutorialPoolCategory, sizes);
+        m_device->RegisterShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
+
+        m_shaderResourceBindingsPools = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection>(m_device->CreateShaderResourceBindingsPoolCollection());
 
         for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
         {
@@ -273,7 +276,7 @@ private:
             auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBindings(m_resourceLayout.get()));
             newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            newBindings.PrepareBindings(tutorialPoolCategory);
+            newBindings.PrepareBindings(m_shaderResourceBindingsPoolCategory, m_shaderResourceBindingsPools.get());
         }
 
         createCommandBuffers(m_indexCount);
@@ -298,21 +301,19 @@ private:
 
         m_swapChain.reset();
         m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
-        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device.get(), m_swapChain->Format(), findDepthFormat());
+        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device->CreateRenderPass(m_swapChain->Format(), findDepthFormat()));
         m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
         createColorResources();
         createDepthResources();
         createFramebuffers();
 
-        // TODO: This has to be removed
+        m_shaderResourceBindingsPools->Clear();
+
         auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
         sizes.ShaderResourceBindingsCount = m_swapChain->ImageCount();
         sizes.CombinedImageSamplerCount = m_swapChain->ImageCount();
         sizes.UniformBufferCount = m_swapChain->ImageCount();
-
-        auto tutorialPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory (0);
-
-        m_device->RegisterShaderResourceBindingsPoolCategory(tutorialPoolCategory, sizes);
+        m_device->UpdateShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
 
         m_uniformBuffers.clear();
         m_uniformBufferViews.clear();
@@ -321,7 +322,7 @@ private:
             auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
             auto const & newView = m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", newView);
-            m_shaderResourceBindings[i].PrepareBindings(tutorialPoolCategory);
+            m_shaderResourceBindings[i].PrepareBindings(m_shaderResourceBindingsPoolCategory, m_shaderResourceBindingsPools.get());
         }
 
         createCommandBuffers(m_indexCount);

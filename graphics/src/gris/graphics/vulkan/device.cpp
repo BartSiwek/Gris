@@ -7,11 +7,13 @@
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
+#include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/sampler.h>
 #include <gris/graphics/vulkan/semaphore.h>
 #include <gris/graphics/vulkan/shader.h>
 #include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
+#include <gris/graphics/vulkan/shader_resource_bindings_pool_collection.h>
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
@@ -94,13 +96,19 @@ void Gris::Graphics::Vulkan::Device::RegisterShaderResourceBindingsPoolCategory(
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
 {
-    auto emplaceResult = m_poolManagers.try_emplace(category, this, sizes);
-    if(!emplaceResult.second)
-    {
-        emplaceResult.first->second = ShaderResourceBindingsPoolManager(this, sizes);
-    }
-    // TODO: Reconsider this from the point of view of resizing pools at runtime
-    //  GRIS_ALWAYS_ASSERT(emplaceResult.second, "Registering an already registered pool category");
+    auto emplaceResult = m_poolManagers.try_emplace(category, this, category, sizes);
+    GRIS_ALWAYS_ASSERT(emplaceResult.second, "Registering an already registered pool category");
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Device::UpdateShaderResourceBindingsPoolCategory(
+    Backend::ShaderResourceBindingsPoolCategory category,
+    const Backend::ShaderResourceBindingsPoolSizes & sizes)
+{
+    auto it = m_poolManagers.find(category);
+    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Updating an non-existent pool category");
+    it->second.Update(sizes);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -117,38 +125,6 @@ const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 {
     return m_device.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
-{
-    return m_allocator;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle() const
-{
-    return m_allocator;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::Device::PoolManager(Backend::ShaderResourceBindingsPoolCategory category) const
-{
-    auto it = m_poolManagers.find(category);
-    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Requested an unknown descriptor pool");
-    return it->second;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::Device::PoolManager(Backend::ShaderResourceBindingsPoolCategory category)
-{
-    auto it = m_poolManagers.find(category);
-    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Requested an unknown descriptor pool");
-    return it->second;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -260,4 +236,50 @@ const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::Alloca
 [[nodiscard]] Gris::Graphics::Vulkan::Semaphore Gris::Graphics::Vulkan::Device::CreateSemaphore()
 {
     return Semaphore(this);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::RenderPass Gris::Graphics::Vulkan::Device::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
+{
+    return RenderPass(this, swapChainFormat, depthFormat);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPoolCollection()
+{
+    return ShaderResourceBindingsPoolCollection(this);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category)
+{
+    auto it = m_poolManagers.find(category);
+    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Allocating a pool from an unknown descriptor pool category");
+    return it->second.AllocatePool();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool)
+{
+    auto it = m_poolManagers.find(pool.Category());
+    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Deallocating a pool with a unknown descriptor pool category");
+    it->second.DeallocatePool(std::move(pool));
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
+{
+    return m_allocator;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle() const
+{
+    return m_allocator;
 }
