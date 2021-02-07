@@ -37,7 +37,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(
     {
     case vk::Result::eSuccess:
         GRIS_ALWAYS_ASSERT(allocateDescriptorSetsResult.value.size() == 1, "Allocate descriptor sets allocated more than one");
-        return std::move(allocateDescriptorSetsResult.value.front());
+        return allocateDescriptorSetsResult.value.front();
     case vk::Result::eErrorFragmentedPool:
     case vk::Result::eErrorOutOfPoolMemory:
         return {};

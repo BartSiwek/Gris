@@ -159,6 +159,7 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 }
 
 // -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] Gris::Graphics::Vulkan::Texture Gris::Graphics::Vulkan::Device::CreateTexture(
     uint32_t width,
     uint32_t height,
@@ -267,7 +268,7 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool)
+void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool)
 {
     auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&pool](const auto & entry)
                            { return entry.Category == pool.Category(); });
@@ -277,14 +278,14 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
+[[nodiscard]] Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
 {
     return m_allocator;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle() const
+[[nodiscard]] const Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle() const
 {
     return m_allocator;
 }

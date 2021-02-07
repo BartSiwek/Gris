@@ -11,7 +11,7 @@ vk::UniqueDescriptorPool CreateNewPool(
     const vk::Device & device,
     const vk::DispatchLoaderDynamic & dispatch,
     const Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes & sizes,
-    vk::DescriptorPoolCreateFlags flags)
+    const vk::DescriptorPoolCreateFlags & flags)
 {
     auto poolSizes = Gris::MakeReservedVector<vk::DescriptorPoolSize>(Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes::FactorCount);
 
@@ -114,11 +114,9 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
         m_freePools.pop_back();
         return pool;
     }
-    else
-    {
-        auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
-        return ShaderResourceBindingsPool(&ParentDevice(), m_category, std::move(descriptorPool));
-    }
+
+    auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
+    return ShaderResourceBindingsPool(&ParentDevice(), m_category, std::move(descriptorPool));
 }
 
 // -------------------------------------------------------------------------------------------------

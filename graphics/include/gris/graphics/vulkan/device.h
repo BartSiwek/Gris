@@ -103,7 +103,7 @@ public:
     [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
     [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection();
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
-    [[nodiscard]] void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
+    void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
 private:
     struct CategoryAndPoolManager
