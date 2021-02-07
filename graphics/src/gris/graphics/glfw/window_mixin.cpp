@@ -62,6 +62,13 @@ Gris::Graphics::Glfw::WindowMixin & Gris::Graphics::Glfw::WindowMixin::operator=
 
 Gris::Graphics::Glfw::WindowMixin::operator bool() const
 {
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Glfw::WindowMixin::IsValid() const
+{
     return m_window != nullptr;
 }
 

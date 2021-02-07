@@ -4,6 +4,20 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::WindowMixin::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+bool Gris::Graphics::Vulkan::WindowMixin::IsValid() const
+{
+    return static_cast<bool>(m_surface);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 vk::Instance & Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
 {
     return Instance::InstanceHandle();
