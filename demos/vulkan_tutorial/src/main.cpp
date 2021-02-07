@@ -163,7 +163,7 @@ private:
     std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
 
     Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ 0 };
-    std::unique_ptr < Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection> m_shaderResourceBindingsPools;
+    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection> m_shaderResourceBindingsPools;
     std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
 
     std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};

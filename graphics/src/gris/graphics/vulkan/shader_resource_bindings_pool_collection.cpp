@@ -16,7 +16,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBind
     Backend::ShaderResourceBindingsPoolCategory category,
     const vk::DescriptorSetLayout & layout)
 {
-    auto it = std::find_if(std::begin(m_pools), std::end(m_pools), [&category](const auto & entry){ return entry.Category == category; });
+    auto it = std::find_if(std::begin(m_pools), std::end(m_pools), [&category](const auto & entry)
+                           { return entry.Category == category; });
     if (it == std::end(m_pools))
     {
         m_pools.emplace_back(PoolAndCategory{ category, ParentDevice().AllocateShaderResourceBindingsPool(category) });
