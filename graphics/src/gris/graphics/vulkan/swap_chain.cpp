@@ -194,16 +194,17 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 
     ///
 
-    uint32_t imageIndex = 0;
-    auto const acquireResult = static_cast<vk::Result>(Dispatch().vkAcquireNextImageKHR(static_cast<VkDevice>(DeviceHandle()), static_cast<VkSwapchainKHR>(m_swapChain.get()), std::numeric_limits<uint64_t>::max(), static_cast<VkSemaphore>(m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle()), VK_NULL_HANDLE, &imageIndex));
-    if (acquireResult == vk::Result::eErrorOutOfDateKHR)
+    auto const acquireResult = DeviceHandle().acquireNextImageKHR(m_swapChain.get(), std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle(), {}, Dispatch());
+    if (acquireResult.result == vk::Result::eErrorOutOfDateKHR)
     {
         return {};
     }
-    if (acquireResult != vk::Result::eSuccess && acquireResult != vk::Result::eSuboptimalKHR)
+    if (acquireResult.result != vk::Result::eSuccess && acquireResult.result != vk::Result::eSuboptimalKHR)
     {
         throw VulkanEngineException("Failed to acquire swap chain image!", acquireResult);
     }
+
+    uint32_t imageIndex = acquireResult.value;
 
     ///
 
@@ -238,12 +239,12 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
 {
     std::array swapChains = { m_swapChain.get() };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };
-    auto presentInfo = static_cast<VkPresentInfoKHR>(vk::PresentInfoKHR{}
-                                                         .setWaitSemaphores(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle())
-                                                         .setSwapchains(swapChains)
-                                                         .setImageIndices(imageIndices));
+    auto presentInfo = vk::PresentInfoKHR{}
+                           .setWaitSemaphores(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle())
+                           .setSwapchains(swapChains)
+                           .setImageIndices(imageIndices);
 
-    auto const presentResult = static_cast<vk::Result>(Dispatch().vkQueuePresentKHR(static_cast<VkQueue>(m_presentQueue), &presentInfo));
+    auto const presentResult = m_presentQueue.presentKHR(&presentInfo, Dispatch());
     if (presentResult == vk::Result::eErrorOutOfDateKHR || presentResult == vk::Result::eSuboptimalKHR)
     {
         return false;

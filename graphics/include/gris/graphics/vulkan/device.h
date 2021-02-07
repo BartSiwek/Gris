@@ -106,6 +106,12 @@ public:
     [[nodiscard]] void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
 private:
+    struct CategoryAndPoolManager
+    {
+        Backend::ShaderResourceBindingsPoolCategory Category;
+        ShaderResourceBindingsPoolManager PoolManager;
+    };
+
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
@@ -114,7 +120,7 @@ private:
     vk::UniqueDevice m_device = {};
     vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
-    std::unordered_map<Backend::ShaderResourceBindingsPoolCategory, ShaderResourceBindingsPoolManager> m_poolManagers;
+    std::vector<CategoryAndPoolManager> m_poolManagers;
     std::unique_ptr<ImmediateContext> m_context = {};
 };
 

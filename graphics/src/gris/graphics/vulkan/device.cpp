@@ -96,8 +96,10 @@ void Gris::Graphics::Vulkan::Device::RegisterShaderResourceBindingsPoolCategory(
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
 {
-    auto emplaceResult = m_poolManagers.try_emplace(category, this, category, sizes);
-    GRIS_ALWAYS_ASSERT(emplaceResult.second, "Registering an already registered pool category");
+    GRIS_FAST_ASSERT(std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
+                                  { return entry.Category == category; }),
+                     "Registering an already registered pool category ");
+    m_poolManagers.emplace_back(CategoryAndPoolManager{ category, { this, category, sizes } });
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -106,9 +108,10 @@ void Gris::Graphics::Vulkan::Device::UpdateShaderResourceBindingsPoolCategory(
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
 {
-    auto it = m_poolManagers.find(category);
-    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Updating an non-existent pool category");
-    it->second.Update(sizes);
+    auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
+                           { return entry.Category == category; });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Updating an non-existent pool category");
+    it->PoolManager.Update(sizes);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -256,18 +259,20 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 [[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category)
 {
-    auto it = m_poolManagers.find(category);
-    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Allocating a pool from an unknown descriptor pool category");
-    return it->second.AllocatePool();
+    auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
+                           { return entry.Category == category; });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Allocating a pool from an unknown descriptor pool category");
+    return it->PoolManager.AllocatePool();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool)
 {
-    auto it = m_poolManagers.find(pool.Category());
-    GRIS_ALWAYS_ASSERT(it != m_poolManagers.end(), "Deallocating a pool with a unknown descriptor pool category");
-    it->second.DeallocatePool(std::move(pool));
+    auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&pool](const auto & entry)
+                           { return entry.Category == pool.Category(); });
+    GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Deallocating a pool with a unknown descriptor pool category");
+    it->PoolManager.DeallocatePool(std::move(pool));
 }
 
 // -------------------------------------------------------------------------------------------------
