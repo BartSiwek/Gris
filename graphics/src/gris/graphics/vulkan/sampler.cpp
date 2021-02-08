@@ -8,8 +8,8 @@ Gris::Graphics::Vulkan::Sampler::Sampler() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Sampler::Sampler(std::shared_ptr<Device *> device, float minLod, float maxLod)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Sampler::Sampler(std::shared_ptr<DeviceSharedData> sharedData, float minLod, float maxLod)
+    : DeviceResource(sharedData)
 {
     auto const samplerInfo = vk::SamplerCreateInfo{}
                                  .setMinFilter(vk::Filter::eLinear)

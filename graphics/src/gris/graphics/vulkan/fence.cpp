@@ -8,8 +8,8 @@ Gris::Graphics::Vulkan::Fence::Fence() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Fence::Fence(std::shared_ptr<Device *> device, bool signaled)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Fence::Fence(std::shared_ptr<DeviceSharedData> sharedData, bool signaled)
+    : DeviceResource(sharedData)
 {
     vk::FenceCreateFlags flags;
     if (signaled)

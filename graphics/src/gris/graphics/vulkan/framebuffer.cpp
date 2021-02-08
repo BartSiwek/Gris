@@ -10,8 +10,8 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Framebuffer::Framebuffer(std::shared_ptr<Device *> device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Framebuffer::Framebuffer(std::shared_ptr<DeviceSharedData> sharedData, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
+    : DeviceResource(sharedData)
 {
     std::array attachments = { colorImageView.ImageViewHandle(), depthImageView.ImageViewHandle(), swapChainImageView.ImageViewHandle() };
 

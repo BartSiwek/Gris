@@ -11,7 +11,7 @@ class Texture : public DeviceResource
 public:
     Texture();
 
-    Texture(std::shared_ptr<Device *> device,
+    Texture(std::shared_ptr<DeviceSharedData> sharedData,
             uint32_t width,
             uint32_t height,
             uint32_t mipLevels,

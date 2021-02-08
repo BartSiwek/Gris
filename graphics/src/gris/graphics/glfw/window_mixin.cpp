@@ -28,19 +28,13 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::WindowMixin::~WindowMixin()
-{
-    glfwDestroyWindow(m_window);
-}
-
-// -------------------------------------------------------------------------------------------------
-
 Gris::Graphics::Glfw::WindowMixin::WindowMixin(WindowMixin && other) noexcept
     : m_width(std::exchange(other.m_width, 0))
     , m_height(std::exchange(other.m_height, 0))
     , m_window(std::exchange(other.m_window, nullptr))
     , m_observers(std::exchange(other.m_observers, {}))
 {
+    glfwSetWindowUserPointer(m_window, this);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -53,9 +47,18 @@ Gris::Graphics::Glfw::WindowMixin & Gris::Graphics::Glfw::WindowMixin::operator=
         m_height = std::exchange(other.m_height, 0);
         m_window = std::exchange(other.m_window, nullptr);
         m_observers = std::exchange(other.m_observers, {});
+
+        glfwSetWindowUserPointer(m_window, this);
     }
 
     return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Glfw::WindowMixin::~WindowMixin()
+{
+    glfwDestroyWindow(m_window);
 }
 
 // -------------------------------------------------------------------------------------------------

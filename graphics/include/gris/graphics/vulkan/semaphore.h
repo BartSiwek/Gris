@@ -12,7 +12,7 @@ class Semaphore : public DeviceResource
 public:
     Semaphore();
 
-    explicit Semaphore(std::shared_ptr<Device *> device);
+    explicit Semaphore(std::shared_ptr<DeviceSharedData> sharedData);
 
     Semaphore(const Semaphore &) = delete;
     Semaphore & operator=(const Semaphore &) = delete;

@@ -27,27 +27,24 @@ Gris::Graphics::Vulkan::Device::Device() = default;
 
 Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
     : m_physicalDevice(physicalDevice)
-    , m_parentReference(std::make_unique<Device*>(this))
+    , m_device(m_physicalDevice.CreateDevice())
+    , m_sharedData(std::make_shared<DeviceSharedData>(Instance::CreateDispatch(m_device.get()), this))
+    , m_allocator(m_physicalDevice.CreateAllocator(m_device.get(), m_sharedData->Dispatch))
+    , m_context(m_sharedData)
 {
-    GRIS_ALWAYS_ASSERT(m_physicalDevice.IsValid(), "Invalid physical device");
-    m_device = m_physicalDevice.CreateDevice();
-    m_dispatch = Instance::CreateDispatch(m_device.get());
-    m_allocator = m_physicalDevice.CreateAllocator(m_device.get(), m_dispatch);
-    m_context = ImmediateContext(m_parentReference);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Device::Device(Device && other) noexcept
     : m_physicalDevice(std::exchange(other.m_physicalDevice, {}))
-    , m_parentReference(std::exchange(other.m_parentReference, nullptr))
     , m_device(std::exchange(other.m_device, {}))
-    , m_dispatch(std::exchange(other.m_dispatch, {}))
+    , m_sharedData(std::exchange(other.m_sharedData, {}))
     , m_allocator(std::exchange(other.m_allocator, {}))
     , m_context(std::exchange(other.m_context, {}))
     , m_poolManagers(std::exchange(other.m_poolManagers, {}))
 {
-    *m_parentReference = this;
+    m_sharedData->ParentDevice = this;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -57,14 +54,13 @@ Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Devic
     if (&other != this)
     {
         m_physicalDevice = std::exchange(other.m_physicalDevice, {});
-        m_parentReference = std::exchange(other.m_parentReference, nullptr);
         m_device = std::exchange(other.m_device, {});
-        m_dispatch = std::exchange(other.m_dispatch, {});
+        m_sharedData = std::exchange(other.m_sharedData, {});
         m_allocator = std::exchange(other.m_allocator, {});
         m_context = std::exchange(other.m_context, {});
         m_poolManagers = std::exchange(other.m_poolManagers, {});
 
-        *m_parentReference = this;
+        m_sharedData->ParentDevice = this;
     }
 
     return *this;
@@ -74,9 +70,9 @@ Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Devic
 
 Gris::Graphics::Vulkan::Device::~Device()
 {
-    if (m_parentReference)
+    if (m_sharedData)
     {
-        *m_parentReference = nullptr;
+        m_sharedData->ParentDevice = nullptr;
     }
 }
 
@@ -133,7 +129,7 @@ bool Gris::Graphics::Vulkan::Device::IsValid() const
 
 void Gris::Graphics::Vulkan::Device::WaitIdle()
 {
-    auto const waitResult = m_device->waitIdle(m_dispatch);
+    auto const waitResult = m_device->waitIdle(m_sharedData->Dispatch);
     if (waitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Idle wait failed", waitResult);
@@ -163,7 +159,7 @@ void Gris::Graphics::Vulkan::Device::RegisterShaderResourceBindingsPoolCategory(
     GRIS_FAST_ASSERT(std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
                                   { return entry.Category == category; }),
                      "Registering an already registered pool category ");
-    m_poolManagers.emplace_back(CategoryAndPoolManager{ category, { m_parentReference, category, sizes } });
+    m_poolManagers.emplace_back(CategoryAndPoolManager{ category, { m_sharedData, category, sizes } });
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -196,28 +192,28 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 [[nodiscard]] Gris::Graphics::Vulkan::Shader Gris::Graphics::Vulkan::Device::CreateShader(const std::vector<uint32_t> & code, std::string entryPoint)
 {
-    return Shader(m_parentReference, code, std::move(entryPoint));
+    return Shader(m_sharedData, code, std::move(entryPoint));
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::SwapChain Gris::Graphics::Vulkan::Device::CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
 {
-    return SwapChain(m_parentReference, window, width, height, virtualFrameCount);
+    return SwapChain(m_sharedData, window, width, height, virtualFrameCount);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::DeferredContext Gris::Graphics::Vulkan::Device::CreateDeferredContext()
 {
-    return DeferredContext(m_parentReference);
+    return DeferredContext(m_sharedData);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::Buffer Gris::Graphics::Vulkan::Device::CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
 {
-    return Buffer(m_parentReference, size, usage, properties);
+    return Buffer(m_sharedData, size, usage, properties);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -232,28 +228,28 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
     const vk::ImageUsageFlags & usage,
     const vk::MemoryPropertyFlags & properties)
 {
-    return Texture(m_parentReference, width, height, mipLevels, numSamples, format, tiling, usage, properties);
+    return Texture(m_sharedData, width, height, mipLevels, numSamples, format, tiling, usage, properties);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::TextureView Gris::Graphics::Vulkan::Device::CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels)
 {
-    return TextureView(m_parentReference, image, format, aspectFlags, mipLevels);
+    return TextureView(m_sharedData, image, format, aspectFlags, mipLevels);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::Sampler Gris::Graphics::Vulkan::Device::CreateSampler(float minLod, float maxLod)
 {
-    return Sampler(m_parentReference, minLod, maxLod);
+    return Sampler(m_sharedData, minLod, maxLod);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsLayout Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsLayout(const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindings)
 {
-    return ShaderResourceBindingsLayout(m_parentReference, bindings);
+    return ShaderResourceBindingsLayout(m_sharedData, bindings);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -267,14 +263,14 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
     const Shader & vertexShader,
     const Shader & fragmentShader)
 {
-    return PipelineStateObject(m_parentReference, swapChainWidth, swapChainHeight, renderPass, inputLayout, resourceLayout, vertexShader, fragmentShader);
+    return PipelineStateObject(m_sharedData, swapChainWidth, swapChainHeight, renderPass, inputLayout, resourceLayout, vertexShader, fragmentShader);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindings Gris::Graphics::Vulkan::Device::CreateShaderResourceBindings(const ShaderResourceBindingsLayout * resourceLayout)
 {
-    return ShaderResourceBindings(m_parentReference, resourceLayout);
+    return ShaderResourceBindings(m_sharedData, resourceLayout);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -287,35 +283,35 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
     uint32_t width,
     uint32_t height)
 {
-    return Framebuffer(m_parentReference, colorImageView, depthImageView, swapChainImageView, renderPass, width, height);
+    return Framebuffer(m_sharedData, colorImageView, depthImageView, swapChainImageView, renderPass, width, height);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::Fence Gris::Graphics::Vulkan::Device::CreateFence(bool signaled)
 {
-    return Fence(m_parentReference, signaled);
+    return Fence(m_sharedData, signaled);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::Semaphore Gris::Graphics::Vulkan::Device::CreateSemaphore()
 {
-    return Semaphore(m_parentReference);
+    return Semaphore(m_sharedData);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::RenderPass Gris::Graphics::Vulkan::Device::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
 {
-    return RenderPass(m_parentReference, swapChainFormat, depthFormat);
+    return RenderPass(m_sharedData, swapChainFormat, depthFormat);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPoolCollection()
 {
-    return ShaderResourceBindingsPoolCollection(m_parentReference);
+    return ShaderResourceBindingsPoolCollection(m_sharedData);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -342,14 +338,14 @@ void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(Shader
 
 [[nodiscard]] Gris::Graphics::Vulkan::TextureView Gris::Graphics::Vulkan::Device::CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels)
 {
-    return TextureView(m_parentReference, image, format, aspectFlags, mipLevels);
+    return TextureView(m_sharedData, image, format, aspectFlags, mipLevels);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category, vk::UniqueDescriptorPool pool)
 {
-    return ShaderResourceBindingsPool(m_parentReference, category, std::move(pool));
+    return ShaderResourceBindingsPool(m_sharedData, category, std::move(pool));
 }
 
 // -------------------------------------------------------------------------------------------------

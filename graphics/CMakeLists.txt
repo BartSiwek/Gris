@@ -47,6 +47,7 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/vulkan/deferred_context.h"
   "include/gris/graphics/vulkan/device.h"
   "include/gris/graphics/vulkan/device_resource.h"
+  "include/gris/graphics/vulkan/device_shared_data.h"
   "include/gris/graphics/vulkan/vulkan_engine_exception.h"
   "include/gris/graphics/vulkan/fence.h"
   "include/gris/graphics/vulkan/framebuffer.h"

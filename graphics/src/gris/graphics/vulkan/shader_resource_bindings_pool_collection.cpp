@@ -11,8 +11,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBind
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(std::shared_ptr<Device *> device)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(std::shared_ptr<DeviceSharedData> sharedData)
+    : DeviceResource(sharedData)
 {
 }
 

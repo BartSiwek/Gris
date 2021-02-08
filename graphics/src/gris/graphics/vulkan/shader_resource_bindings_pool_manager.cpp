@@ -87,10 +87,10 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBinding
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(
-    std::shared_ptr<Device *> device,
+    std::shared_ptr<DeviceSharedData> sharedData,
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
-    : DeviceResource(device)
+    : DeviceResource(sharedData)
     , m_category(category)
     , m_sizes(sizes)
 {

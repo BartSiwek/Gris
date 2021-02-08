@@ -1,6 +1,7 @@
 #pragma once
 
 #include <gris/graphics/vulkan/allocator.h>
+#include <gris/graphics/vulkan/device_shared_data.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/physical_device.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
@@ -131,11 +132,8 @@ private:
     [[nodiscard]] Allocator & AllocatorHandle();
 
     PhysicalDevice m_physicalDevice = {};
-
-    std::shared_ptr<Device *> m_parentReference;
-
     vk::UniqueDevice m_device = {};
-    vk::DispatchLoaderDynamic m_dispatch = {};
+    std::shared_ptr<DeviceSharedData> m_sharedData;
     Allocator m_allocator = {};
     ImmediateContext m_context = {};
     std::vector<CategoryAndPoolManager> m_poolManagers;

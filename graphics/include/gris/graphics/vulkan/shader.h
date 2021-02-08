@@ -10,7 +10,7 @@ class Shader : public DeviceResource
 public:
     Shader();
 
-    Shader(std::shared_ptr<Device *> device, const std::vector<uint32_t> & code, std::string entryPoint);
+    Shader(std::shared_ptr<DeviceSharedData> sharedData, const std::vector<uint32_t> & code, std::string entryPoint);
 
     Shader(const Shader &) = delete;
     Shader & operator=(const Shader &) = delete;

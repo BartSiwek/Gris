@@ -11,10 +11,10 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool()
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(
-    std::shared_ptr<Device *> device,
+    std::shared_ptr<DeviceSharedData> sharedData,
     Backend::ShaderResourceBindingsPoolCategory category,
     vk::UniqueDescriptorPool pool)
-    : DeviceResource(device)
+    : DeviceResource(sharedData)
     , m_category(category)
     , m_pool(std::move(pool))
 {

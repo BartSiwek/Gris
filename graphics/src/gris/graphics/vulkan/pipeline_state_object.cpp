@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
-    std::shared_ptr<Device *> device,
+    std::shared_ptr<DeviceSharedData> sharedData,
     uint32_t swapChainWidth,
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
-    : DeviceResource(device)
+    : DeviceResource(sharedData)
 {
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo{}

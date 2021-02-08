@@ -12,13 +12,13 @@ class TextureView : public DeviceResource
 public:
     TextureView();
 
-    TextureView(std::shared_ptr<Device *> device,
+    TextureView(std::shared_ptr<DeviceSharedData> sharedData,
                 const Texture & image,
                 vk::Format format,
                 const vk::ImageAspectFlags & aspectFlags,
                 uint32_t mipLevels);
 
-    TextureView(std::shared_ptr<Device *> device,
+    TextureView(std::shared_ptr<DeviceSharedData> sharedData,
                 const vk::Image & image,
                 vk::Format format,
                 const vk::ImageAspectFlags & aspectFlags,

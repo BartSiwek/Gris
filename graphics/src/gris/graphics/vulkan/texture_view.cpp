@@ -10,23 +10,23 @@ Gris::Graphics::Vulkan::TextureView::TextureView() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<Device *> device,
+Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<DeviceSharedData> sharedData,
                                                  const Texture & image,
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
                                                  uint32_t mipLevels)
-    : TextureView(device, image.ImageHandle(), format, aspectFlags, mipLevels)
+    : TextureView(sharedData, image.ImageHandle(), format, aspectFlags, mipLevels)
 {
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<Device *> device,
+Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<DeviceSharedData> sharedData,
                                                  const vk::Image & image,
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
                                                  uint32_t mipLevels)
-    : DeviceResource(device)
+    : DeviceResource(sharedData)
 {
     auto const viewInfo = vk::ImageViewCreateInfo{}
                               .setImage(image)

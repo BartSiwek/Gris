@@ -10,7 +10,7 @@ class Fence : public DeviceResource
 public:
     Fence();
 
-    Fence(std::shared_ptr<Device *> device, bool signaled);
+    Fence(std::shared_ptr<DeviceSharedData> sharedData, bool signaled);
 
     Fence(const Fence &) = delete;
     Fence & operator=(const Fence &) = delete;

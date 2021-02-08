@@ -8,8 +8,8 @@ Gris::Graphics::Vulkan::Shader::Shader() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Shader::Shader(std::shared_ptr<Device *> device, const std::vector<uint32_t> & code, std::string entryPoint)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Shader::Shader(std::shared_ptr<DeviceSharedData> sharedData, const std::vector<uint32_t> & code, std::string entryPoint)
+    : DeviceResource(sharedData)
     , m_entryPoint(std::move(entryPoint))
 {
     GRIS_ALWAYS_ASSERT(!m_entryPoint.empty(), "Shader entry point is empty");

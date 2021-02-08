@@ -17,7 +17,7 @@ class DeferredContext : public DeviceResource
 public:
     DeferredContext();
 
-    explicit DeferredContext(std::shared_ptr<Device *> device);
+    explicit DeferredContext(std::shared_ptr<DeviceSharedData> sharedData);
 
     DeferredContext(const DeferredContext &) = delete;
     DeferredContext & operator=(const DeferredContext &) = delete;

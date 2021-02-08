@@ -65,8 +65,8 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::SwapChain::SwapChain(std::shared_ptr<Device *> device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::SwapChain::SwapChain(std::shared_ptr<DeviceSharedData> sharedData, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
+    : DeviceResource(sharedData)
     , m_virtualFrameCount(virtualFrameCount)
 {
     auto const & indices = ParentDevice().QueueFamilies();
