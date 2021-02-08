@@ -55,7 +55,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] const ImmediateContext & Context() const;
     [[nodiscard]] ImmediateContext & Context();

@@ -46,7 +46,7 @@ Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::ImmediateContext::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::ImmediateContext::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
 }

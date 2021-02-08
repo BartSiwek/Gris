@@ -22,7 +22,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] const vk::RenderPass & RenderPassHandle() const;
     [[nodiscard]] vk::RenderPass & RenderPassHandle();

@@ -147,7 +147,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::PipelineStateObject::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::PipelineStateObject::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_graphicsPipeline);
 }

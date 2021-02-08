@@ -70,7 +70,7 @@ Gris::Graphics::Glfw::WindowMixin::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Glfw::WindowMixin::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Glfw::WindowMixin::IsValid() const
 {
     return m_window != nullptr;
 }

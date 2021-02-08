@@ -85,7 +85,7 @@ Gris::Graphics::Vulkan::Device::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Device::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Device::IsValid() const
 {
     return m_physicalDevice.IsValid() && static_cast<bool>(m_device);
 }

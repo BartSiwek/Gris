@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::Shader::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Shader::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Shader::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_shaderModule);
 }

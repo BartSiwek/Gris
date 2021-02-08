@@ -25,7 +25,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() co
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::IsValid() const
 {
     return DeviceResource::IsValid();
 }

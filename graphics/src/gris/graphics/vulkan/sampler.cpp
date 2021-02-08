@@ -46,7 +46,7 @@ Gris::Graphics::Vulkan::Sampler::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Sampler::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Sampler::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_sampler);
 }

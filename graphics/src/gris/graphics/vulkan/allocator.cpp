@@ -51,7 +51,7 @@ Gris::Graphics::Vulkan::Allocator::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Allocator::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Allocator::IsValid() const
 {
     return m_allocator != VK_NULL_HANDLE;
 }

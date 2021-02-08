@@ -24,7 +24,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     const vk::Semaphore & SemaphoreHandle() const;
     vk::Semaphore & SemaphoreHandle();

@@ -11,7 +11,7 @@ Gris::Graphics::Vulkan::WindowMixin::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::WindowMixin::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::WindowMixin::IsValid() const
 {
     return static_cast<bool>(m_surface);
 }

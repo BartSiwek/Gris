@@ -105,7 +105,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::IsValid() const
 {
     return DeviceResource::IsValid();
 }

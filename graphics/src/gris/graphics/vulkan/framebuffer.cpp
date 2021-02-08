@@ -40,7 +40,7 @@ Gris::Graphics::Vulkan::Framebuffer::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Framebuffer::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Framebuffer::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_framebuffer);
 }

@@ -31,7 +31,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindings::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::ShaderResourceBindings::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindings::IsValid() const
 {
     return DeviceResource::IsValid() && m_layout != nullptr && m_layout->IsValid();
 }

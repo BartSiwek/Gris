@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::Glfw::Window::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Glfw::Window::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Glfw::Window::IsValid() const
 {
     return Graphics::Glfw::WindowMixin::IsValid() && Graphics::Vulkan::WindowMixin::IsValid();
 }

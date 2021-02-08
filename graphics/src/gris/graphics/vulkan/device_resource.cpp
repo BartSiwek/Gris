@@ -25,7 +25,7 @@ Gris::Graphics::Vulkan::DeviceResource::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::DeviceResource::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::DeviceResource::IsValid() const
 {
     return static_cast<bool>(m_sharedData) && m_sharedData->ParentDevice != nullptr;
 }

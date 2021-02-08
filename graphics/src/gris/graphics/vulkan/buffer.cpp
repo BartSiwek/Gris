@@ -47,7 +47,7 @@ Gris::Graphics::Vulkan::Buffer::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Buffer::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Buffer::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_buffer) && m_bufferMemory.IsValid();
 }

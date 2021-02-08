@@ -24,7 +24,7 @@ Gris::Graphics::Vulkan::RenderPass::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_renderPass);
 }

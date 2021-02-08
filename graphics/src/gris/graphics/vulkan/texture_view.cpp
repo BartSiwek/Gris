@@ -58,7 +58,7 @@ Gris::Graphics::Vulkan::TextureView::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::TextureView::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::TextureView::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_imageView);
 }

@@ -37,7 +37,7 @@ Gris::Graphics::Vulkan::Fence::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Fence::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Fence::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_fence);
 }

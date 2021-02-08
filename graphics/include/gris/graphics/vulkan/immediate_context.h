@@ -28,7 +28,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     void GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight);
     void CopyBufferToImage(const Buffer & buffer, const Texture & texture, uint32_t width, uint32_t height);

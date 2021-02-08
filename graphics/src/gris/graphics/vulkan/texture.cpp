@@ -64,7 +64,7 @@ Gris::Graphics::Vulkan::Texture::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Texture::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Texture::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_image) && m_imageMemory.IsValid();
 }

@@ -25,7 +25,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     const vk::Framebuffer & FramebufferHandle() const;
     vk::Framebuffer & FramebufferHandle();

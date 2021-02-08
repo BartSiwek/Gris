@@ -24,7 +24,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] Allocation AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo);
     [[nodiscard]] Allocation AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo);

@@ -31,7 +31,7 @@ Gris::Graphics::Vulkan::Semaphore::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::Semaphore::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::Semaphore::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_semaphore);
 }

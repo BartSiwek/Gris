@@ -54,7 +54,7 @@ Gris::Graphics::Vulkan::DeferredContext::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_commandPool) && static_cast<bool>(m_commandBuffer);
 }

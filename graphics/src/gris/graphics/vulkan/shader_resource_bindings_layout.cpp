@@ -74,7 +74,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_descriptorSetLayout);
 }

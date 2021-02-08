@@ -30,7 +30,7 @@ protected:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] const Device & ParentDevice() const;
     [[nodiscard]] Device & ParentDevice();

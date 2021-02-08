@@ -154,7 +154,7 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::SwapChain::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::SwapChain::IsValid() const
 {
     return DeviceResource::IsValid() && static_cast<bool>(m_swapChain);
 }

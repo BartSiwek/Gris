@@ -37,7 +37,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::PhysicalDevice::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::PhysicalDevice::IsValid() const
 {
     return static_cast<bool>(m_physicalDevice);
 }

@@ -35,7 +35,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] const vk::PipelineLayout & PipelineLayoutHandle() const;
     [[nodiscard]] vk::PipelineLayout & PipelineLayoutHandle();

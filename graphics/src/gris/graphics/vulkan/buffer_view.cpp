@@ -24,7 +24,7 @@ Gris::Graphics::Vulkan::BufferView::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-bool Gris::Graphics::Vulkan::BufferView::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::BufferView::IsValid() const
 {
     return m_buffer != nullptr && m_size > 0;
 }

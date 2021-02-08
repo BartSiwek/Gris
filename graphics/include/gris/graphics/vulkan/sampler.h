@@ -22,7 +22,7 @@ public:
 
     explicit operator bool() const;
 
-    bool IsValid() const;
+    [[nodiscard]] bool IsValid() const;
 
     const vk::Sampler & SamplerHandle() const;
     vk::Sampler & SamplerHandle();
