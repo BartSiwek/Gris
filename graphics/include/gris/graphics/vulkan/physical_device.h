@@ -22,7 +22,7 @@ public:
     PhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies);
 
     PhysicalDevice(const PhysicalDevice &) = default;
-    PhysicalDevice& operator=(const PhysicalDevice &) = default;
+    PhysicalDevice & operator=(const PhysicalDevice &) = default;
 
     PhysicalDevice(PhysicalDevice &&) noexcept = default;
     PhysicalDevice & operator=(PhysicalDevice &&) noexcept = default;
