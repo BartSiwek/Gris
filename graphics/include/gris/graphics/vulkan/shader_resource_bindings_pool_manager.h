@@ -14,7 +14,7 @@ public:
     ShaderResourceBindingsPoolManager();
 
     ShaderResourceBindingsPoolManager(
-        Device * device,
+        std::shared_ptr<Device *> device,
         Backend::ShaderResourceBindingsPoolCategory category,
         const Backend::ShaderResourceBindingsPoolSizes & sizes);
 

@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(std::shared_ptr<Device *> device)
     : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();

@@ -18,7 +18,7 @@ public:
 protected:
     DeviceResource();
 
-    explicit DeviceResource(Device * device);
+    explicit DeviceResource(std::shared_ptr<Device *> device);
 
     DeviceResource(const DeviceResource &) = default;
     DeviceResource & operator=(const DeviceResource &) = default;
@@ -43,7 +43,7 @@ protected:
     [[nodiscard]] Allocator & AllocatorHandle();
 
 private:
-    Device * m_parentDevice = nullptr;
+    std::shared_ptr<Device *> m_parentDevice = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

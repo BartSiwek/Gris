@@ -150,38 +150,38 @@ public:
     }
 
 private:
-    std::unique_ptr<Gris::Graphics::Vulkan::Glfw::Window> m_window = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::Device> m_device = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::SwapChain> m_swapChain = {};
+    Gris::Graphics::Vulkan::Glfw::Window m_window = {};
+    Gris::Graphics::Vulkan::Device m_device = {};
+    Gris::Graphics::Vulkan::SwapChain m_swapChain = {};
 
     std::vector<Gris::Graphics::Vulkan::Framebuffer> m_swapChainFramebuffers = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::RenderPass> m_renderPass = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_vertexShader = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::Shader> m_fragmentShader = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout> m_resourceLayout = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::PipelineStateObject> m_pso = {};
+    Gris::Graphics::Vulkan::RenderPass m_renderPass = {};
+    Gris::Graphics::Vulkan::Shader m_vertexShader = {};
+    Gris::Graphics::Vulkan::Shader m_fragmentShader = {};
+    Gris::Graphics::Vulkan::ShaderResourceBindingsLayout m_resourceLayout = {};
+    Gris::Graphics::Vulkan::PipelineStateObject m_pso = {};
 
-    Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ 0 };
-    std::unique_ptr<Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection> m_shaderResourceBindingsPools;
+    Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ std::numeric_limits<Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory::UnderlyingType>::max() };
+    Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection m_shaderResourceBindingsPools;
     std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_colorImage = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_colorImageView = {};
+    Gris::Graphics::Vulkan::Texture m_colorImage = {};
+    Gris::Graphics::Vulkan::TextureView m_colorImageView = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_depthImage = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_depthImageView = {};
+    Gris::Graphics::Vulkan::Texture m_depthImage = {};
+    Gris::Graphics::Vulkan::TextureView m_depthImageView = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::Texture> m_textureImage = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::TextureView> m_textureImageView = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::Sampler> m_textureSampler = {};
+    Gris::Graphics::Vulkan::Texture m_textureImage = {};
+    Gris::Graphics::Vulkan::TextureView m_textureImageView = {};
+    Gris::Graphics::Vulkan::Sampler m_textureSampler = {};
 
     uint32_t m_indexCount = 0;
-    std::unique_ptr<Gris::Graphics::Vulkan::Buffer> m_vertexBuffer = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::BufferView> m_vertexBufferView = {};
+    Gris::Graphics::Vulkan::Buffer m_vertexBuffer = {};
+    Gris::Graphics::Vulkan::BufferView m_vertexBufferView = {};
 
-    std::unique_ptr<Gris::Graphics::Vulkan::Buffer> m_indexBuffer = {};
-    std::unique_ptr<Gris::Graphics::Vulkan::BufferView> m_indexBufferView = {};
+    Gris::Graphics::Vulkan::Buffer m_indexBuffer = {};
+    Gris::Graphics::Vulkan::BufferView m_indexBufferView = {};
 
     std::vector<Gris::Graphics::Vulkan::Buffer> m_uniformBuffers = {};
     std::vector<Gris::Graphics::Vulkan::BufferView> m_uniformBufferViews = {};
@@ -199,25 +199,25 @@ private:
 
     void InitWindow()
     {
-        m_window = std::make_unique<Gris::Graphics::Vulkan::Glfw::Window>(WIDTH, HEIGHT, "Vulkan tutorial");
-        m_window->AddObserver(this);
+        m_window = Gris::Graphics::Vulkan::Glfw::Window(WIDTH, HEIGHT, "Vulkan tutorial");
+        m_window.AddObserver(this);
     }
 
     void InitVulkan()
     {
-        m_device = std::make_unique<Gris::Graphics::Vulkan::Device>(Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(*m_window));
+        m_device = Gris::Graphics::Vulkan::Device(Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(m_window));
 
         createTextureImage();
-        m_textureImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_textureImage->MipLevels()));
-        m_textureSampler = std::make_unique<Gris::Graphics::Vulkan::Sampler>(m_device->CreateSampler(0.0F, static_cast<float>(m_textureImage->MipLevels())));
+        m_textureImageView = m_device.CreateTextureView(m_textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_textureImage.MipLevels());
+        m_textureSampler = m_device.CreateSampler(0.0F, static_cast<float>(m_textureImage.MipLevels()));
 
         auto [vertices, indices] = loadModel();
         m_indexCount = static_cast<uint32_t>(indices.size());
         createVertexBuffer(vertices);
         createIndexBuffer(indices);
 
-        m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
-        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device->CreateRenderPass(m_swapChain->Format(), findDepthFormat()));
+        m_swapChain = m_device.CreateSwapChain(m_window, m_window.Width(), m_window.Height(), MAX_FRAMES_IN_FLIGHT);
+        m_renderPass = m_device.CreateRenderPass(m_swapChain.Format(), findDepthFormat());
 
         auto const vertexShaderPath = Gris::DirectoryRegistry::TryResolvePath(VERTEX_SHADER_PATH);
         if (!vertexShaderPath)
@@ -225,7 +225,7 @@ private:
             throw Gris::EngineException("Error resolving vertex shader path", VERTEX_SHADER_PATH);
         }
 
-        m_vertexShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*vertexShaderPath), "main"));
+        m_vertexShader = m_device.CreateShader(ReadFile<uint32_t>(*vertexShaderPath), "main");
 
         auto const fragmentShaderPath = Gris::DirectoryRegistry::TryResolvePath(FRAGMENT_SHADER_PATH);
         if (!fragmentShaderPath)
@@ -233,7 +233,7 @@ private:
             throw Gris::EngineException("Error resolving fragment shader path", FRAGMENT_SHADER_PATH);
         }
 
-        m_fragmentShader = std::make_unique<Gris::Graphics::Vulkan::Shader>(m_device->CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main"));
+        m_fragmentShader = m_device.CreateShader(ReadFile<uint32_t>(*fragmentShaderPath), "main");
 
         auto const resourceLayouts = std::array{
             Gris::Graphics::Backend::ShaderResourceBindingLayout{
@@ -252,31 +252,31 @@ private:
             },
         };
         Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
-        m_resourceLayout = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout>(m_device->CreateShaderResourceBindingsLayout(bindingsLayout));
+        m_resourceLayout = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
 
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
+        m_pso = m_device.CreatePipelineStateObject(m_swapChain.Extent().width, m_swapChain.Extent().height, m_renderPass, Vertex::BuildInputLayout(), m_resourceLayout, m_vertexShader, m_fragmentShader);
         createColorResources();
         createDepthResources();
         createFramebuffers();
 
         auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
-        sizes.ShaderResourceBindingsCount = m_swapChain->ImageCount();
-        sizes.CombinedImageSamplerCount = m_swapChain->ImageCount();
-        sizes.UniformBufferCount = m_swapChain->ImageCount();
+        sizes.ShaderResourceBindingsCount = m_swapChain.ImageCount();
+        sizes.CombinedImageSamplerCount = m_swapChain.ImageCount();
+        sizes.UniformBufferCount = m_swapChain.ImageCount();
 
-        m_device->RegisterShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
+        m_device.RegisterShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
 
-        m_shaderResourceBindingsPools = std::make_unique<Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection>(m_device->CreateShaderResourceBindingsPoolCollection());
+        m_shaderResourceBindingsPools = m_device.CreateShaderResourceBindingsPoolCollection();
 
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        for (size_t i = 0; i < m_swapChain.ImageCount(); i++)
         {
-            auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            auto & newBuffer = m_uniformBuffers.emplace_back(m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
             m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device->CreateShaderResourceBindings(m_resourceLayout.get()));
-            newBindings.SetCombinedSamplerAndImageView("texSampler", *m_textureSampler, *m_textureImageView);
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device.CreateShaderResourceBindings(&m_resourceLayout));
+            newBindings.SetCombinedSamplerAndImageView("texSampler", m_textureSampler, m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-            newBindings.PrepareBindings(m_shaderResourceBindingsPoolCategory, m_shaderResourceBindingsPools.get());
+            newBindings.PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
         }
 
         createCommandBuffers(m_indexCount);
@@ -286,43 +286,44 @@ private:
 
     void MainLoop()
     {
-        while (!m_window->ShouldClose())
+        while (!m_window.ShouldClose())
         {
             Gris::Graphics::Glfw::Instance::PollEvents();
             drawFrame();
         }
 
-        m_device->WaitIdle();
+        m_device.WaitIdle();
     }
 
     void recreateSwapChain()
     {
-        m_device->WaitIdle();
+        m_device.WaitIdle();
 
-        m_swapChain.reset();
-        m_swapChain = std::make_unique<Gris::Graphics::Vulkan::SwapChain>(m_device->CreateSwapChain(*m_window, m_window->Width(), m_window->Height(), MAX_FRAMES_IN_FLIGHT));
-        m_renderPass = std::make_unique<Gris::Graphics::Vulkan::RenderPass>(m_device->CreateRenderPass(m_swapChain->Format(), findDepthFormat()));
-        m_pso = std::make_unique<Gris::Graphics::Vulkan::PipelineStateObject>(m_device->CreatePipelineStateObject(m_swapChain->Extent().width, m_swapChain->Extent().height, *m_renderPass, Vertex::BuildInputLayout(), *m_resourceLayout, *m_vertexShader, *m_fragmentShader));
+        m_swapChain = {};
+        m_swapChain = m_device.CreateSwapChain(m_window, m_window.Width(), m_window.Height(), MAX_FRAMES_IN_FLIGHT);
+
+        m_renderPass = m_device.CreateRenderPass(m_swapChain.Format(), findDepthFormat());
+        m_pso = m_device.CreatePipelineStateObject(m_swapChain.Extent().width, m_swapChain.Extent().height, m_renderPass, Vertex::BuildInputLayout(), m_resourceLayout, m_vertexShader, m_fragmentShader);
         createColorResources();
         createDepthResources();
         createFramebuffers();
 
-        m_shaderResourceBindingsPools->Clear();
+        m_shaderResourceBindingsPools.Clear();
 
         auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
-        sizes.ShaderResourceBindingsCount = m_swapChain->ImageCount();
-        sizes.CombinedImageSamplerCount = m_swapChain->ImageCount();
-        sizes.UniformBufferCount = m_swapChain->ImageCount();
-        m_device->UpdateShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
+        sizes.ShaderResourceBindingsCount = m_swapChain.ImageCount();
+        sizes.CombinedImageSamplerCount = m_swapChain.ImageCount();
+        sizes.UniformBufferCount = m_swapChain.ImageCount();
+        m_device.UpdateShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
 
         m_uniformBuffers.clear();
         m_uniformBufferViews.clear();
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        for (size_t i = 0; i < m_swapChain.ImageCount(); i++)
         {
-            auto & newBuffer = m_uniformBuffers.emplace_back(m_device->CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
+            auto & newBuffer = m_uniformBuffers.emplace_back(m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
             auto const & newView = m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", newView);
-            m_shaderResourceBindings[i].PrepareBindings(m_shaderResourceBindingsPoolCategory, m_shaderResourceBindingsPools.get());
+            m_shaderResourceBindings[i].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
         }
 
         createCommandBuffers(m_indexCount);
@@ -332,32 +333,32 @@ private:
     {
         m_swapChainFramebuffers.clear();
 
-        auto const swapChainExtent = m_swapChain->Extent();
-        for (size_t i = 0; i < m_swapChain->ImageCount(); i++)
+        auto const swapChainExtent = m_swapChain.Extent();
+        for (size_t i = 0; i < m_swapChain.ImageCount(); i++)
         {
-            m_swapChainFramebuffers.emplace_back(m_device->CreateFramebuffer(*m_colorImageView, *m_depthImageView, m_swapChain->ImageView(i), *m_renderPass, swapChainExtent.width, swapChainExtent.height));
+            m_swapChainFramebuffers.emplace_back(m_device.CreateFramebuffer(m_colorImageView, m_depthImageView, m_swapChain.ImageView(i), m_renderPass, swapChainExtent.width, swapChainExtent.height));
         }
     }
 
     void createColorResources()
     {
-        auto const swapChainExtent = m_swapChain->Extent();
-        auto const swapChainFormat = m_swapChain->Format();
-        m_colorImage = std::make_unique<Gris::Graphics::Vulkan::Texture>(m_device->CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device->MsaaSamples(), swapChainFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransientAttachment | vk::ImageUsageFlagBits::eColorAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_colorImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_colorImage, swapChainFormat, vk::ImageAspectFlagBits::eColor, 1));
+        auto const swapChainExtent = m_swapChain.Extent();
+        auto const swapChainFormat = m_swapChain.Format();
+        m_colorImage = m_device.CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device.MsaaSamples(), swapChainFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransientAttachment | vk::ImageUsageFlagBits::eColorAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        m_colorImageView = m_device.CreateTextureView(m_colorImage, swapChainFormat, vk::ImageAspectFlagBits::eColor, 1);
     }
 
     void createDepthResources()
     {
         auto const depthFormat = findDepthFormat();
-        auto const swapChainExtent = m_swapChain->Extent();
-        m_depthImage = std::make_unique<Gris::Graphics::Vulkan::Texture>(m_device->CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device->MsaaSamples(), depthFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_depthImageView = std::make_unique<Gris::Graphics::Vulkan::TextureView>(m_device->CreateTextureView(*m_depthImage, depthFormat, vk::ImageAspectFlagBits::eDepth, 1));
+        auto const swapChainExtent = m_swapChain.Extent();
+        m_depthImage = m_device.CreateTexture(swapChainExtent.width, swapChainExtent.height, 1, m_device.MsaaSamples(), depthFormat, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eDepthStencilAttachment, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        m_depthImageView = m_device.CreateTextureView(m_depthImage, depthFormat, vk::ImageAspectFlagBits::eDepth, 1);
     }
 
     [[nodiscard]] vk::Format findDepthFormat() const
     {
-        return m_device->FindSupportedFormat(
+        return m_device.FindSupportedFormat(
             { vk::Format::eD32Sfloat, vk::Format::eD32SfloatS8Uint, vk::Format::eD24UnormS8Uint },
             vk::ImageTiling::eOptimal,
             vk::FormatFeatureFlagBits::eDepthStencilAttachment);
@@ -385,16 +386,15 @@ private:
             throw Gris::EngineException("Failed to load texture image");
         }
 
-        auto stagingBuffer = m_device->CreateBuffer(imageSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        auto stagingBuffer = m_device.CreateBuffer(imageSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(pixels, imageSize);
 
         stbi_image_free(pixels);
 
-        m_textureImage = std::make_unique<Gris::Graphics::Vulkan::Texture>(m_device->CreateTexture(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_device->Context()->TransitionImageLayout(*m_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
-        m_device->Context()->CopyBufferToImage(stagingBuffer, *m_textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-        // Transitioned to VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL while generating mipmaps
-        m_device->Context()->GenerateMipmaps(*m_textureImage, vk::Format::eR8G8B8A8Srgb, texWidth, texHeight);
+        m_textureImage = m_device.CreateTexture(static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        m_device.Context().TransitionImageLayout(m_textureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
+        m_device.Context().CopyBufferToImage(stagingBuffer, m_textureImage, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+        m_device.Context().GenerateMipmaps(m_textureImage, vk::Format::eR8G8B8A8Srgb, texWidth, texHeight);
     }
 
     [[nodiscard]] static std::pair<std::vector<Vertex>, std::vector<uint32_t>> loadModel()
@@ -456,26 +456,26 @@ private:
     {
         auto const bufferSize = sizeof(vertices[0]) * vertices.size();
 
-        auto stagingBuffer = m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        auto stagingBuffer = m_device.CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(vertices.data(), static_cast<size_t>(bufferSize));
 
-        m_vertexBuffer = std::make_unique<Gris::Graphics::Vulkan::Buffer>(m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_device->Context()->CopyBuffer(stagingBuffer, *m_vertexBuffer, bufferSize);
+        m_vertexBuffer = m_device.CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        m_device.Context().CopyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
 
-        m_vertexBufferView = std::make_unique<Gris::Graphics::Vulkan::BufferView>(m_vertexBuffer.get(), 0, static_cast<uint32_t>(bufferSize));
+        m_vertexBufferView = Gris::Graphics::Vulkan::BufferView(&m_vertexBuffer, 0, static_cast<uint32_t>(bufferSize));
     }
 
     void createIndexBuffer(const std::vector<uint32_t> & indices)
     {
         auto const bufferSize = sizeof(indices[0]) * indices.size();
 
-        auto stagingBuffer = m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        auto stagingBuffer = m_device.CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         stagingBuffer.SetData(indices.data(), static_cast<size_t>(bufferSize));
 
-        m_indexBuffer = std::make_unique<Gris::Graphics::Vulkan::Buffer>(m_device->CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
-        m_device->Context()->CopyBuffer(stagingBuffer, *m_indexBuffer, bufferSize);
+        m_indexBuffer = m_device.CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
+        m_device.Context().CopyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
 
-        m_indexBufferView = std::make_unique<Gris::Graphics::Vulkan::BufferView>(m_indexBuffer.get(), 0, static_cast<uint32_t>(bufferSize));
+        m_indexBufferView = Gris::Graphics::Vulkan::BufferView(&m_indexBuffer, 0, static_cast<uint32_t>(bufferSize));
     }
 
     void createCommandBuffers(uint32_t indexCount)
@@ -485,15 +485,15 @@ private:
 
         for (uint32_t i = 0; i < commandBufferCount; i++)
         {
-            m_commandBuffers.emplace_back(m_device->CreateDeferredContext());
+            m_commandBuffers.emplace_back(m_device.CreateDeferredContext());
             auto & commandBuffer = m_commandBuffers.back();
 
             commandBuffer.Begin();
-            commandBuffer.BeginRenderPass(*m_renderPass, m_swapChainFramebuffers[i], m_swapChain->Extent());
-            commandBuffer.BindPipeline(*m_pso);
-            commandBuffer.BindVertexBuffer(*m_vertexBufferView);
-            commandBuffer.BindIndexBuffer(*m_indexBufferView);
-            commandBuffer.BindDescriptorSet(*m_pso, m_shaderResourceBindings[i]);
+            commandBuffer.BeginRenderPass(m_renderPass, m_swapChainFramebuffers[i], m_swapChain.Extent());
+            commandBuffer.BindPipeline(m_pso);
+            commandBuffer.BindVertexBuffer(m_vertexBufferView);
+            commandBuffer.BindIndexBuffer(m_indexBufferView);
+            commandBuffer.BindDescriptorSet(m_pso, m_shaderResourceBindings[i]);
             commandBuffer.DrawIndexed(indexCount);
             commandBuffer.EndRenderPass();
             commandBuffer.End();
@@ -507,7 +507,7 @@ private:
         auto const currentTime = std::chrono::high_resolution_clock::now();
         auto const time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
 
-        auto const swapChainExtent = m_swapChain->Extent();
+        auto const swapChainExtent = m_swapChain.Extent();
 
         UniformBufferObject ubo = {};
 
@@ -528,7 +528,7 @@ private:
 
     void drawFrame()
     {
-        auto const nextImageResult = m_swapChain->NextImage();
+        auto const nextImageResult = m_swapChain.NextImage();
         if (!nextImageResult)
         {
             recreateSwapChain();
@@ -537,11 +537,11 @@ private:
 
         updateUniformBuffer(nextImageResult->SwapChainImageIndex);
 
-        auto const waitSemaphores = std::vector{ std::ref(m_swapChain->ImageAvailableSemaphore(*nextImageResult)) };
-        auto const signalSemaphores = std::vector{ std::ref(m_swapChain->RenderingFinishedSemaphore(*nextImageResult)) };
-        m_device->Context()->Submit(&m_commandBuffers[nextImageResult->SwapChainImageIndex], waitSemaphores, signalSemaphores, m_swapChain->RenderingFinishedFence(*nextImageResult));
+        auto const waitSemaphores = std::vector{ std::ref(m_swapChain.ImageAvailableSemaphore(*nextImageResult)) };
+        auto const signalSemaphores = std::vector{ std::ref(m_swapChain.RenderingFinishedSemaphore(*nextImageResult)) };
+        m_device.Context().Submit(&m_commandBuffers[nextImageResult->SwapChainImageIndex], waitSemaphores, signalSemaphores, m_swapChain.RenderingFinishedFence(*nextImageResult));
 
-        auto const presentResult = m_swapChain->Present(*nextImageResult);
+        auto const presentResult = m_swapChain.Present(*nextImageResult);
         if (!presentResult || m_framebufferResized)
         {
             m_framebufferResized = false;

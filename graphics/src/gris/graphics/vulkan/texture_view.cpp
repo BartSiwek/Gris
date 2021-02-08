@@ -10,7 +10,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
+Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<Device *> device,
                                                  const Texture & image,
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
@@ -21,7 +21,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
+Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<Device *> device,
                                                  const vk::Image & image,
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,

@@ -8,7 +8,7 @@ Gris::Graphics::Vulkan::Shader::Shader() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code, std::string entryPoint)
+Gris::Graphics::Vulkan::Shader::Shader(std::shared_ptr<Device *> device, const std::vector<uint32_t> & code, std::string entryPoint)
     : DeviceResource(device)
     , m_entryPoint(std::move(entryPoint))
 {

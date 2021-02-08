@@ -1,5 +1,6 @@
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
 
+#include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/utils.h>
@@ -86,7 +87,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBinding
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(
-    Device * device,
+    std::shared_ptr<Device *> device,
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
     : DeviceResource(device)
@@ -136,7 +137,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
     }
 
     auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
-    return ShaderResourceBindingsPool(&ParentDevice(), m_category, std::move(descriptorPool));
+    return ParentDevice().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -24,7 +24,7 @@ class SwapChain : public DeviceResource
 public:
     SwapChain();
 
-    SwapChain(Device * device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+    SwapChain(std::shared_ptr<Device *> device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
 
     SwapChain(const SwapChain &) = delete;
     SwapChain & operator=(const SwapChain &) = delete;

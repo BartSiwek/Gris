@@ -8,7 +8,7 @@ Gris::Graphics::Vulkan::Sampler::Sampler() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float maxLod)
+Gris::Graphics::Vulkan::Sampler::Sampler(std::shared_ptr<Device *> device, float minLod, float maxLod)
     : DeviceResource(device)
 {
     auto const samplerInfo = vk::SamplerCreateInfo{}

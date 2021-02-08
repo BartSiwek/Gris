@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Buffer::Buffer() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Buffer::Buffer(Device * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
+Gris::Graphics::Vulkan::Buffer::Buffer(std::shared_ptr<Device *> device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
 {
     auto const bufferInfo = vk::BufferCreateInfo{}

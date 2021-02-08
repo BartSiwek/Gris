@@ -14,7 +14,7 @@ class ShaderResourceBindingsLayout : public DeviceResource
 public:
     ShaderResourceBindingsLayout();
 
-    ShaderResourceBindingsLayout(Device * device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout);
+    ShaderResourceBindingsLayout(std::shared_ptr<Device *> device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout);
 
     ShaderResourceBindingsLayout(const ShaderResourceBindingsLayout &) = delete;
     ShaderResourceBindingsLayout & operator=(const ShaderResourceBindingsLayout &) = delete;

@@ -16,7 +16,7 @@ public:
     PipelineStateObject();
 
     PipelineStateObject(
-        Device * device,
+        std::shared_ptr<Device *> device,
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
         const RenderPass & renderPass,

@@ -11,7 +11,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool()
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(
-    Device * device,
+    std::shared_ptr<Device *> device,
     Backend::ShaderResourceBindingsPoolCategory category,
     vk::UniqueDescriptorPool pool)
     : DeviceResource(device)

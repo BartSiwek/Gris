@@ -16,7 +16,7 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<Device *> device)
     : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();

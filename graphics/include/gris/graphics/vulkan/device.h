@@ -5,8 +5,6 @@
 #include <gris/graphics/vulkan/physical_device.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
 
-#include <gris/span.h>
-
 namespace Gris::Graphics::Backend
 {
 
@@ -26,6 +24,7 @@ class Shader;
 class InputLayout;
 class ShaderResourceBindingsLayout;
 class ShaderResourceBindings;
+class ShaderResourceBindingsPool;
 class ShaderResourceBindingsPoolCollection;
 class RenderPass;
 class PipelineStateObject;
@@ -48,17 +47,17 @@ public:
     Device(const Device &) = delete;
     Device& operator=(const Device &) = delete;
 
-    Device(Device &&) noexcept = default;
-    Device & operator=(Device &&) noexcept = default;
+    Device(Device && other) noexcept;
+    Device & operator=(Device && other) noexcept;
 
-    ~Device() = default;
+    ~Device();
 
     explicit operator bool() const;
 
     bool IsValid() const;
 
-    [[nodiscard]] const ImmediateContext * Context() const;
-    [[nodiscard]] ImmediateContext * Context();
+    [[nodiscard]] const ImmediateContext & Context() const;
+    [[nodiscard]] ImmediateContext & Context();
 
     [[nodiscard]] const vk::SampleCountFlagBits & MsaaSamples() const;
 
@@ -118,6 +117,9 @@ public:
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
     void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
+    [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
+    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::UniqueDescriptorPool pool);
+
 private:
     struct CategoryAndPoolManager
     {
@@ -130,11 +132,13 @@ private:
 
     PhysicalDevice m_physicalDevice = {};
 
+    std::shared_ptr<Device *> m_parentReference;
+
     vk::UniqueDevice m_device = {};
     vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
+    ImmediateContext m_context = {};
     std::vector<CategoryAndPoolManager> m_poolManagers;
-    std::unique_ptr<ImmediateContext> m_context = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

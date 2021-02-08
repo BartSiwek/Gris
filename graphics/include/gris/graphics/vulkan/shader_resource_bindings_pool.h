@@ -15,7 +15,7 @@ public:
     ShaderResourceBindingsPool();
 
     ShaderResourceBindingsPool(
-        Device * device,
+        std::shared_ptr<Device *> device,
         Backend::ShaderResourceBindingsPoolCategory category,
         vk::UniqueDescriptorPool pool);
 

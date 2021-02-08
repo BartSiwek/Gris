@@ -10,7 +10,7 @@ class Sampler : public DeviceResource
 public:
     Sampler();
 
-    Sampler(Device * device, float minLod, float maxLod);
+    Sampler(std::shared_ptr<Device *> device, float minLod, float maxLod);
 
     Sampler(const Sampler &) = delete;
     Sampler & operator=(const Sampler &) = delete;
