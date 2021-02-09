@@ -1,11 +1,10 @@
 #pragma once
 
 #include <gris/graphics/vulkan/allocator.h>
+#include <gris/graphics/vulkan/device_shared_data.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/physical_device.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
-
-#include <gris/span.h>
 
 namespace Gris::Graphics::Backend
 {
@@ -26,6 +25,7 @@ class Shader;
 class InputLayout;
 class ShaderResourceBindingsLayout;
 class ShaderResourceBindings;
+class ShaderResourceBindingsPool;
 class ShaderResourceBindingsPoolCollection;
 class RenderPass;
 class PipelineStateObject;
@@ -41,10 +41,24 @@ class Device
 public:
     friend class DeviceResource;
 
+    Device();
+
     explicit Device(PhysicalDevice physicalDevice);
 
-    [[nodiscard]] const ImmediateContext * Context() const;
-    [[nodiscard]] ImmediateContext * Context();
+    Device(const Device &) = delete;
+    Device & operator=(const Device &) = delete;
+
+    Device(Device && other) noexcept;
+    Device & operator=(Device && other) noexcept;
+
+    ~Device();
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
+
+    [[nodiscard]] const ImmediateContext & Context() const;
+    [[nodiscard]] ImmediateContext & Context();
 
     [[nodiscard]] const vk::SampleCountFlagBits & MsaaSamples() const;
 
@@ -61,7 +75,6 @@ public:
     void RegisterShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
     void UpdateShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
-    // TODO: Do this better
     [[nodiscard]] const vk::Device & DeviceHandle() const;
     [[nodiscard]] vk::Device & DeviceHandle();
 
@@ -105,6 +118,9 @@ public:
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
     void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
+    [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
+    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::UniqueDescriptorPool pool);
+
 private:
     struct CategoryAndPoolManager
     {
@@ -115,13 +131,12 @@ private:
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
-    PhysicalDevice m_physicalDevice;
-
+    PhysicalDevice m_physicalDevice = {};
     vk::UniqueDevice m_device = {};
-    vk::DispatchLoaderDynamic m_dispatch = {};
+    std::shared_ptr<DeviceSharedData> m_sharedData;
     Allocator m_allocator = {};
+    ImmediateContext m_context = {};
     std::vector<CategoryAndPoolManager> m_poolManagers;
-    std::unique_ptr<ImmediateContext> m_context = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

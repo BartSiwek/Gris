@@ -14,7 +14,21 @@ class Fence;
 class ImmediateContext : public DeviceResource
 {
 public:
-    explicit ImmediateContext(Device * device);
+    ImmediateContext();
+
+    explicit ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData);
+
+    ImmediateContext(const ImmediateContext &) = delete;
+    ImmediateContext & operator=(const ImmediateContext &) = delete;
+
+    ImmediateContext(ImmediateContext &&) noexcept = default;
+    ImmediateContext & operator=(ImmediateContext &&) noexcept = default;
+
+    ~ImmediateContext() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     void GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight);
     void CopyBufferToImage(const Buffer & buffer, const Texture & texture, uint32_t width, uint32_t height);

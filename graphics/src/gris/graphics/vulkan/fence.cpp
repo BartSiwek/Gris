@@ -4,8 +4,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Fence::Fence() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Fence::Fence(std::shared_ptr<DeviceSharedData> sharedData, bool signaled)
+    : DeviceResource(std::move(sharedData))
 {
     vk::FenceCreateFlags flags;
     if (signaled)
@@ -26,7 +30,20 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::Fence::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Fence::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_fence);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle() const
 {
     return m_fence.get();
@@ -34,7 +51,6 @@ Gris::Graphics::Vulkan::Fence::Fence(Device * device, bool signaled)
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle()
 {
     return m_fence.get();

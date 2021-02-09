@@ -11,13 +11,18 @@ class WindowMixin
 {
 public:
     WindowMixin() = default;
-    virtual ~WindowMixin() = default;
 
     WindowMixin(const WindowMixin & other) = delete;
     WindowMixin & operator=(const WindowMixin & other) = delete;
 
     WindowMixin(WindowMixin &&) noexcept = default;
     WindowMixin & operator=(WindowMixin &&) noexcept = default;
+
+    virtual ~WindowMixin() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] vk::SurfaceKHR SurfaceHandle() const
     {

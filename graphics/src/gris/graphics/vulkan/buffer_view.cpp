@@ -4,6 +4,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::BufferView::BufferView() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::BufferView::BufferView(const Buffer * buffer, uint32_t offset, uint32_t size)
     : m_buffer(buffer)
     , m_offset(offset)
@@ -13,7 +17,20 @@ Gris::Graphics::Vulkan::BufferView::BufferView(const Buffer * buffer, uint32_t o
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::BufferView::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::BufferView::IsValid() const
+{
+    return m_buffer != nullptr && m_size > 0;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::BufferView::BufferHandle() const
 {
     return m_buffer->BufferHandle();

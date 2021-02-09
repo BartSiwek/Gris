@@ -12,18 +12,24 @@ namespace Gris::Graphics::Vulkan
 class ShaderResourceBindingsPool : DeviceResource
 {
 public:
+    ShaderResourceBindingsPool();
+
     ShaderResourceBindingsPool(
-        Device * device,
+        std::shared_ptr<DeviceSharedData> sharedData,
         Backend::ShaderResourceBindingsPoolCategory category,
         vk::UniqueDescriptorPool pool);
 
     ShaderResourceBindingsPool(const ShaderResourceBindingsPool &) = delete;
     ShaderResourceBindingsPool & operator=(const ShaderResourceBindingsPool &) = delete;
 
-    ShaderResourceBindingsPool(ShaderResourceBindingsPool &&) = default;
-    ShaderResourceBindingsPool & operator=(ShaderResourceBindingsPool &&) = default;
+    ShaderResourceBindingsPool(ShaderResourceBindingsPool &&) noexcept = default;
+    ShaderResourceBindingsPool & operator=(ShaderResourceBindingsPool &&) noexcept = default;
 
     ~ShaderResourceBindingsPool() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] Backend::ShaderResourceBindingsPoolCategory Category() const;
 
@@ -32,9 +38,9 @@ public:
     void Reset();
 
 private:
-    Backend::ShaderResourceBindingsPoolCategory m_category;
+    Backend::ShaderResourceBindingsPoolCategory m_category = Backend::ShaderResourceBindingsPoolCategory{ std::numeric_limits<Backend::ShaderResourceBindingsPoolCategory::UnderlyingType>::max() };
 
-    vk::UniqueDescriptorPool m_pool;
+    vk::UniqueDescriptorPool m_pool = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

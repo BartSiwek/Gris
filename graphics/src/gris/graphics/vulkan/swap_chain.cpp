@@ -61,12 +61,16 @@ vk::Extent2D ChooseSwapExtent(const vk::SurfaceCapabilitiesKHR & capabilities, u
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::SwapChain::SwapChain() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::SwapChain::SwapChain(std::shared_ptr<DeviceSharedData> sharedData, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount)
+    : DeviceResource(std::move(sharedData))
     , m_virtualFrameCount(virtualFrameCount)
 {
-    auto const & indices = device->QueueFamilies();
-    auto const swapChainSupport = device->SwapChainSupport(window);
+    auto const & indices = ParentDevice().QueueFamilies();
+    auto const swapChainSupport = ParentDevice().SwapChainSupport(window);
     auto const surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
     auto const presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
     auto const extent = ChooseSwapExtent(swapChainSupport.capabilities, width, height);
@@ -117,7 +121,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     }
 
     m_swapChainImages = std::move(swapChainImagesResult.value);
-    m_presentQueue = DeviceHandle().getQueue(device->QueueFamilies().presentFamily.value(), 0, Dispatch());
+    m_presentQueue = DeviceHandle().getQueue(ParentDevice().QueueFamilies().presentFamily.value(), 0, Dispatch());
 
     m_swapChainImageFormat = surfaceFormat.format;
     m_swapChainExtent = extent;
@@ -125,7 +129,7 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     m_swapChainImageViews.reserve(m_swapChainImages.size());
     for (auto const & swapChainImage : m_swapChainImages)
     {
-        m_swapChainImageViews.emplace_back(&ParentDevice(), swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1);
+        m_swapChainImageViews.emplace_back(ParentDevice().CreateTextureView(swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1));
     }
 
     m_renderFinishedFences.reserve(m_swapChainImages.size());
@@ -139,6 +143,20 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(Device * device, const WindowMixin 
     }
 
     m_swapChainImageToVirtualFrame.resize(m_swapChainImages.size(), std::numeric_limits<uint32_t>::max());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::SwapChain::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::SwapChain::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_swapChain);
 }
 
 // -------------------------------------------------------------------------------------------------

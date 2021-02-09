@@ -5,9 +5,29 @@
 
 #include <gris/utils.h>
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(Device * device)
-    : DeviceResource(device)
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(std::shared_ptr<DeviceSharedData> sharedData)
+    : DeviceResource(std::move(sharedData))
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::IsValid() const
+{
+    return DeviceResource::IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------

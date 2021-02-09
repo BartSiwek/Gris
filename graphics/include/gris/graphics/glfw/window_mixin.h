@@ -13,8 +13,9 @@ namespace Gris::Graphics::Glfw
 class WindowMixin
 {
 public:
+    WindowMixin() = default;
+
     WindowMixin(uint32_t width, uint32_t height, const std::string & title);
-    virtual ~WindowMixin();
 
     WindowMixin(const WindowMixin & other) = delete;
     WindowMixin & operator=(const WindowMixin & other) = delete;
@@ -22,7 +23,11 @@ public:
     WindowMixin(WindowMixin && other) noexcept;
     WindowMixin & operator=(WindowMixin && other) noexcept;
 
+    virtual ~WindowMixin();
+
     explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] uint32_t Width() const;
     [[nodiscard]] uint32_t Height() const;

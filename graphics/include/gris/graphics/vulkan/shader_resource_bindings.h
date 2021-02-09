@@ -17,7 +17,21 @@ class ShaderResourceBindingsPoolCollection;
 class ShaderResourceBindings : DeviceResource
 {
 public:
-    ShaderResourceBindings(Device * device, const ShaderResourceBindingsLayout * resourceLayout);
+    ShaderResourceBindings();
+
+    ShaderResourceBindings(std::shared_ptr<DeviceSharedData> sharedData, const ShaderResourceBindingsLayout * resourceLayout);
+
+    ShaderResourceBindings(const ShaderResourceBindings &) = delete;
+    ShaderResourceBindings & operator=(const ShaderResourceBindings &) = delete;
+
+    ShaderResourceBindings(ShaderResourceBindings &&) noexcept = default;
+    ShaderResourceBindings & operator=(ShaderResourceBindings &&) noexcept = default;
+
+    ~ShaderResourceBindings() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle() const;
     [[nodiscard]] vk::DescriptorSet & DescriptorSetHandle();

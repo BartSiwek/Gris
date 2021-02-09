@@ -5,15 +5,32 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapChainFormat, vk::Format depthFormat)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::RenderPass::RenderPass() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::RenderPass::RenderPass(std::shared_ptr<DeviceSharedData> sharedData, vk::Format swapChainFormat, vk::Format depthFormat)
+    : DeviceResource(std::move(sharedData))
 {
     CreateRenderPass(swapChainFormat, depthFormat);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::RenderPass::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_renderPass);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle() const
 {
     return m_renderPass.get();
@@ -21,7 +38,6 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass(Device * device, vk::Format swapC
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle()
 {
     return m_renderPass.get();

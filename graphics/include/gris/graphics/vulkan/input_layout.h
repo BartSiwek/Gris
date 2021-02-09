@@ -12,10 +12,17 @@ class InputLayout
 public:
     InputLayout() = default;
 
+    InputLayout(const InputLayout &) = default;
+    InputLayout & operator=(const InputLayout &) = default;
+
+    InputLayout(InputLayout &&) noexcept = default;
+    InputLayout & operator=(InputLayout &&) noexcept = default;
+
+    ~InputLayout() = default;
+
     void AddBinding(uint32_t binding, uint32_t stride, vk::VertexInputRate inputRate);
     void AddAttributeDescription(uint32_t location, uint32_t binding, vk::Format format, uint32_t offset);
 
-    // TODO: Do this better
     [[nodiscard]] const std::vector<vk::VertexInputBindingDescription> & BindingDescription() const;
     [[nodiscard]] const std::vector<vk::VertexInputAttributeDescription> & AttributeDescriptions() const;
 

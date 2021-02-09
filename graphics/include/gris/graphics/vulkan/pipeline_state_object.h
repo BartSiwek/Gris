@@ -13,8 +13,10 @@ class Shader;
 class PipelineStateObject : public DeviceResource
 {
 public:
+    PipelineStateObject();
+
     PipelineStateObject(
-        Device * device,
+        std::shared_ptr<DeviceSharedData> sharedData,
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
@@ -23,17 +25,27 @@ public:
         const Shader & vertexShader,
         const Shader & fragmentShader);
 
-    // TODO: Do this better
+    PipelineStateObject(const PipelineStateObject &) = delete;
+    PipelineStateObject & operator=(const PipelineStateObject &) = delete;
+
+    PipelineStateObject(PipelineStateObject &&) noexcept = default;
+    PipelineStateObject & operator=(PipelineStateObject &&) noexcept = default;
+
+    ~PipelineStateObject() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
+
     [[nodiscard]] const vk::PipelineLayout & PipelineLayoutHandle() const;
     [[nodiscard]] vk::PipelineLayout & PipelineLayoutHandle();
 
-    // TODO: Do this better
     [[nodiscard]] const vk::Pipeline & GraphicsPipelineHandle() const;
     [[nodiscard]] vk::Pipeline & GraphicsPipelineHandle();
 
 private:
-    vk::UniquePipelineLayout m_pipelineLayout;
-    vk::UniquePipeline m_graphicsPipeline;
+    vk::UniquePipelineLayout m_pipelineLayout = {};
+    vk::UniquePipeline m_graphicsPipeline = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

@@ -7,6 +7,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Glfw::Window::Window() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Glfw::Window::Window(uint32_t width, uint32_t height, const std::string & title)
     : Gris::Graphics::Glfw::WindowMixin(width, height, title)
 {
@@ -19,4 +23,18 @@ Gris::Graphics::Vulkan::Glfw::Window::Window(uint32_t width, uint32_t height, co
 
     const vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(InstanceHandle(), nullptr, Dispatch());
     SetSurfaceHandle(vk::UniqueSurfaceKHR(vk::SurfaceKHR(surface), deleter));
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Glfw::Window::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Glfw::Window::IsValid() const
+{
+    return Graphics::Glfw::WindowMixin::IsValid() && Graphics::Vulkan::WindowMixin::IsValid();
 }

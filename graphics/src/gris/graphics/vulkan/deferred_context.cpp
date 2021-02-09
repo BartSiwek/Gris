@@ -10,8 +10,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(std::shared_ptr<DeviceSharedData> sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -43,7 +47,20 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(Device * device)
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::DeferredContext::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool) && static_cast<bool>(m_commandBuffer);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] vk::CommandBuffer & Gris::Graphics::Vulkan::DeferredContext::CommandBufferHandle()
 {
     return m_commandBuffer.get();

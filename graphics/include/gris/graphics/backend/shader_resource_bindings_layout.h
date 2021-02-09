@@ -33,8 +33,6 @@ enum class ShaderStageFlags : uint32_t
     Compute = 0x00000020,
 };
 
-// TODO: Add bitwise operators for flags
-
 struct ShaderResourceBindingLayout
 {
     std::string_view Semantic = {};

@@ -12,8 +12,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -31,6 +35,20 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(Device * device)
     }
 
     m_commandPool = std::move(createCommandPoolResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::ImmediateContext::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -281,7 +299,6 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
         throw VulkanEngineException("Error submitting the command buffer", submitResult);
     }
 
-    // TODO: There has to be a better way to do this
     auto const waitResult = m_graphicsQueue.waitIdle(Dispatch());
     if (waitResult != vk::Result::eSuccess)
     {

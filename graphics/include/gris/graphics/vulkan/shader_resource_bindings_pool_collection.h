@@ -14,7 +14,21 @@ namespace Gris::Graphics::Vulkan
 class ShaderResourceBindingsPoolCollection : DeviceResource
 {
 public:
-    ShaderResourceBindingsPoolCollection(Device * device);
+    ShaderResourceBindingsPoolCollection();
+
+    ShaderResourceBindingsPoolCollection(std::shared_ptr<DeviceSharedData> sharedData);
+
+    ShaderResourceBindingsPoolCollection(const ShaderResourceBindingsPoolCollection &) = default;
+    ShaderResourceBindingsPoolCollection & operator=(const ShaderResourceBindingsPoolCollection &) = default;
+
+    ShaderResourceBindingsPoolCollection(ShaderResourceBindingsPoolCollection &&) noexcept = default;
+    ShaderResourceBindingsPoolCollection & operator=(ShaderResourceBindingsPoolCollection &&) noexcept = default;
+
+    ~ShaderResourceBindingsPoolCollection() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] vk::DescriptorSet Allocate(
         Backend::ShaderResourceBindingsPoolCategory category,

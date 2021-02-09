@@ -129,7 +129,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
     allocatorInfo.preferredLargeHeapBlockSize = 0;
     allocatorInfo.pAllocationCallbacks = nullptr;
     allocatorInfo.pDeviceMemoryCallbacks = nullptr;
-    allocatorInfo.frameInUseCount = 0;  // TODO: Easy to set this correctly
+    allocatorInfo.frameInUseCount = 0;
     allocatorInfo.pHeapSizeLimit = nullptr;
     allocatorInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorInfo.pRecordSettings = nullptr;

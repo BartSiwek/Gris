@@ -12,11 +12,23 @@ class Buffer;
 class BufferView
 {
 public:
+    BufferView();
+
     BufferView(const Buffer * buffer, uint32_t offset, uint32_t size);
 
-    // TODO: Do this better
+    BufferView(const BufferView &) = default;
+    BufferView & operator=(const BufferView &) = default;
+
+    BufferView(BufferView &&) noexcept = default;
+    BufferView & operator=(BufferView &&) noexcept = default;
+
+    ~BufferView() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
+
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
-    [[nodiscard]] vk::Buffer & BufferHandle();
 
     uint32_t Offset() const;
 

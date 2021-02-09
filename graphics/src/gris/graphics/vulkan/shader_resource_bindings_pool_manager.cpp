@@ -1,8 +1,11 @@
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
 
+#include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/utils.h>
+
+// -------------------------------------------------------------------------------------------------
 
 namespace
 {
@@ -79,14 +82,32 @@ vk::UniqueDescriptorPool CreateNewPool(
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(
-    Device * device,
+    std::shared_ptr<DeviceSharedData> sharedData,
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
-    : DeviceResource(device)
+    : DeviceResource(std::move(sharedData))
     , m_category(category)
     , m_sizes(sizes)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::IsValid() const
+{
+    return DeviceResource::IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -116,7 +137,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
     }
 
     auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
-    return ShaderResourceBindingsPool(&ParentDevice(), m_category, std::move(descriptorPool));
+    return ParentDevice().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
 }
 
 // -------------------------------------------------------------------------------------------------

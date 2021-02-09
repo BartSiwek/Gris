@@ -22,7 +22,21 @@ struct VirtualFrame
 class SwapChain : public DeviceResource
 {
 public:
-    SwapChain(Device * device, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+    SwapChain();
+
+    SwapChain(std::shared_ptr<DeviceSharedData> sharedData, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+
+    SwapChain(const SwapChain &) = delete;
+    SwapChain & operator=(const SwapChain &) = delete;
+
+    SwapChain(SwapChain &&) noexcept = default;
+    SwapChain & operator=(SwapChain &&) noexcept = default;
+
+    ~SwapChain() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] uint32_t ImageCount() const;
 

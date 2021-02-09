@@ -4,8 +4,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float maxLod)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Sampler::Sampler() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Sampler::Sampler(std::shared_ptr<DeviceSharedData> sharedData, float minLod, float maxLod)
+    : DeviceResource(std::move(sharedData))
 {
     auto const samplerInfo = vk::SamplerCreateInfo{}
                                  .setMinFilter(vk::Filter::eLinear)
@@ -35,7 +39,20 @@ Gris::Graphics::Vulkan::Sampler::Sampler(Device * device, float minLod, float ma
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::Sampler::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Sampler::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_sampler);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 {
     return m_sampler.get();
@@ -43,7 +60,6 @@ const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
 {
     return m_sampler.get();

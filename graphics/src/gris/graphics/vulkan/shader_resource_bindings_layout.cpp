@@ -35,8 +35,12 @@ static_assert(Gris::UnderlyingCast(Gris::Graphics::Backend::ShaderStageFlags::Co
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(Device * device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(std::shared_ptr<DeviceSharedData> sharedData, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout)
+    : DeviceResource(std::move(sharedData))
 {
     auto bindings = Gris::MakeReservedVector<vk::DescriptorSetLayoutBinding>(bindingsLayout.Layouts.size());
     for (const auto & resourceLayout : bindingsLayout.Layouts)
@@ -59,6 +63,20 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
     }
 
     m_descriptorSetLayout = std::move(createDescriptorSetLayoutResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_descriptorSetLayout);
 }
 
 // -------------------------------------------------------------------------------------------------

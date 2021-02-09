@@ -3,7 +3,13 @@
 #include <gris/graphics/vulkan/allocator.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
-Gris::Graphics::Vulkan::Texture::Texture(Device * device,
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Texture::Texture() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Texture::Texture(std::shared_ptr<DeviceSharedData> sharedData,
                                          uint32_t width,
                                          uint32_t height,
                                          uint32_t mipLevels,
@@ -12,7 +18,7 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
                                          vk::ImageTiling tiling,
                                          const vk::ImageUsageFlags & usage,
                                          const vk::MemoryPropertyFlags & properties)
-    : DeviceResource(device)
+    : DeviceResource(std::move(sharedData))
     , m_mipLevels(mipLevels)
 {
     auto const imageInfo = vk::ImageCreateInfo{}
@@ -49,13 +55,29 @@ Gris::Graphics::Vulkan::Texture::Texture(Device * device,
     AllocatorHandle().Bind(m_image.get(), m_imageMemory);
 }
 
-// TODO: Do this better
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Texture::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Texture::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_image) && m_imageMemory.IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle() const
 {
     return m_image.get();
 }
 
-// TODO: Do this better
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle()
 {
     return m_image.get();

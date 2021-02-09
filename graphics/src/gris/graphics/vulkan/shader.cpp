@@ -4,10 +4,16 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32_t> & code, std::string entryPoint)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Shader::Shader() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Shader::Shader(std::shared_ptr<DeviceSharedData> sharedData, const std::vector<uint32_t> & code, std::string entryPoint)
+    : DeviceResource(std::move(sharedData))
     , m_entryPoint(std::move(entryPoint))
 {
+    GRIS_ALWAYS_ASSERT(!m_entryPoint.empty(), "Shader entry point is empty");
+
     auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
     auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo, nullptr, Dispatch());
@@ -21,7 +27,20 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::Shader::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Shader::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_shaderModule);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle() const
 {
     return m_shaderModule.get();
@@ -29,7 +48,6 @@ Gris::Graphics::Vulkan::Shader::Shader(Device * device, const std::vector<uint32
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle()
 {
     return m_shaderModule.get();

@@ -4,8 +4,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Semaphore::Semaphore(Device * device)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Semaphore::Semaphore() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Semaphore::Semaphore(std::shared_ptr<DeviceSharedData> sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 
@@ -16,6 +20,20 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(Device * device)
     }
 
     m_semaphore = std::move(imageSemaphoreCreateResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Semaphore::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Semaphore::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_semaphore);
 }
 
 // -------------------------------------------------------------------------------------------------

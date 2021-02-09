@@ -6,9 +6,11 @@
 namespace Gris::Graphics::Vulkan::Glfw
 {
 
-class Window : public Graphics::Glfw::WindowMixin, public WindowMixin
+class Window : public Graphics::Glfw::WindowMixin, public Graphics::Vulkan::WindowMixin
 {
 public:
+    Window();
+
     Window(uint32_t width, uint32_t height, const std::string & title);
 
     Window(const Window &) = delete;
@@ -18,6 +20,10 @@ public:
     Window & operator=(Window &&) noexcept = default;
 
     ~Window() override = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 };
 
 }  // namespace Gris::Graphics::Vulkan::Glfw

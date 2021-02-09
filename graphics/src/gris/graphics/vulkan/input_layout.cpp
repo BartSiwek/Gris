@@ -16,7 +16,6 @@ void Gris::Graphics::Vulkan::InputLayout::AddAttributeDescription(uint32_t locat
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const std::vector<vk::VertexInputBindingDescription> & Gris::Graphics::Vulkan::InputLayout::BindingDescription() const
 {
     return m_bindings;
@@ -24,7 +23,6 @@ void Gris::Graphics::Vulkan::InputLayout::AddAttributeDescription(uint32_t locat
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const std::vector<vk::VertexInputAttributeDescription> & Gris::Graphics::Vulkan::InputLayout::AttributeDescriptions() const
 {
     return m_attributes;

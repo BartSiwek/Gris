@@ -9,8 +9,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
-    Device * device,
+    std::shared_ptr<DeviceSharedData> sharedData,
     uint32_t swapChainWidth,
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
@@ -18,7 +22,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
-    : DeviceResource(device)
+    : DeviceResource(std::move(sharedData))
 {
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo{}
@@ -136,7 +140,20 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::PipelineStateObject::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::PipelineStateObject::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_graphicsPipeline);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle() const
 {
     return m_pipelineLayout.get();
@@ -144,7 +161,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle()
 {
     return m_pipelineLayout.get();
@@ -152,7 +168,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle() const
 {
     return m_graphicsPipeline.get();
@@ -160,7 +175,6 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle()
 {
     return m_graphicsPipeline.get();

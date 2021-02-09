@@ -2,6 +2,8 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
+#include <gris/graphics/vulkan/device_shared_data.h>
+
 #include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
 
 namespace Gris::Graphics::Vulkan
@@ -16,13 +18,19 @@ public:
     virtual ~DeviceResource() = default;
 
 protected:
-    explicit DeviceResource(Device * device);
+    DeviceResource();
 
-    DeviceResource(const DeviceResource & other) = default;
-    DeviceResource & operator=(const DeviceResource & other) = default;
+    explicit DeviceResource(std::shared_ptr<DeviceSharedData> sharedData);
 
-    DeviceResource(DeviceResource && other) = default;
-    DeviceResource & operator=(DeviceResource && other) = default;
+    DeviceResource(const DeviceResource &) = default;
+    DeviceResource & operator=(const DeviceResource &) = default;
+
+    DeviceResource(DeviceResource &&) noexcept = default;
+    DeviceResource & operator=(DeviceResource &&) noexcept = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] const Device & ParentDevice() const;
     [[nodiscard]] Device & ParentDevice();
@@ -37,7 +45,7 @@ protected:
     [[nodiscard]] Allocator & AllocatorHandle();
 
 private:
-    Device * m_parentDevice = nullptr;
+    std::shared_ptr<DeviceSharedData> m_sharedData = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

@@ -6,23 +6,27 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
+Gris::Graphics::Vulkan::TextureView::TextureView() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<DeviceSharedData> sharedData,
                                                  const Texture & image,
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
                                                  uint32_t mipLevels)
-    : TextureView(device, image.ImageHandle(), format, aspectFlags, mipLevels)
+    : TextureView(std::move(sharedData), image.ImageHandle(), format, aspectFlags, mipLevels)
 {
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
+Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<DeviceSharedData> sharedData,
                                                  const vk::Image & image,
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
                                                  uint32_t mipLevels)
-    : DeviceResource(device)
+    : DeviceResource(std::move(sharedData))
 {
     auto const viewInfo = vk::ImageViewCreateInfo{}
                               .setImage(image)
@@ -47,7 +51,20 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::TextureView::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::TextureView::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_imageView);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle() const
 {
     return m_imageView.get();
@@ -55,7 +72,6 @@ Gris::Graphics::Vulkan::TextureView::TextureView(Device * device,
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 [[nodiscard]] vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle()
 {
     return m_imageView.get();

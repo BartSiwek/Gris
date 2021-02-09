@@ -6,8 +6,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
-    : DeviceResource(device)
+Gris::Graphics::Vulkan::Framebuffer::Framebuffer() = default;
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Framebuffer::Framebuffer(std::shared_ptr<DeviceSharedData> sharedData, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height)
+    : DeviceResource(std::move(sharedData))
 {
     std::array attachments = { colorImageView.ImageViewHandle(), depthImageView.ImageViewHandle(), swapChainImageView.ImageViewHandle() };
 
@@ -29,7 +33,20 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Device * device, const TextureV
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
+Gris::Graphics::Vulkan::Framebuffer::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::Framebuffer::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_framebuffer);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 const vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle() const
 {
     return m_framebuffer.get();
@@ -37,7 +54,6 @@ const vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle()
 
 // -------------------------------------------------------------------------------------------------
 
-// TODO: Do this better
 vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle()
 {
     return m_framebuffer.get();

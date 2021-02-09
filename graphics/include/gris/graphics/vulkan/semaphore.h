@@ -10,9 +10,22 @@ class Device;
 class Semaphore : public DeviceResource
 {
 public:
-    explicit Semaphore(Device * device);
+    Semaphore();
 
-    // TODO: Do this better
+    explicit Semaphore(std::shared_ptr<DeviceSharedData> sharedData);
+
+    Semaphore(const Semaphore &) = delete;
+    Semaphore & operator=(const Semaphore &) = delete;
+
+    Semaphore(Semaphore &&) noexcept = default;
+    Semaphore & operator=(Semaphore &&) noexcept = default;
+
+    ~Semaphore() = default;
+
+    explicit operator bool() const;
+
+    [[nodiscard]] bool IsValid() const;
+
     const vk::Semaphore & SemaphoreHandle() const;
     vk::Semaphore & SemaphoreHandle();
 

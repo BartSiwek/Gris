@@ -9,16 +9,22 @@ namespace Gris::Graphics::Vulkan
 class Buffer : public DeviceResource
 {
 public:
-    Buffer(Device * device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    Buffer();
+
+    Buffer(std::shared_ptr<DeviceSharedData> sharedData, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+
+    Buffer(const Buffer &) = delete;
+    Buffer & operator=(const Buffer &) = delete;
+
+    Buffer(Buffer &&) noexcept = default;
+    Buffer & operator=(Buffer &&) noexcept = default;
+
     ~Buffer() = default;
 
-    Buffer(const Buffer & other) = delete;
-    Buffer & operator=(const Buffer & other) = delete;
+    explicit operator bool() const;
 
-    Buffer(Buffer && other) = default;
-    Buffer & operator=(Buffer && other) = default;
+    [[nodiscard]] bool IsValid() const;
 
-    // TODO: Do this via context
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
     [[nodiscard]] vk::Buffer & BufferHandle();
 
