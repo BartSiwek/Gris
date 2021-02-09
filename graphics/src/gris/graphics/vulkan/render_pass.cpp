@@ -10,7 +10,7 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::RenderPass::RenderPass(std::shared_ptr<DeviceSharedData> sharedData, vk::Format swapChainFormat, vk::Format depthFormat)
-    : DeviceResource(sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     CreateRenderPass(swapChainFormat, depthFormat);
 }

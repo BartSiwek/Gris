@@ -15,7 +15,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<DeviceSharedDat
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
                                                  uint32_t mipLevels)
-    : TextureView(sharedData, image.ImageHandle(), format, aspectFlags, mipLevels)
+    : TextureView(std::move(sharedData), image.ImageHandle(), format, aspectFlags, mipLevels)
 {
 }
 
@@ -26,7 +26,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView(std::shared_ptr<DeviceSharedDat
                                                  vk::Format format,
                                                  const vk::ImageAspectFlags & aspectFlags,
                                                  uint32_t mipLevels)
-    : DeviceResource(sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const viewInfo = vk::ImageViewCreateInfo{}
                               .setImage(image)

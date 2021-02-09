@@ -17,7 +17,7 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();

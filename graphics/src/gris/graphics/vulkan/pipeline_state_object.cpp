@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
-    : DeviceResource(sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo{}

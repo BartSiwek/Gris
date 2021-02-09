@@ -18,7 +18,7 @@ Gris::Graphics::Vulkan::Texture::Texture(std::shared_ptr<DeviceSharedData> share
                                          vk::ImageTiling tiling,
                                          const vk::ImageUsageFlags & usage,
                                          const vk::MemoryPropertyFlags & properties)
-    : DeviceResource(sharedData)
+    : DeviceResource(std::move(sharedData))
     , m_mipLevels(mipLevels)
 {
     auto const imageInfo = vk::ImageCreateInfo{}

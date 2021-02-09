@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Semaphore::Semaphore(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(sharedData)
+    : DeviceResource(std::move(sharedData))
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 
