@@ -24,7 +24,19 @@ class SwapChain : public DeviceResource
 public:
     SwapChain();
 
-    SwapChain(std::shared_ptr<DeviceSharedData> sharedData, const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+    SwapChain(
+        std::shared_ptr<DeviceSharedData> sharedData,
+        const WindowMixin & window,
+        uint32_t width,
+        uint32_t height,
+        uint32_t virtualFrameCount);
+    SwapChain(
+        std::shared_ptr<DeviceSharedData> sharedData,
+        const WindowMixin & window,
+        uint32_t width,
+        uint32_t height,
+        uint32_t virtualFrameCount,
+        SwapChain prevSwapChain);
 
     SwapChain(const SwapChain &) = delete;
     SwapChain & operator=(const SwapChain &) = delete;
@@ -82,6 +94,12 @@ public:
     }
 
 private:
+    void CreateSwapChain(
+        const WindowMixin & window,
+        uint32_t width,
+        uint32_t height,
+        vk::SwapchainKHR oldSwapChain);
+
     vk::UniqueSwapchainKHR m_swapChain = {};
     std::vector<vk::Image> m_swapChainImages = {};
     vk::Queue m_presentQueue = {};

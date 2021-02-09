@@ -79,6 +79,7 @@ public:
     [[nodiscard]] vk::Device & DeviceHandle();
 
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
+    [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain);
 
     [[nodiscard]] DeferredContext CreateDeferredContext();
     [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint);
