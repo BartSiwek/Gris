@@ -299,8 +299,7 @@ private:
     {
         m_device.WaitIdle();
 
-        m_swapChain = {};
-        m_swapChain = m_device.CreateSwapChain(m_window, m_window.Width(), m_window.Height(), MAX_FRAMES_IN_FLIGHT);
+        m_swapChain = m_device.CreateSwapChain(m_window, m_window.Width(), m_window.Height(), MAX_FRAMES_IN_FLIGHT, std::move(m_swapChain));
 
         m_renderPass = m_device.CreateRenderPass(m_swapChain.Format(), findDepthFormat());
         m_pso = m_device.CreatePipelineStateObject(m_swapChain.Extent().width, m_swapChain.Extent().height, m_renderPass, Vertex::BuildInputLayout(), m_resourceLayout, m_vertexShader, m_fragmentShader);

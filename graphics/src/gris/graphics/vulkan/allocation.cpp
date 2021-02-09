@@ -28,6 +28,8 @@ Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operato
 {
     if (this != &other)
     {
+        Reset();
+
         m_allocation = std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE));
         m_owner = std::exchange(other.m_owner, nullptr);
     }

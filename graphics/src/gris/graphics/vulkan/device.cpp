@@ -204,6 +204,13 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
+[[nodiscard]] Gris::Graphics::Vulkan::SwapChain Gris::Graphics::Vulkan::Device::CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain)
+{
+    return SwapChain(m_sharedData, window, width, height, virtualFrameCount, std::move(oldSwapChain));
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] Gris::Graphics::Vulkan::DeferredContext Gris::Graphics::Vulkan::Device::CreateDeferredContext()
 {
     return DeferredContext(m_sharedData);
