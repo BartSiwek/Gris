@@ -38,7 +38,7 @@ public:
     void Reset();
 
 private:
-    Backend::ShaderResourceBindingsPoolCategory m_category = Backend::ShaderResourceBindingsPoolCategory{ std::numeric_limits<Backend::ShaderResourceBindingsPoolCategory::UnderlyingType>::max() };
+    Backend::ShaderResourceBindingsPoolCategory m_category = Backend::ShaderResourceBindingsPoolCategory{ Backend::ShaderResourceBindingsPoolCategory::INVALID_VALUE };
 
     vk::UniqueDescriptorPool m_pool = {};
 };

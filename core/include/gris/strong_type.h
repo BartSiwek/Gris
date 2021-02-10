@@ -26,14 +26,22 @@ struct Crpt
     }
 };
 
+template<auto Value>
+struct HasInvalidValueHelper
+{
+    template<typename T>
+    struct HasInvalidValueBase
+    {
+        static constexpr auto INVALID_VALUE = Value;
+    };
+};
+
 }  // namespace Detail
 
 template<typename T, typename TagT, template<typename> class... MixinTs>
 class StrongType : public MixinTs<StrongType<T, TagT, MixinTs...>>...
 {
 public:
-    using UnderlyingType = T;
-
     explicit StrongType(const T & value)
         : m_value(value)
     {
@@ -81,6 +89,10 @@ struct Hashable
 {
     static constexpr bool IsHashable = true;
 };
+
+template<auto Value>
+using HasInvalidValue = typename Detail::HasInvalidValueHelper<Value>::template HasInvalidValueBase;
+
 
 }  // namespace StrongTypeMixins
 
