@@ -115,11 +115,11 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
     vulkanFunctions.vkCreateImage = dispatch.vkCreateImage;
     vulkanFunctions.vkDestroyImage = dispatch.vkDestroyImage;
     vulkanFunctions.vkCmdCopyBuffer = dispatch.vkCmdCopyBuffer;
-    vulkanFunctions.vkGetBufferMemoryRequirements2KHR = dispatch.vkGetBufferMemoryRequirements2KHR;
-    vulkanFunctions.vkGetImageMemoryRequirements2KHR = dispatch.vkGetImageMemoryRequirements2KHR;
-    vulkanFunctions.vkBindBufferMemory2KHR = dispatch.vkBindBufferMemory2KHR;
-    vulkanFunctions.vkBindImageMemory2KHR = dispatch.vkBindImageMemory2KHR;
-    vulkanFunctions.vkGetPhysicalDeviceMemoryProperties2KHR = dispatch.vkGetPhysicalDeviceMemoryProperties2KHR;
+    vulkanFunctions.vkGetBufferMemoryRequirements2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkGetBufferMemoryRequirements2 : dispatch.vkGetBufferMemoryRequirements2KHR;
+    vulkanFunctions.vkGetImageMemoryRequirements2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkGetImageMemoryRequirements2 : dispatch.vkGetImageMemoryRequirements2KHR;
+    vulkanFunctions.vkBindBufferMemory2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkBindBufferMemory2 : dispatch.vkBindBufferMemory2KHR;
+    vulkanFunctions.vkBindImageMemory2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkBindImageMemory2 : dispatch.vkBindImageMemory2KHR;
+    vulkanFunctions.vkGetPhysicalDeviceMemoryProperties2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkGetPhysicalDeviceMemoryProperties2 : dispatch.vkGetPhysicalDeviceMemoryProperties2KHR;
 
     // Create the VMA
     auto allocatorInfo = VmaAllocatorCreateInfo{};
@@ -134,7 +134,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
     allocatorInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorInfo.pRecordSettings = nullptr;
     allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance.get());
-    allocatorInfo.vulkanApiVersion = VK_API_VERSION_1_0;
+    allocatorInfo.vulkanApiVersion = GRIS_VULKAN_API_VERSION;
 
     VmaAllocator allocator = {};
     auto const allocatorCreateResult = static_cast<vk::Result>(vmaCreateAllocator(&allocatorInfo, &allocator));
@@ -217,7 +217,7 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
                              .setApplicationVersion(VK_MAKE_VERSION(1, 0, 0))
                              .setPEngineName("No Engine")
                              .setEngineVersion(VK_MAKE_VERSION(1, 0, 0))
-                             .setApiVersion(VK_API_VERSION_1_0);
+                             .setApiVersion(GRIS_VULKAN_API_VERSION);
 
     std::vector<const char *> enabledLayers;
     if constexpr (ENABLE_VALIDATION_LAYERS)
