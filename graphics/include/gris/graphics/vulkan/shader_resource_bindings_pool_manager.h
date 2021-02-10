@@ -38,7 +38,7 @@ public:
     void DeallocatePool(ShaderResourceBindingsPool pool);
 
 private:
-    Backend::ShaderResourceBindingsPoolCategory m_category = Backend::ShaderResourceBindingsPoolCategory{ Backend::ShaderResourceBindingsPoolCategory::INVALID_VALUE };
+    Backend::ShaderResourceBindingsPoolCategory m_category = {};
     Backend::ShaderResourceBindingsPoolSizes m_sizes = {};
     std::vector<ShaderResourceBindingsPool> m_freePools = {};
 };

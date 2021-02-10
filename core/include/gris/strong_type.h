@@ -38,10 +38,15 @@ struct HasInvalidValueHelper
 
 }  // namespace Detail
 
-template<typename T, typename TagT, template<typename> class... MixinTs>
-class StrongType : public MixinTs<StrongType<T, TagT, MixinTs...>>...
+template<typename T, typename TagT, T DefaultValue = T(), template<typename> class... MixinTs>
+class StrongType : public MixinTs<StrongType<T, TagT, DefaultValue, MixinTs...>>...
 {
 public:
+    StrongType()
+        : m_value(DefaultValue)
+    {
+    }
+
     explicit StrongType(const T & value)
         : m_value(value)
     {
@@ -101,13 +106,13 @@ using HasInvalidValue = typename Detail::HasInvalidValueHelper<Value>::template 
 namespace std
 {
 
-template<typename T, typename TagT, template<typename> class... MixinTs>
-struct hash<Gris::StrongType<T, TagT, MixinTs...>>
+template<typename T, typename TagT, T DefaultValue, template<typename> class... MixinTs>
+struct hash<Gris::StrongType<T, TagT, DefaultValue, MixinTs...>>
 {
-    using CompleteStrongType = Gris::StrongType<T, TagT, MixinTs...>;
+    using CompleteStrongType = Gris::StrongType<T, TagT, DefaultValue, MixinTs...>;
     using IsHashable = std::enable_if_t<CompleteStrongType::IsHashable, void>;
 
-    size_t operator()(Gris::StrongType<T, TagT, MixinTs...> const & value) const
+    size_t operator()(Gris::StrongType<T, TagT, DefaultValue, MixinTs...> const & value) const
     {
         return std::hash<T>()(value.Get());
     }

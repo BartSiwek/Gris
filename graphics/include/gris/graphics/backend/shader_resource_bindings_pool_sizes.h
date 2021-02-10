@@ -34,6 +34,7 @@ struct ShaderResourceBindingsPoolSizes
 using ShaderResourceBindingsPoolCategory = StrongType<
     uint32_t,
     struct ShaderResourceBindingsPoolCategoryTag,
+    std::numeric_limits<uint32_t>::max(),
     StrongTypeMixins::Comparable,
     StrongTypeMixins::Hashable,
     StrongTypeMixins::HasInvalidValue<std::numeric_limits<uint32_t>::max()>>;
