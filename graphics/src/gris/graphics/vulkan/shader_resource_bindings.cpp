@@ -103,14 +103,16 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
     m_descriptorSet = pools->Allocate(category, m_layout->DescriptorSetLayoutHandle());
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
+    auto bufferInfos = MakeReservedVector<vk::DescriptorBufferInfo>(descriptorCount);
+    auto imageInfos = MakeReservedVector<vk::DescriptorImageInfo>(descriptorCount);
     auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);
 
     for (auto const & [name, bufferView] : m_bufferViews)
     {
-        auto bufferInfo = vk::DescriptorBufferInfo{}
-                              .setBuffer(bufferView->BufferHandle())
-                              .setOffset(bufferView->Offset())
-                              .setRange(bufferView->Size());
+        bufferInfos.emplace_back(vk::DescriptorBufferInfo{}
+                                     .setBuffer(bufferView->BufferHandle())
+                                     .setOffset(bufferView->Offset())
+                                     .setRange(bufferView->Size()));
 
         auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
@@ -120,12 +122,12 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                           .setDstBinding(binding.binding)
                                           .setDstArrayElement(0)
                                           .setDescriptorType(vk::DescriptorType::eUniformBuffer)
-                                          .setBufferInfo(bufferInfo));
+                                          .setBufferInfo(bufferInfos.back()));
     }
 
     for (auto const & [name, sampler] : m_samplers)
     {
-        vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}.setSampler(sampler->SamplerHandle());
+        imageInfos.emplace_back(vk::DescriptorImageInfo{}.setSampler(sampler->SamplerHandle()));
 
         auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
@@ -135,14 +137,14 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                           .setDstBinding(binding.binding)
                                           .setDstArrayElement(0)
                                           .setDescriptorType(vk::DescriptorType::eSampler)
-                                          .setImageInfo(imageInfo));
+                                          .setImageInfo(imageInfos.back()));
     }
 
     for (auto const & [name, textureView] : m_textureViews)
     {
-        vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}
-                                                .setImageView(textureView->ImageViewHandle())
-                                                .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+        imageInfos.emplace_back(vk::DescriptorImageInfo{}
+                                    .setImageView(textureView->ImageViewHandle())
+                                    .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal));
 
         auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
@@ -152,15 +154,15 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                           .setDstBinding(binding.binding)
                                           .setDstArrayElement(0)
                                           .setDescriptorType(vk::DescriptorType::eSampledImage)
-                                          .setImageInfo(imageInfo));
+                                          .setImageInfo(imageInfos.back()));
     }
 
     for (auto const & [name, samperAndTextureView] : m_combinedSamplers)
     {
-        vk::DescriptorImageInfo imageInfo = vk::DescriptorImageInfo{}
-                                                .setSampler(samperAndTextureView.SamplerPart->SamplerHandle())
-                                                .setImageView(samperAndTextureView.TextureViewPart->ImageViewHandle())
-                                                .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
+        imageInfos.emplace_back(vk::DescriptorImageInfo{}
+                                    .setSampler(samperAndTextureView.SamplerPart->SamplerHandle())
+                                    .setImageView(samperAndTextureView.TextureViewPart->ImageViewHandle())
+                                    .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal));
 
         auto const & binding = m_layout->NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
@@ -170,7 +172,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                           .setDstBinding(binding.binding)
                                           .setDstArrayElement(0)
                                           .setDescriptorType(vk::DescriptorType::eCombinedImageSampler)
-                                          .setImageInfo(imageInfo));
+                                          .setImageInfo(imageInfos.back()));
     }
 
     DeviceHandle().updateDescriptorSets(descriptorWrites, {}, Dispatch());
