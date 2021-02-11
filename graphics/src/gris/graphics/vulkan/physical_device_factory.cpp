@@ -10,47 +10,13 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::PhysicalDevice Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(const WindowMixin & window)
+namespace
 {
-    auto devices = Instance::EnumeratePhysicalDevices();
 
-    for (auto const & device : devices)
-    {
-        auto [isSuitable, queueFamilies] = IsDeviceSuitable(device, window.SurfaceHandle());
-        if (isSuitable)
-        {
-            auto const msaaSamples = GetMaxUsableSampleCount(device);
-            return PhysicalDevice(device, msaaSamples, queueFamilies);
-        }
-    }
-
-    throw VulkanEngineException("Failed to find a suitable GPU!");
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] std::tuple<bool, Gris::Graphics::Vulkan::DeviceQueueFamilyIndices> Gris::Graphics::Vulkan::PhysicalDeviceFactory::IsDeviceSuitable(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
+[[nodiscard]] Gris::Graphics::Vulkan::DeviceQueueFamilyIndices FindQueueFamilies(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
 {
-    auto queueFamilies = FindQueueFamilies(device, surface);
-    auto extensionsSupported = CheckDeviceExtensionSupport(device);
+    using namespace Gris::Graphics::Vulkan;
 
-    auto swapChainSupport = SwapChainSupportDetails{};
-    auto swapChainAdequate = false;
-    if (extensionsSupported)
-    {
-        swapChainSupport = QuerySwapChainSupport(device, surface);
-        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-    }
-
-    auto supportedFeatures = device.getFeatures(Instance::Dispatch());
-    auto isSuitable = queueFamilies.IsComplete() && extensionsSupported && swapChainAdequate && static_cast<bool>(supportedFeatures.samplerAnisotropy);
-    return { isSuitable, queueFamilies };
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] Gris::Graphics::Vulkan::DeviceQueueFamilyIndices Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindQueueFamilies(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
-{
     auto queueFamilies = device.getQueueFamilyProperties(Instance::Dispatch());
 
     DeviceQueueFamilyIndices indices;
@@ -86,8 +52,10 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::PhysicalDeviceFactory::CheckDeviceExtensionSupport(const vk::PhysicalDevice & device)
+[[nodiscard]] bool CheckDeviceExtensionSupport(const vk::PhysicalDevice & device)
 {
+    using namespace Gris::Graphics::Vulkan;
+
     auto availableExtensionsResult = device.enumerateDeviceExtensionProperties(nullptr, Instance::Dispatch());
     if (availableExtensionsResult.result != vk::Result::eSuccess)
     {
@@ -105,9 +73,31 @@
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::SampleCountFlagBits Gris::Graphics::Vulkan::PhysicalDeviceFactory::GetMaxUsableSampleCount(const vk::PhysicalDevice & physicalDevice)
+[[nodiscard]] std::tuple<bool, Gris::Graphics::Vulkan::DeviceQueueFamilyIndices> IsDeviceSuitable(const vk::PhysicalDevice & device, const vk::SurfaceKHR & surface)
 {
-    auto const physicalDeviceProperties = physicalDevice.getProperties(Instance::Dispatch());
+    using namespace Gris::Graphics::Vulkan;
+
+    auto queueFamilies = FindQueueFamilies(device, surface);
+    auto extensionsSupported = CheckDeviceExtensionSupport(device);
+
+    auto swapChainSupport = SwapChainSupportDetails{};
+    auto swapChainAdequate = false;
+    if (extensionsSupported)
+    {
+        swapChainSupport = QuerySwapChainSupport(device, surface);
+        swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
+    }
+
+    auto supportedFeatures = device.getFeatures(Instance::Dispatch());
+    auto isSuitable = queueFamilies.IsComplete() && extensionsSupported && swapChainAdequate && static_cast<bool>(supportedFeatures.samplerAnisotropy);
+    return { isSuitable, queueFamilies };
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::SampleCountFlagBits GetMaxUsableSampleCount(const vk::PhysicalDevice & physicalDevice)
+{
+    auto const physicalDeviceProperties = physicalDevice.getProperties(Gris::Graphics::Vulkan::Instance::Dispatch());
 
     auto const counts = physicalDeviceProperties.limits.framebufferColorSampleCounts & physicalDeviceProperties.limits.framebufferDepthSampleCounts;
     if (counts & vk::SampleCountFlagBits::e64)
@@ -136,4 +126,25 @@
     }
 
     return vk::SampleCountFlagBits::e1;
+}
+
+}  // namespace
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::PhysicalDevice Gris::Graphics::Vulkan::FindSuitablePhysicalDevice(const WindowMixin & window)
+{
+    auto devices = Instance::EnumeratePhysicalDevices();
+
+    for (auto const & device : devices)
+    {
+        auto [isSuitable, queueFamilies] = IsDeviceSuitable(device, window.SurfaceHandle());
+        if (isSuitable)
+        {
+            auto const msaaSamples = GetMaxUsableSampleCount(device);
+            return PhysicalDevice(device, msaaSamples, queueFamilies);
+        }
+    }
+
+    throw VulkanEngineException("Failed to find a suitable GPU!");
 }
