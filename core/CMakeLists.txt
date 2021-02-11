@@ -30,6 +30,7 @@ target_sources(Gris.Core PRIVATE
   "include/gris/casts.h"
   "include/gris/directory_registry.h"
   "include/gris/engine_exception.h"
+  "include/gris/enum.h"
   "include/gris/log.h"
   "include/gris/macros.h"
   "include/gris/span.h"

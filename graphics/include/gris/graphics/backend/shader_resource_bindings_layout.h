@@ -1,5 +1,6 @@
 #pragma once
 
+#include <gris/enum.h>
 #include <gris/span.h>
 
 #include <cstdint>
@@ -32,6 +33,8 @@ enum class ShaderStageFlags : uint32_t
     Fragment = 0x00000010,
     Compute = 0x00000020,
 };
+
+GRIS_ENABLE_ENUM_BIT_FLAGS_OPERATIONS(ShaderStageFlags)
 
 struct ShaderResourceBindingLayout
 {
