@@ -35,6 +35,15 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<Devic
     }
 
     m_commandPool = std::move(createCommandPoolResult.value);
+
+    auto const fenceInfo = vk::FenceCreateInfo{};
+    auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo, nullptr, Dispatch());
+    if (fenceCreateResult.result != vk::Result::eSuccess)
+    {
+        throw VulkanEngineException("Error creating immediate context fence", fenceCreateResult);
+    }
+
+    m_fence = std::move(fenceCreateResult.value);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -290,18 +299,31 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
         throw VulkanEngineException("Error ending the command buffer", endResult);
     }
 
+    ///
+
     std::array commandBuffers = { commandBuffer };
     std::array submits = { vk::SubmitInfo{}.setCommandBuffers(commandBuffers) };
 
-    auto const submitResult = m_graphicsQueue.submit(submits, vk::Fence(), Dispatch());
+    auto const submitResult = m_graphicsQueue.submit(submits, m_fence.get(), Dispatch());
     if (submitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error submitting the command buffer", submitResult);
     }
 
-    auto const waitResult = m_graphicsQueue.waitIdle(Dispatch());
+    ///
+
+    auto waitFences = std::array{ m_fence.get() };
+    auto const waitResult = DeviceHandle().waitForFences(waitFences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max(), Dispatch());
     if (waitResult != vk::Result::eSuccess)
     {
-        throw VulkanEngineException("Error waiting for graphics queue to be idle", waitResult);
+        throw VulkanEngineException("Failed to wait for immediate context fence!", waitResult);
+    }
+
+    ///
+
+    auto const resetResult = DeviceHandle().resetFences(waitFences, Dispatch());
+    if (resetResult != vk::Result::eSuccess)
+    {
+        throw VulkanEngineException("Error resetting immediate context fence", resetResult);
     }
 }

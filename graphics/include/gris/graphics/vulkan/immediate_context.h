@@ -42,6 +42,7 @@ private:
 
     vk::Queue m_graphicsQueue = {};
     vk::UniqueCommandPool m_commandPool = {};
+    vk::UniqueFence m_fence = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan
