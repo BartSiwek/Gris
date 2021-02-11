@@ -28,11 +28,14 @@ struct Crpt
 
 }  // namespace Detail
 
-template<typename T, typename TagT, template<typename> class... MixinTs>
-class StrongType : public MixinTs<StrongType<T, TagT, MixinTs...>>...
+template<typename T, typename TagT, T DefaultValue = T(), template<typename> class... MixinTs>
+class StrongType : public MixinTs<StrongType<T, TagT, DefaultValue, MixinTs...>>...
 {
 public:
-    using UnderlyingType = T;
+    StrongType()
+        : m_value(DefaultValue)
+    {
+    }
 
     explicit StrongType(const T & value)
         : m_value(value)
@@ -82,6 +85,16 @@ struct Hashable
     static constexpr bool IsHashable = true;
 };
 
+template<auto Value>
+struct HasInvalidValue
+{
+    template<typename T>
+    struct Mixin
+    {
+        static constexpr auto INVALID_VALUE = Value;
+    };
+};
+
 }  // namespace StrongTypeMixins
 
 }  // namespace Gris
@@ -89,13 +102,13 @@ struct Hashable
 namespace std
 {
 
-template<typename T, typename TagT, template<typename> class... MixinTs>
-struct hash<Gris::StrongType<T, TagT, MixinTs...>>
+template<typename T, typename TagT, T DefaultValue, template<typename> class... MixinTs>
+struct hash<Gris::StrongType<T, TagT, DefaultValue, MixinTs...>>
 {
-    using CompleteStrongType = Gris::StrongType<T, TagT, MixinTs...>;
+    using CompleteStrongType = Gris::StrongType<T, TagT, DefaultValue, MixinTs...>;
     using IsHashable = std::enable_if_t<CompleteStrongType::IsHashable, void>;
 
-    size_t operator()(Gris::StrongType<T, TagT, MixinTs...> const & value) const
+    size_t operator()(Gris::StrongType<T, TagT, DefaultValue, MixinTs...> const & value) const
     {
         return std::hash<T>()(value.Get());
     }

@@ -162,7 +162,7 @@ private:
     Gris::Graphics::Vulkan::ShaderResourceBindingsLayout m_resourceLayout = {};
     Gris::Graphics::Vulkan::PipelineStateObject m_pso = {};
 
-    Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ std::numeric_limits<Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory::UnderlyingType>::max() };
+    Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ 0 };
     Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection m_shaderResourceBindingsPools;
     std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
 
