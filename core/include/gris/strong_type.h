@@ -89,7 +89,7 @@ template<auto Value>
 struct HasInvalidValue
 {
     template<typename T>
-    struct Base
+    struct Mixin
     {
         static constexpr auto INVALID_VALUE = Value;
     };

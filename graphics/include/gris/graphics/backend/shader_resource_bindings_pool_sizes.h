@@ -37,6 +37,6 @@ using ShaderResourceBindingsPoolCategory = StrongType<
     std::numeric_limits<uint32_t>::max(),
     StrongTypeMixins::Comparable,
     StrongTypeMixins::Hashable,
-    StrongTypeMixins::HasInvalidValue<std::numeric_limits<uint32_t>::max()>::Base>;
+    StrongTypeMixins::HasInvalidValue<std::numeric_limits<uint32_t>::max()>::Mixin>;
 
 }  // namespace Gris::Graphics::Backend
