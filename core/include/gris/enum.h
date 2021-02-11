@@ -15,7 +15,7 @@ template<typename EnumT>
 constexpr inline bool EnableBitmaskOperators(EnumT)
 {
     return false;
-};
+}
 
 template<typename EnumT, typename = std::enable_if_t<std::is_enum_v<EnumT> && EnableBitmaskOperators(EnumT())>>
 inline constexpr EnumT operator|(EnumT lhs, EnumT rhs)
@@ -76,4 +76,4 @@ inline constexpr EnumT operator~(EnumT value)
     constexpr inline bool EnableBitmaskOperators(type) \
     {                                                  \
         return true;                                   \
-    };
+    }

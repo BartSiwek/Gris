@@ -34,7 +34,7 @@ enum class ShaderStageFlags : uint32_t
     Compute = 0x00000020,
 };
 
-GRIS_ENABLE_ENUM_BIT_FLAGS_OPERATIONS(ShaderStageFlags);
+GRIS_ENABLE_ENUM_BIT_FLAGS_OPERATIONS(ShaderStageFlags)
 
 struct ShaderResourceBindingLayout
 {
