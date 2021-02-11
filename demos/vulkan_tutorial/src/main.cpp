@@ -205,7 +205,7 @@ private:
 
     void InitVulkan()
     {
-        m_device = Gris::Graphics::Vulkan::Device(Gris::Graphics::Vulkan::PhysicalDeviceFactory::FindPhysicalDevice(m_window));
+        m_device = Gris::Graphics::Vulkan::Device(Gris::Graphics::Vulkan::FindSuitablePhysicalDevice(m_window));
 
         createTextureImage();
         m_textureImageView = m_device.CreateTextureView(m_textureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_textureImage.MipLevels());
