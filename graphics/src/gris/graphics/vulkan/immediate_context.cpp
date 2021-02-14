@@ -16,10 +16,10 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
-    auto const queueFamilies = ParentDevice().QueueFamilies();
+    auto const queueFamilies = Parent().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
     m_graphicsQueue = DeviceHandle().getQueue(graphicsQueueFamily, 0, Dispatch());
@@ -64,7 +64,7 @@ Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
 
 void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight)
 {
-    auto const formatProperties = ParentDevice().GetFormatProperties(imageFormat);
+    auto const formatProperties = Parent().GetFormatProperties(imageFormat);
 
     if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear))
     {

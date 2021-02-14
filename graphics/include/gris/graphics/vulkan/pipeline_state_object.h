@@ -16,7 +16,7 @@ public:
     PipelineStateObject();
 
     PipelineStateObject(
-        std::shared_ptr<DeviceSharedData> sharedData,
+        const ParentObject<Device> & device,
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
         const RenderPass & renderPass,

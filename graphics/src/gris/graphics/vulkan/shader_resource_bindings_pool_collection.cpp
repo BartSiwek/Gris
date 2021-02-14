@@ -11,8 +11,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBind
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
 }
 
@@ -40,7 +40,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() co
                            { return entry.Category == category; });
     if (it == std::end(m_pools))
     {
-        m_pools.emplace_back(PoolAndCategory{ category, ParentDevice().AllocateShaderResourceBindingsPool(category) });
+        m_pools.emplace_back(PoolAndCategory{ category, Parent().AllocateShaderResourceBindingsPool(category) });
         auto allocateResult = m_pools.back().Pool.Allocate(layout);
         if (!allocateResult)
         {
@@ -53,7 +53,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() co
     auto allocateResult = it->Pool.Allocate(layout);
     if (!allocateResult)
     {
-        m_pools.emplace_back(PoolAndCategory{ category, ParentDevice().AllocateShaderResourceBindingsPool(category) });
+        m_pools.emplace_back(PoolAndCategory{ category, Parent().AllocateShaderResourceBindingsPool(category) });
         allocateResult = m_pools.back().Pool.Allocate(layout);
         if (!allocateResult)
         {
@@ -87,7 +87,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::DeallocateAll
 {
     for (auto & entry : m_pools)
     {
-        ParentDevice().DeallocateShaderResourceBindingsPool(std::move(entry.Pool));
+        Parent().DeallocateShaderResourceBindingsPool(std::move(entry.Pool));
     }
     m_pools.clear();
 }

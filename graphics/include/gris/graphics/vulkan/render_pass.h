@@ -10,7 +10,7 @@ class RenderPass : public DeviceResource
 public:
     RenderPass();
 
-    RenderPass(std::shared_ptr<DeviceSharedData> sharedData, vk::Format swapChainFormat, vk::Format depthFormat);
+    RenderPass(const ParentObject<Device> & device, vk::Format swapChainFormat, vk::Format depthFormat);
 
     RenderPass(const RenderPass &) = delete;
     RenderPass & operator=(const RenderPass &) = delete;

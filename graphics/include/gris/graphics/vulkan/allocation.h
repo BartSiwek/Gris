@@ -2,17 +2,19 @@
 
 #include <gris/graphics/vulkan/vma_headers.h>
 
+#include <gris/object_hierarchy.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
 class Allocator;
 
-class Allocation
+class Allocation : public ChildObject<Allocator>
 {
 public:
     Allocation();
 
-    Allocation(VmaAllocation allocation, Allocator * owner);
+    Allocation(VmaAllocation allocation, const ParentObject<Allocator> & owner);
 
     Allocation(const Allocation &) = delete;
     Allocation & operator=(const Allocation &) = delete;
@@ -32,7 +34,6 @@ private:
     friend class Allocator;
 
     VmaAllocation m_allocation = VK_NULL_HANDLE;
-    Allocator * m_owner = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

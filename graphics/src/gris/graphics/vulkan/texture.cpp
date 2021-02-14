@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Texture::Texture() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Texture::Texture(std::shared_ptr<DeviceSharedData> sharedData,
+Gris::Graphics::Vulkan::Texture::Texture(const ParentObject<Device> & device,
                                          uint32_t width,
                                          uint32_t height,
                                          uint32_t mipLevels,
@@ -18,7 +18,7 @@ Gris::Graphics::Vulkan::Texture::Texture(std::shared_ptr<DeviceSharedData> share
                                          vk::ImageTiling tiling,
                                          const vk::ImageUsageFlags & usage,
                                          const vk::MemoryPropertyFlags & properties)
-    : DeviceResource(std::move(sharedData))
+    : DeviceResource(device)
     , m_mipLevels(mipLevels)
 {
     auto const imageInfo = vk::ImageCreateInfo{}

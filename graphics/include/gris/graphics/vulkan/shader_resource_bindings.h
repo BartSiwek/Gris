@@ -19,7 +19,7 @@ class ShaderResourceBindings : DeviceResource
 public:
     ShaderResourceBindings();
 
-    ShaderResourceBindings(std::shared_ptr<DeviceSharedData> sharedData, const ShaderResourceBindingsLayout * resourceLayout);
+    ShaderResourceBindings(const ParentObject<Device> & device, const ShaderResourceBindingsLayout * resourceLayout);
 
     ShaderResourceBindings(const ShaderResourceBindings &) = delete;
     ShaderResourceBindings & operator=(const ShaderResourceBindings &) = delete;

@@ -1,10 +1,11 @@
 #pragma once
 
 #include <gris/graphics/vulkan/allocator.h>
-#include <gris/graphics/vulkan/device_shared_data.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/physical_device.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
+
+#include <gris/object_hierarchy.h>
 
 namespace Gris::Graphics::Backend
 {
@@ -36,7 +37,7 @@ class Fence;
 class Semaphore;
 class RenderPass;
 
-class Device
+class Device : public ParentObject<Device>
 {
 public:
     friend class DeviceResource;
@@ -48,10 +49,10 @@ public:
     Device(const Device &) = delete;
     Device & operator=(const Device &) = delete;
 
-    Device(Device && other) noexcept;
-    Device & operator=(Device && other) noexcept;
+    Device(Device && other) noexcept = default;
+    Device & operator=(Device && other) = default;
 
-    ~Device();
+    ~Device() = default;
 
     explicit operator bool() const;
 
@@ -132,9 +133,12 @@ private:
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
+    [[nodiscard]] const vk::DispatchLoaderDynamic & DispatchHandle() const;
+    [[nodiscard]] vk::DispatchLoaderDynamic & DispatchHandle();
+
     PhysicalDevice m_physicalDevice = {};
     vk::UniqueDevice m_device = {};
-    std::shared_ptr<DeviceSharedData> m_sharedData;
+    vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
     ImmediateContext m_context = {};
     std::vector<CategoryAndPoolManager> m_poolManagers;

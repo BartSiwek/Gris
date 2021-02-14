@@ -16,7 +16,8 @@ Gris::Graphics::Vulkan::Allocator::Allocator(VmaAllocator allocator)
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Allocator::Allocator(Allocator && other) noexcept
-    : m_allocator(std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE)))
+    : ParentObject(std::move(other))
+    , m_allocator(std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE)))
 {
 }
 
@@ -26,6 +27,9 @@ Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Allocator::operator=
 {
     if (this != &other)
     {
+        Reset();
+
+        ParentObject::operator=(std::move(other));
         m_allocator = std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE));
     }
 
@@ -36,10 +40,7 @@ Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Allocator::operator=
 
 Gris::Graphics::Vulkan::Allocator::~Allocator()
 {
-    if (m_allocator != VK_NULL_HANDLE)
-    {
-        vmaDestroyAllocator(m_allocator);
-    }
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -67,7 +68,7 @@ Gris::Graphics::Vulkan::Allocator::operator bool() const
         throw VulkanEngineException("Error allocating buffer from VMA", vk::to_string(createBufferResult));
     }
 
-    return Allocation(allocation, this);
+    return Allocation(allocation, *this);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -81,7 +82,7 @@ Gris::Graphics::Vulkan::Allocator::operator bool() const
         throw VulkanEngineException("Error allocating image from VMA", vk::to_string(createImageResult));
     }
 
-    return Allocation(allocation, this);
+    return Allocation(allocation, *this);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -132,4 +133,14 @@ void Gris::Graphics::Vulkan::Allocator::Bind(const vk::Image & image, const Allo
 void Gris::Graphics::Vulkan::Allocator::Unmap(const Allocation & allocation) const
 {
     vmaUnmapMemory(m_allocator, allocation.m_allocation);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Allocator::Reset()
+{
+    if (m_allocator != VK_NULL_HANDLE)
+    {
+        vmaDestroyAllocator(m_allocator);
+    }
 }

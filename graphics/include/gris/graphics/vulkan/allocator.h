@@ -4,10 +4,12 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
+#include <gris/object_hierarchy.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
-class Allocator
+class Allocator : public ParentObject<Allocator>
 {
 public:
     Allocator();
@@ -38,6 +40,8 @@ public:
     void Unmap(const Allocation & allocation) const;
 
 private:
+    void Reset();
+
     VmaAllocator m_allocator = VK_NULL_HANDLE;
 };
 

@@ -25,13 +25,13 @@ public:
     SwapChain();
 
     SwapChain(
-        std::shared_ptr<DeviceSharedData> sharedData,
+        const ParentObject<Device> & device,
         const WindowMixin & window,
         uint32_t width,
         uint32_t height,
         uint32_t virtualFrameCount);
     SwapChain(
-        std::shared_ptr<DeviceSharedData> sharedData,
+        const ParentObject<Device> & device,
         const WindowMixin & window,
         uint32_t width,
         uint32_t height,

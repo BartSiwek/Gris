@@ -484,9 +484,7 @@ private:
 
         for (uint32_t i = 0; i < commandBufferCount; i++)
         {
-            m_commandBuffers.emplace_back(m_device.CreateDeferredContext());
-            auto & commandBuffer = m_commandBuffers.back();
-
+            auto & commandBuffer = m_commandBuffers.emplace_back(m_device.CreateDeferredContext());
             commandBuffer.Begin();
             commandBuffer.BeginRenderPass(m_renderPass, m_swapChainFramebuffers[i], m_swapChain.Extent());
             commandBuffer.BindPipeline(m_pso);

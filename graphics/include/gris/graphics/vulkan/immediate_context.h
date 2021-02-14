@@ -16,7 +16,7 @@ class ImmediateContext : public DeviceResource
 public:
     ImmediateContext();
 
-    explicit ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData);
+    explicit ImmediateContext(const ParentObject<Device> & device);
 
     ImmediateContext(const ImmediateContext &) = delete;
     ImmediateContext & operator=(const ImmediateContext &) = delete;

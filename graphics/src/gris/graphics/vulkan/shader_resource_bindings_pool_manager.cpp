@@ -87,10 +87,10 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBinding
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(
-    std::shared_ptr<DeviceSharedData> sharedData,
+    const ParentObject<Device> & device,
     Backend::ShaderResourceBindingsPoolCategory category,
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
-    : DeviceResource(std::move(sharedData))
+    : DeviceResource(device)
     , m_category(category)
     , m_sizes(sizes)
 {
@@ -137,7 +137,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
     }
 
     auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
-    return ParentDevice().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
+    return Parent().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
 }
 
 // -------------------------------------------------------------------------------------------------

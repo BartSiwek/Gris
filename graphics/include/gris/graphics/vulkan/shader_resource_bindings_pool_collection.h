@@ -16,7 +16,7 @@ class ShaderResourceBindingsPoolCollection : DeviceResource
 public:
     ShaderResourceBindingsPoolCollection();
 
-    ShaderResourceBindingsPoolCollection(std::shared_ptr<DeviceSharedData> sharedData);
+    ShaderResourceBindingsPoolCollection(const ParentObject<Device> & device);
 
     ShaderResourceBindingsPoolCollection(const ShaderResourceBindingsPoolCollection &) = default;
     ShaderResourceBindingsPoolCollection & operator=(const ShaderResourceBindingsPoolCollection &) = default;

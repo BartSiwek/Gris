@@ -8,17 +8,17 @@ Gris::Graphics::Vulkan::Allocation::Allocation() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, Allocator * owner)
-    : m_allocation(allocation)
-    , m_owner(owner)
+Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, const ParentObject<Allocator> & owner)
+    : ChildObject(owner)
+    , m_allocation(allocation)
 {
 }
 
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Allocation::Allocation(Allocation && other) noexcept
-    : m_allocation(std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE)))
-    , m_owner(std::exchange(other.m_owner, nullptr))
+    : ChildObject(std::move(other)) 
+    , m_allocation(std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE)))
 {
 }
 
@@ -30,8 +30,8 @@ Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operato
     {
         Reset();
 
+        ChildObject::operator=(std::move(other));
         m_allocation = std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE));
-        m_owner = std::exchange(other.m_owner, nullptr);
     }
 
     return *this;
@@ -55,7 +55,7 @@ Gris::Graphics::Vulkan::Allocation::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Allocation::IsValid() const
 {
-    return m_owner != nullptr && m_allocation != VK_NULL_HANDLE;
+    return ChildObject::IsValid() && m_allocation != VK_NULL_HANDLE;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -64,8 +64,8 @@ void Gris::Graphics::Vulkan::Allocation::Reset()
 {
     if (IsValid())
     {
-        m_owner->FreeMemory(m_allocation);
+        Parent().FreeMemory(m_allocation);
         m_allocation = VK_NULL_HANDLE;
-        m_owner = nullptr;
+        ResetParent();
     }
 }

@@ -8,8 +8,8 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Semaphore::Semaphore(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::Semaphore::Semaphore(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 

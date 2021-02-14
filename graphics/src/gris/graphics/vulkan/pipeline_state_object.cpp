@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
-    std::shared_ptr<DeviceSharedData> sharedData,
+    const ParentObject<Device> & device,
     uint32_t swapChainWidth,
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
-    : DeviceResource(std::move(sharedData))
+    : DeviceResource(device)
 {
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo{}
@@ -76,7 +76,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                 .setLineWidth(1.0F);
 
     auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo{}
-                                     .setRasterizationSamples(ParentDevice().MsaaSamples())
+                                     .setRasterizationSamples(Parent().MsaaSamples())
                                      .setSampleShadingEnable(static_cast<vk::Bool32>(false));
 
     auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo{}

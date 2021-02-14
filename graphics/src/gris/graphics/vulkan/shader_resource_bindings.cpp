@@ -16,8 +16,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings() = defau
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings(std::shared_ptr<DeviceSharedData> sharedData, const ShaderResourceBindingsLayout * resourceLayout)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings(const ParentObject<Device> & device, const ShaderResourceBindingsLayout * resourceLayout)
+    : DeviceResource(device)
     , m_layout(resourceLayout)
 {
 }

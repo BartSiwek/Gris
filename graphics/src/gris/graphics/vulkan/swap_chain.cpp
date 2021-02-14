@@ -66,12 +66,12 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::SwapChain::SwapChain(
-    std::shared_ptr<DeviceSharedData> sharedData,
+    const ParentObject<Device> & device,
     const WindowMixin & window,
     uint32_t width,
     uint32_t height,
     uint32_t virtualFrameCount)
-    : DeviceResource(std::move(sharedData))
+    : DeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
 {
     CreateSwapChain(window, width, height, {});
@@ -80,13 +80,13 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::SwapChain::SwapChain(
-    std::shared_ptr<DeviceSharedData> sharedData,
+    const ParentObject<Device> & device,
     const WindowMixin & window,
     uint32_t width,
     uint32_t height,
     uint32_t virtualFrameCount,
     SwapChain prevSwapChain)
-    : DeviceResource(std::move(sharedData))
+    : DeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
 {
     CreateSwapChain(window, width, height, prevSwapChain.m_swapChain.get());
@@ -230,8 +230,8 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     uint32_t height,
     vk::SwapchainKHR oldSwapChain)
 {
-    auto const & indices = ParentDevice().QueueFamilies();
-    auto const swapChainSupport = ParentDevice().SwapChainSupport(window);
+    auto const & indices = Parent().QueueFamilies();
+    auto const swapChainSupport = Parent().SwapChainSupport(window);
     auto const surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
     auto const presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
     auto const extent = ChooseSwapExtent(swapChainSupport.capabilities, width, height);
@@ -282,7 +282,7 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     }
 
     m_swapChainImages = std::move(swapChainImagesResult.value);
-    m_presentQueue = DeviceHandle().getQueue(ParentDevice().QueueFamilies().presentFamily.value(), 0, Dispatch());
+    m_presentQueue = DeviceHandle().getQueue(Parent().QueueFamilies().presentFamily.value(), 0, Dispatch());
 
     m_swapChainImageFormat = surfaceFormat.format;
     m_swapChainExtent = extent;
@@ -290,7 +290,7 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     m_swapChainImageViews.reserve(m_swapChainImages.size());
     for (auto const & swapChainImage : m_swapChainImages)
     {
-        m_swapChainImageViews.emplace_back(ParentDevice().CreateTextureView(swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1));
+        m_swapChainImageViews.emplace_back(Parent().CreateTextureView(swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1));
     }
 
     m_renderFinishedFences.reserve(m_swapChainImages.size());
@@ -298,9 +298,9 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     m_renderFinishedSemaphores.reserve(m_swapChainImages.size());
     for (uint32_t frameIndex = 0; frameIndex < m_virtualFrameCount; ++frameIndex)
     {
-        m_renderFinishedFences.emplace_back(ParentDevice().CreateFence(true));
-        m_imageAvailableSemaphores.emplace_back(ParentDevice().CreateSemaphore());
-        m_renderFinishedSemaphores.emplace_back(ParentDevice().CreateSemaphore());
+        m_renderFinishedFences.emplace_back(Parent().CreateFence(true));
+        m_imageAvailableSemaphores.emplace_back(Parent().CreateSemaphore());
+        m_renderFinishedSemaphores.emplace_back(Parent().CreateSemaphore());
     }
 
     m_swapChainImageToVirtualFrame.resize(m_swapChainImages.size(), std::numeric_limits<uint32_t>::max());

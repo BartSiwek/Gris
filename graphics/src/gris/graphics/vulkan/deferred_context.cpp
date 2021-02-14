@@ -14,10 +14,10 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeferredContext::DeferredContext(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
-    auto const queueFamilies = ParentDevice().QueueFamilies();
+    auto const queueFamilies = Parent().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
     auto const poolInfo = vk::CommandPoolCreateInfo{}.setQueueFamilyIndex(graphicsQueueFamily);

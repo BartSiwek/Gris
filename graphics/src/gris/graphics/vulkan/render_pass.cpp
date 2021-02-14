@@ -9,8 +9,8 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::RenderPass::RenderPass(std::shared_ptr<DeviceSharedData> sharedData, vk::Format swapChainFormat, vk::Format depthFormat)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::RenderPass::RenderPass(const ParentObject<Device> & device, vk::Format swapChainFormat, vk::Format depthFormat)
+    : DeviceResource(device)
 {
     CreateRenderPass(swapChainFormat, depthFormat);
 }
@@ -49,7 +49,7 @@ void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFo
 {
     auto const colorAttachment = vk::AttachmentDescription{}
                                      .setFormat(swapChainFormat)
-                                     .setSamples(ParentDevice().MsaaSamples())
+                                     .setSamples(Parent().MsaaSamples())
                                      .setLoadOp(vk::AttachmentLoadOp::eClear)
                                      .setStoreOp(vk::AttachmentStoreOp::eStore)
                                      .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)
@@ -59,7 +59,7 @@ void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFo
 
     auto const depthAttachment = vk::AttachmentDescription{}
                                      .setFormat(depthFormat)
-                                     .setSamples(ParentDevice().MsaaSamples())
+                                     .setSamples(Parent().MsaaSamples())
                                      .setLoadOp(vk::AttachmentLoadOp::eClear)
                                      .setStoreOp(vk::AttachmentStoreOp::eDontCare)
                                      .setStencilLoadOp(vk::AttachmentLoadOp::eDontCare)

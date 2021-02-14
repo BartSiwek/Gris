@@ -39,8 +39,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(std::shared_ptr<DeviceSharedData> sharedData, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(const ParentObject<Device> & device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout)
+    : DeviceResource(device)
 {
     auto bindings = Gris::MakeReservedVector<vk::DescriptorSetLayoutBinding>(bindingsLayout.Layouts.size());
     for (const auto & resourceLayout : bindingsLayout.Layouts)

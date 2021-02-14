@@ -13,7 +13,7 @@ class Framebuffer : public DeviceResource
 public:
     Framebuffer();
 
-    Framebuffer(std::shared_ptr<DeviceSharedData> sharedData, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
+    Framebuffer(const ParentObject<Device> & device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
 
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer & operator=(const Framebuffer &) = delete;

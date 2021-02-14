@@ -11,7 +11,7 @@ class Buffer : public DeviceResource
 public:
     Buffer();
 
-    Buffer(std::shared_ptr<DeviceSharedData> sharedData, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    Buffer(const ParentObject<Device> & device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
 
     Buffer(const Buffer &) = delete;
     Buffer & operator=(const Buffer &) = delete;
