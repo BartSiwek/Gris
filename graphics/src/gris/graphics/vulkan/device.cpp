@@ -281,6 +281,20 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
+[[nodiscard]] Gris::Graphics::Vulkan::TextureView Gris::Graphics::Vulkan::Device::CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels)
+{
+    return TextureView(*this, image, format, aspectFlags, mipLevels);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category, vk::UniqueDescriptorPool pool)
+{
+    return ShaderResourceBindingsPool(*this, category, std::move(pool));
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category)
 {
     auto it = std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
@@ -297,20 +311,6 @@ void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(Shader
                            { return entry.Category == pool.Category(); });
     GRIS_ALWAYS_ASSERT(it != std::end(m_poolManagers), "Deallocating a pool with a unknown descriptor pool category");
     it->PoolManager.DeallocatePool(std::move(pool));
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] Gris::Graphics::Vulkan::TextureView Gris::Graphics::Vulkan::Device::CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels)
-{
-    return TextureView(*this, image, format, aspectFlags, mipLevels);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category, vk::UniqueDescriptorPool pool)
-{
-    return ShaderResourceBindingsPool(*this, category, std::move(pool));
 }
 
 // -------------------------------------------------------------------------------------------------

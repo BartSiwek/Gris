@@ -76,12 +76,8 @@ public:
     void RegisterShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
     void UpdateShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
-    [[nodiscard]] const vk::Device & DeviceHandle() const;
-    [[nodiscard]] vk::Device & DeviceHandle();
-
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain);
-
     [[nodiscard]] DeferredContext CreateDeferredContext();
     [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint);
     [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
@@ -117,11 +113,11 @@ public:
     [[nodiscard]] Semaphore CreateSemaphore();
     [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
     [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection();
-    [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
-    void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
-
     [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
     [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::UniqueDescriptorPool pool);
+
+    [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
+    void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
 private:
     struct CategoryAndPoolManager
@@ -129,6 +125,9 @@ private:
         Backend::ShaderResourceBindingsPoolCategory Category;
         ShaderResourceBindingsPoolManager PoolManager;
     };
+
+    [[nodiscard]] const vk::Device & DeviceHandle() const;
+    [[nodiscard]] vk::Device & DeviceHandle();
 
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
