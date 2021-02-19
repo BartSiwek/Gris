@@ -27,10 +27,10 @@ public:
     TextureView(const TextureView &) = delete;
     TextureView & operator=(const TextureView &) = delete;
 
-    TextureView(TextureView &&) noexcept = default;
-    TextureView & operator=(TextureView &&) noexcept = default;
+    TextureView(TextureView && other) noexcept;
+    TextureView & operator=(TextureView && other) noexcept;
 
-    ~TextureView() = default;
+    virtual ~TextureView();
 
     explicit operator bool() const;
 
@@ -40,7 +40,9 @@ public:
     [[nodiscard]] vk::ImageView & ImageViewHandle();
 
 private:
-    vk::UniqueImageView m_imageView = {};
+    void Reset();
+
+    vk::ImageView m_imageView = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

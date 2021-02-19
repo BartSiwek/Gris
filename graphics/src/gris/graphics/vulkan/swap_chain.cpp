@@ -89,7 +89,59 @@ Gris::Graphics::Vulkan::SwapChain::SwapChain(
     : DeviceResource(device)
     , m_virtualFrameCount(virtualFrameCount)
 {
-    CreateSwapChain(window, width, height, prevSwapChain.m_swapChain.get());
+    CreateSwapChain(window, width, height, prevSwapChain.m_swapChain);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::SwapChain::SwapChain(SwapChain && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_swapChain(std::exchange(other.m_swapChain, {}))
+    , m_swapChainImages(std::exchange(other.m_swapChainImages, {}))
+    , m_presentQueue(std::exchange(other.m_presentQueue, {}))
+    , m_swapChainImageFormat(std::exchange(other.m_swapChainImageFormat, {}))
+    , m_swapChainExtent(std::exchange(other.m_swapChainExtent, {}))
+    , m_swapChainImageViews(std::exchange(other.m_swapChainImageViews, {}))
+    , m_renderFinishedFences(std::exchange(other.m_renderFinishedFences, {}))
+    , m_imageAvailableSemaphores(std::exchange(other.m_imageAvailableSemaphores, {}))
+    , m_renderFinishedSemaphores(std::exchange(other.m_renderFinishedSemaphores, {}))
+    , m_currentVirtualFrame(std::exchange(other.m_currentVirtualFrame, 0))
+    , m_virtualFrameCount(std::exchange(other.m_virtualFrameCount, 1))
+    , m_swapChainImageToVirtualFrame(std::exchange(other.m_swapChainImageToVirtualFrame, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::SwapChain & Gris::Graphics::Vulkan::SwapChain::operator=(SwapChain && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_swapChain = std::exchange(other.m_swapChain, {});
+        m_swapChainImages = std::exchange(other.m_swapChainImages, {});
+        m_presentQueue = std::exchange(other.m_presentQueue, {});
+        m_swapChainImageFormat = std::exchange(other.m_swapChainImageFormat, {});
+        m_swapChainExtent = std::exchange(other.m_swapChainExtent, {});
+        m_swapChainImageViews = std::exchange(other.m_swapChainImageViews, {});
+        m_renderFinishedFences = std::exchange(other.m_renderFinishedFences, {});
+        m_imageAvailableSemaphores = std::exchange(other.m_imageAvailableSemaphores, {});
+        m_renderFinishedSemaphores = std::exchange(other.m_renderFinishedSemaphores, {});
+        m_currentVirtualFrame = std::exchange(other.m_currentVirtualFrame, 0);
+        m_virtualFrameCount = std::exchange(other.m_virtualFrameCount, 1);
+        m_swapChainImageToVirtualFrame = std::exchange(other.m_swapChainImageToVirtualFrame, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::SwapChain::~SwapChain()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -159,7 +211,7 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 
     ///
 
-    auto const acquireResult = DeviceHandle().acquireNextImageKHR(m_swapChain.get(), std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle(), {}, Dispatch());
+    auto const acquireResult = DeviceHandle().acquireNextImageKHR(m_swapChain, std::numeric_limits<uint64_t>::max(), m_imageAvailableSemaphores[virtualFrameIndex].SemaphoreHandle(), {}, Dispatch());
     if (acquireResult.result == vk::Result::eErrorOutOfDateKHR)
     {
         return {};
@@ -202,7 +254,7 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::SwapChain::Present(const VirtualFrame & virtualFrame)
 {
-    std::array swapChains = { m_swapChain.get() };
+    std::array swapChains = { m_swapChain };
     std::array imageIndices = { virtualFrame.SwapChainImageIndex };
     auto presentInfo = vk::PresentInfoKHR{}
                            .setWaitSemaphores(m_renderFinishedSemaphores[virtualFrame.VirtualFrameIndex].SemaphoreHandle())
@@ -230,8 +282,8 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     uint32_t height,
     vk::SwapchainKHR oldSwapChain)
 {
-    auto const & indices = Parent().QueueFamilies();
-    auto const swapChainSupport = Parent().SwapChainSupport(window);
+    auto const & indices = ParentDevice().QueueFamilies();
+    auto const swapChainSupport = ParentDevice().SwapChainSupport(window);
     auto const surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
     auto const presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
     auto const extent = ChooseSwapExtent(swapChainSupport.capabilities, width, height);
@@ -267,7 +319,7 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
                                 .setClipped(static_cast<vk::Bool32>(true))
                                 .setOldSwapchain(oldSwapChain);
 
-    auto createSwapChainResult = DeviceHandle().createSwapchainKHRUnique(createInfo, nullptr, Dispatch());
+    auto createSwapChainResult = DeviceHandle().createSwapchainKHR(createInfo, nullptr, Dispatch());
     if (createSwapChainResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating swap chain", createSwapChainResult);
@@ -275,14 +327,14 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
 
     m_swapChain = std::move(createSwapChainResult.value);
 
-    auto swapChainImagesResult = DeviceHandle().getSwapchainImagesKHR(m_swapChain.get(), Dispatch());
+    auto swapChainImagesResult = DeviceHandle().getSwapchainImagesKHR(m_swapChain, Dispatch());
     if (swapChainImagesResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error getting swap chain images", swapChainImagesResult);
     }
 
     m_swapChainImages = std::move(swapChainImagesResult.value);
-    m_presentQueue = DeviceHandle().getQueue(Parent().QueueFamilies().presentFamily.value(), 0, Dispatch());
+    m_presentQueue = DeviceHandle().getQueue(ParentDevice().QueueFamilies().presentFamily.value(), 0, Dispatch());
 
     m_swapChainImageFormat = surfaceFormat.format;
     m_swapChainExtent = extent;
@@ -290,7 +342,7 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     m_swapChainImageViews.reserve(m_swapChainImages.size());
     for (auto const & swapChainImage : m_swapChainImages)
     {
-        m_swapChainImageViews.emplace_back(Parent().CreateTextureView(swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1));
+        m_swapChainImageViews.emplace_back(ParentDevice().CreateTextureView(swapChainImage, m_swapChainImageFormat, vk::ImageAspectFlagBits::eColor, 1));
     }
 
     m_renderFinishedFences.reserve(m_swapChainImages.size());
@@ -298,10 +350,37 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     m_renderFinishedSemaphores.reserve(m_swapChainImages.size());
     for (uint32_t frameIndex = 0; frameIndex < m_virtualFrameCount; ++frameIndex)
     {
-        m_renderFinishedFences.emplace_back(Parent().CreateFence(true));
-        m_imageAvailableSemaphores.emplace_back(Parent().CreateSemaphore());
-        m_renderFinishedSemaphores.emplace_back(Parent().CreateSemaphore());
+        m_renderFinishedFences.emplace_back(ParentDevice().CreateFence(true));
+        m_imageAvailableSemaphores.emplace_back(ParentDevice().CreateSemaphore());
+        m_renderFinishedSemaphores.emplace_back(ParentDevice().CreateSemaphore());
     }
 
     m_swapChainImageToVirtualFrame.resize(m_swapChainImages.size(), std::numeric_limits<uint32_t>::max());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::SwapChain::Reset()
+{
+    m_swapChainImageToVirtualFrame.clear();
+    m_virtualFrameCount = 1;
+    m_currentVirtualFrame = 0;
+    
+    m_renderFinishedSemaphores.clear();
+    m_imageAvailableSemaphores.clear();
+    m_renderFinishedFences.clear();
+
+    m_swapChainImageViews.clear();
+
+    m_swapChainExtent = vk::Extent2D{};
+    m_swapChainImageFormat = {};
+    
+    m_presentQueue = nullptr;    
+    m_swapChainImages.clear();
+    
+    if(m_swapChain)
+    {
+        DeviceHandle().destroySwapchainKHR(m_swapChain, nullptr, Dispatch());
+        m_swapChain = nullptr;
+    }
 }

@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::Texture::Texture(const ParentObject<Device> & device,
                                .setQueueFamilyIndices({})
                                .setInitialLayout(vk::ImageLayout::eUndefined);
 
-    auto createImageResult = DeviceHandle().createImageUnique(imageInfo, nullptr, Dispatch());
+    auto createImageResult = DeviceHandle().createImage(imageInfo, nullptr, Dispatch());
     if (createImageResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating image", createImageResult);
@@ -50,9 +50,44 @@ Gris::Graphics::Vulkan::Texture::Texture(const ParentObject<Device> & device,
     allocationInfo.memoryTypeBits = 0;
     allocationInfo.pool = {};
     allocationInfo.pUserData = nullptr;
-    m_imageMemory = AllocatorHandle().AllocateMemory(m_image.get(), allocationInfo);
+    m_imageMemory = AllocatorHandle().AllocateMemory(m_image, allocationInfo);
 
-    AllocatorHandle().Bind(m_image.get(), m_imageMemory);
+    AllocatorHandle().Bind(m_image, m_imageMemory);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Texture::Texture(Texture && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_image(std::exchange(other.m_image, {}))
+    , m_imageMemory(std::exchange(other.m_imageMemory, {}))
+    , m_mipLevels(std::exchange(other.m_mipLevels, 1))
+{
+
+}
+
+// -------------------------------------------------------------------------------------------------    
+
+Gris::Graphics::Vulkan::Texture & Gris::Graphics::Vulkan::Texture::operator=(Texture && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_image = std::exchange(other.m_image, {});
+        m_imageMemory = std::exchange(other.m_imageMemory, {});
+        m_mipLevels = std::exchange(other.m_mipLevels, 1);
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Texture::~Texture()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -73,12 +108,30 @@ Gris::Graphics::Vulkan::Texture::operator bool() const
 
 [[nodiscard]] const vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle() const
 {
-    return m_image.get();
+    return m_image;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::Image & Gris::Graphics::Vulkan::Texture::ImageHandle()
 {
-    return m_image.get();
+    return m_image;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Texture::Reset()
+{
+    m_mipLevels = 1;
+
+    if (m_imageMemory)
+    {
+        m_imageMemory = {};
+    }
+
+    if (m_image)
+    {
+        DeviceHandle().destroyImage(m_image, nullptr, Dispatch());
+        m_image = nullptr;
+    }
 }

@@ -17,13 +17,13 @@ Gris::Graphics::Vulkan::Buffer::Buffer(const ParentObject<Device> & device, vk::
                                 .setUsage(usage)
                                 .setSharingMode(vk::SharingMode::eExclusive);
 
-    auto createBufferResult = DeviceHandle().createBufferUnique(bufferInfo, nullptr, Dispatch());
+    auto createBufferResult = DeviceHandle().createBuffer(bufferInfo, nullptr, Dispatch());
     if (createBufferResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating buffer", createBufferResult);
     }
 
-    m_buffer = std::move(createBufferResult.value);
+    m_buffer = createBufferResult.value;
 
     auto allocationInfo = VmaAllocationCreateInfo{};
     allocationInfo.flags = {};
@@ -33,9 +33,41 @@ Gris::Graphics::Vulkan::Buffer::Buffer(const ParentObject<Device> & device, vk::
     allocationInfo.memoryTypeBits = 0;
     allocationInfo.pool = {};
     allocationInfo.pUserData = nullptr;
-    m_bufferMemory = AllocatorHandle().AllocateMemory(m_buffer.get(), allocationInfo);
+    m_bufferMemory = AllocatorHandle().AllocateMemory(m_buffer, allocationInfo);
 
-    AllocatorHandle().Bind(m_buffer.get(), m_bufferMemory);
+    AllocatorHandle().Bind(m_buffer, m_bufferMemory);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Buffer::Buffer(Buffer && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_buffer(std::exchange(other.m_buffer, {}))
+    , m_bufferMemory(std::exchange(other.m_bufferMemory, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Buffer & Gris::Graphics::Vulkan::Buffer::operator=(Buffer && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_buffer = std::exchange(other.m_buffer, {});
+        m_bufferMemory = std::exchange(other.m_bufferMemory, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Buffer::~Buffer()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -49,21 +81,21 @@ Gris::Graphics::Vulkan::Buffer::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Buffer::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_buffer) && m_bufferMemory.IsValid();
+    return DeviceResource::IsValid() && static_cast<bool>(m_buffer) && static_cast<bool>(m_bufferMemory);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] const vk::Buffer & Gris::Graphics::Vulkan::Buffer::BufferHandle() const
 {
-    return m_buffer.get();
+    return m_buffer;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::Buffer & Gris::Graphics::Vulkan::Buffer::BufferHandle()
 {
-    return m_buffer.get();
+    return m_buffer;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -73,4 +105,22 @@ void Gris::Graphics::Vulkan::Buffer::SetData(const void * const data, size_t siz
     auto * const memoryPtr = AllocatorHandle().Map(m_bufferMemory);
     memcpy(memoryPtr, data, size);
     AllocatorHandle().Unmap(m_bufferMemory);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Buffer::Reset()
+{
+    if (m_bufferMemory)
+    {
+        m_bufferMemory = {};
+    }
+
+    if (m_buffer)
+    {
+        DeviceHandle().destroyBuffer(m_buffer, nullptr, Dispatch());
+        m_buffer = nullptr;
+    }
+
+    ResetParent();
 }

@@ -49,10 +49,10 @@ public:
     Device(const Device &) = delete;
     Device & operator=(const Device &) = delete;
 
-    Device(Device && other) noexcept = default;
-    Device & operator=(Device && other) = default;
+    Device(Device && other) noexcept;
+    Device & operator=(Device && other);
 
-    ~Device() = default;
+    virtual ~Device();
 
     explicit operator bool() const;
 
@@ -101,7 +101,7 @@ public:
         const ShaderResourceBindingsLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
-    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ShaderResourceBindingsLayout * resourceLayout);
+    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout);
     [[nodiscard]] Framebuffer CreateFramebuffer(
         const TextureView & colorImageView,
         const TextureView & depthImageView,
@@ -114,7 +114,7 @@ public:
     [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
     [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection();
     [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
-    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::UniqueDescriptorPool pool);
+    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::DescriptorPool pool);
 
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
     void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
@@ -135,8 +135,10 @@ private:
     [[nodiscard]] const vk::DispatchLoaderDynamic & DispatchHandle() const;
     [[nodiscard]] vk::DispatchLoaderDynamic & DispatchHandle();
 
+    void Reset();
+
     PhysicalDevice m_physicalDevice = {};
-    vk::UniqueDevice m_device = {};
+    vk::Device m_device = {};
     vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
     ImmediateContext m_context = {};

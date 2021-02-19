@@ -22,13 +22,44 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(const ParentObject<Device> & de
                                      .setHeight(height)
                                      .setLayers(1);
 
-    auto createFramebufferResult = DeviceHandle().createFramebufferUnique(framebufferInfo, nullptr, Dispatch());
+    auto createFramebufferResult = DeviceHandle().createFramebuffer(framebufferInfo, nullptr, Dispatch());
     if (createFramebufferResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating framebuffer", createFramebufferResult);
     }
 
     m_framebuffer = std::move(createFramebufferResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Framebuffer && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_framebuffer(std::exchange(other.m_framebuffer, {}))
+{
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::operator=(Framebuffer && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_framebuffer = std::exchange(other.m_framebuffer, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Framebuffer::~Framebuffer()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -49,12 +80,25 @@ Gris::Graphics::Vulkan::Framebuffer::operator bool() const
 
 const vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle() const
 {
-    return m_framebuffer.get();
+    return m_framebuffer;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle()
 {
-    return m_framebuffer.get();
+    return m_framebuffer;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Framebuffer::Reset()
+{
+    if (m_framebuffer)
+    {
+        DeviceHandle().destroyFramebuffer(m_framebuffer, nullptr, Dispatch());
+        m_framebuffer = nullptr;
+    }
+
+    ResetParent();
 }

@@ -28,10 +28,10 @@ public:
     PipelineStateObject(const PipelineStateObject &) = delete;
     PipelineStateObject & operator=(const PipelineStateObject &) = delete;
 
-    PipelineStateObject(PipelineStateObject &&) noexcept = default;
-    PipelineStateObject & operator=(PipelineStateObject &&) noexcept = default;
+    PipelineStateObject(PipelineStateObject && other) noexcept;
+    PipelineStateObject & operator=(PipelineStateObject && other) noexcept;
 
-    ~PipelineStateObject() = default;
+    virtual ~PipelineStateObject();
 
     explicit operator bool() const;
 
@@ -44,8 +44,10 @@ public:
     [[nodiscard]] vk::Pipeline & GraphicsPipelineHandle();
 
 private:
-    vk::UniquePipelineLayout m_pipelineLayout = {};
-    vk::UniquePipeline m_graphicsPipeline = {};
+    void Reset();
+
+    vk::PipelineLayout m_pipelineLayout = {};
+    vk::Pipeline m_graphicsPipeline = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

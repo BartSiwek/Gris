@@ -41,10 +41,10 @@ public:
     SwapChain(const SwapChain &) = delete;
     SwapChain & operator=(const SwapChain &) = delete;
 
-    SwapChain(SwapChain &&) noexcept = default;
-    SwapChain & operator=(SwapChain &&) noexcept = default;
+    SwapChain(SwapChain && other) noexcept;
+    SwapChain & operator=(SwapChain && other) noexcept;
 
-    ~SwapChain() = default;
+    virtual ~SwapChain();
 
     explicit operator bool() const;
 
@@ -100,7 +100,9 @@ private:
         uint32_t height,
         vk::SwapchainKHR oldSwapChain);
 
-    vk::UniqueSwapchainKHR m_swapChain = {};
+    void Reset();
+
+    vk::SwapchainKHR m_swapChain = {};
     std::vector<vk::Image> m_swapChainImages = {};
     vk::Queue m_presentQueue = {};
 

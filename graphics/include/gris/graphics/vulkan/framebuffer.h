@@ -18,10 +18,10 @@ public:
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer & operator=(const Framebuffer &) = delete;
 
-    Framebuffer(Framebuffer &&) noexcept = default;
-    Framebuffer & operator=(Framebuffer &&) noexcept = default;
+    Framebuffer(Framebuffer && other) noexcept;
+    Framebuffer & operator=(Framebuffer && other) noexcept;
 
-    ~Framebuffer() = default;
+    virtual ~Framebuffer();
 
     explicit operator bool() const;
 
@@ -31,7 +31,9 @@ public:
     vk::Framebuffer & FramebufferHandle();
 
 private:
-    vk::UniqueFramebuffer m_framebuffer = {};
+    void Reset();
+
+    vk::Framebuffer m_framebuffer = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

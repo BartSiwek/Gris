@@ -31,6 +31,20 @@ Gris::Graphics::Vulkan::DeviceResource::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
+[[nodiscard]] const Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::DeviceResource::ParentDevice() const
+{
+    return Parent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::DeviceResource::ParentDevice()
+{
+    return Parent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const vk::Device & Gris::Graphics::Vulkan::DeviceResource::DeviceHandle() const
 {
     return Parent().DeviceHandle();

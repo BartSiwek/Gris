@@ -15,10 +15,10 @@ public:
     Shader(const Shader &) = delete;
     Shader & operator=(const Shader &) = delete;
 
-    Shader(Shader &&) noexcept = default;
-    Shader & operator=(Shader &&) noexcept = default;
+    Shader(Shader && other) noexcept;
+    Shader & operator=(Shader && other) noexcept;
 
-    ~Shader() = default;
+    virtual ~Shader();
 
     explicit operator bool() const;
 
@@ -30,7 +30,9 @@ public:
     [[nodiscard]] const std::string & EntryPoint() const;
 
 private:
-    vk::UniqueShaderModule m_shaderModule = {};
+    void Reset();
+
+    vk::ShaderModule m_shaderModule = {};
     std::string m_entryPoint = {};
 };
 

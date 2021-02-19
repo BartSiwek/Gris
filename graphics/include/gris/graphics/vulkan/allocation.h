@@ -22,7 +22,7 @@ public:
     Allocation(Allocation && other) noexcept;
     Allocation & operator=(Allocation && other) noexcept;
 
-    ~Allocation();
+    virtual ~Allocation();
 
     explicit operator bool() const;
 

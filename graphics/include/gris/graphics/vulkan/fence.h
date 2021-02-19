@@ -15,10 +15,10 @@ public:
     Fence(const Fence &) = delete;
     Fence & operator=(const Fence &) = delete;
 
-    Fence(Fence &&) noexcept = default;
-    Fence & operator=(Fence &&) noexcept = default;
+    Fence(Fence && other) noexcept;
+    Fence & operator=(Fence && other) noexcept;
 
-    ~Fence() = default;
+    virtual ~Fence();
 
     explicit operator bool() const;
 
@@ -28,7 +28,9 @@ public:
     [[nodiscard]] vk::Fence & FenceHandle();
 
 private:
-    vk::UniqueFence m_fence = {};
+    void Reset();
+
+    vk::Fence m_fence = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

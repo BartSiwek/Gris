@@ -10,7 +10,7 @@
 namespace
 {
 
-vk::UniqueDescriptorPool CreateNewPool(
+vk::DescriptorPool CreateNewPool(
     const vk::Device & device,
     const vk::DispatchLoaderDynamic & dispatch,
     const Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes & sizes,
@@ -69,13 +69,13 @@ vk::UniqueDescriptorPool CreateNewPool(
                           .setPoolSizeCount(static_cast<uint32_t>(Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes::FactorCount))
                           .setPoolSizes(poolSizes);
 
-    auto createDescriptorPoolResult = device.createDescriptorPoolUnique(createInfo, nullptr, dispatch);
+    auto createDescriptorPoolResult = device.createDescriptorPool(createInfo, nullptr, dispatch);
     if (createDescriptorPoolResult.result != vk::Result::eSuccess)
     {
         throw Gris::Graphics::Vulkan::VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);
     }
 
-    return std::move(createDescriptorPoolResult.value);
+    return createDescriptorPoolResult.value;
 }
 
 }  // namespace
@@ -94,6 +94,40 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBinding
     , m_category(category)
     , m_sizes(sizes)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_category(std::exchange(other.m_category, {}))
+    , m_sizes(std::exchange(other.m_sizes, {}))
+    , m_freePools(std::exchange(other.m_freePools, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::operator=(ShaderResourceBindingsPoolManager && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_category = std::exchange(other.m_category, {});
+        m_sizes = std::exchange(other.m_sizes, {});
+        m_freePools = std::exchange(other.m_freePools, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::~ShaderResourceBindingsPoolManager()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -137,7 +171,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
     }
 
     auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
-    return Parent().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
+    return ParentDevice().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -145,6 +179,15 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
 void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::DeallocatePool(ShaderResourceBindingsPool pool)
 {
     GRIS_ALWAYS_ASSERT(pool.Category() == m_category, "Pool deallocated with incompatible category");
-    pool.Reset();
+    pool.ResetPool();
     m_freePools.emplace_back(std::move(pool));
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Reset()
+{
+    m_freePools.clear();
+    m_sizes = {};
+    m_category = {};
 }

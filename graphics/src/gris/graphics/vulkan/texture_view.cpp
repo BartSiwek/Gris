@@ -40,13 +40,44 @@ Gris::Graphics::Vulkan::TextureView::TextureView(const ParentObject<Device> & de
                                                        .setBaseArrayLayer(0)
                                                        .setLayerCount(1));
 
-    auto createImageViewResult = DeviceHandle().createImageViewUnique(viewInfo, nullptr, Dispatch());
+    auto createImageViewResult = DeviceHandle().createImageView(viewInfo, nullptr, Dispatch());
     if (createImageViewResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating image view", createImageViewResult);
     }
 
     m_imageView = std::move(createImageViewResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::TextureView::TextureView(TextureView && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_imageView(std::exchange(other.m_imageView, {}))
+{
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::TextureView::operator=(TextureView && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_imageView = std::exchange(other.m_imageView, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::TextureView::~TextureView()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -67,12 +98,23 @@ Gris::Graphics::Vulkan::TextureView::operator bool() const
 
 [[nodiscard]] const vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle() const
 {
-    return m_imageView.get();
+    return m_imageView;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::ImageView & Gris::Graphics::Vulkan::TextureView::ImageViewHandle()
 {
-    return m_imageView.get();
+    return m_imageView;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::TextureView::Reset()
+{
+    if (m_imageView)
+    {
+        DeviceHandle().destroyImageView(m_imageView, nullptr, Dispatch());
+        m_imageView = nullptr;
+    }
 }

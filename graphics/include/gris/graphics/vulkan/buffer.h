@@ -16,10 +16,10 @@ public:
     Buffer(const Buffer &) = delete;
     Buffer & operator=(const Buffer &) = delete;
 
-    Buffer(Buffer &&) noexcept = default;
-    Buffer & operator=(Buffer &&) noexcept = default;
+    Buffer(Buffer && other) noexcept;
+    Buffer & operator=(Buffer && other) noexcept;
 
-    ~Buffer() = default;
+    virtual ~Buffer();
 
     explicit operator bool() const;
 
@@ -31,7 +31,9 @@ public:
     void SetData(const void * data, size_t size);
 
 private:
-    vk::UniqueBuffer m_buffer = {};
+    void Reset();
+
+    vk::Buffer m_buffer = {};
     Allocation m_bufferMemory = {};
 };
 

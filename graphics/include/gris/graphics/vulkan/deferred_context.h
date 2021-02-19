@@ -22,10 +22,10 @@ public:
     DeferredContext(const DeferredContext &) = delete;
     DeferredContext & operator=(const DeferredContext &) = delete;
 
-    DeferredContext(DeferredContext &&) noexcept = default;
-    DeferredContext & operator=(DeferredContext &&) noexcept = default;
+    DeferredContext(DeferredContext && other) noexcept;
+    DeferredContext & operator=(DeferredContext && other) noexcept;
 
-    ~DeferredContext() = default;
+    virtual ~DeferredContext();
 
     explicit operator bool() const;
 
@@ -44,8 +44,10 @@ public:
     void End();
 
 private:
-    vk::UniqueCommandPool m_commandPool = {};
-    vk::UniqueCommandBuffer m_commandBuffer = {};
+    void Reset();
+
+    vk::CommandPool m_commandPool = {};
+    vk::CommandBuffer m_commandBuffer = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

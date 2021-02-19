@@ -16,9 +16,11 @@ Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings() = defau
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings(const ParentObject<Device> & device, const ShaderResourceBindingsLayout * resourceLayout)
+Gris::Graphics::Vulkan::ShaderResourceBindings::ShaderResourceBindings(
+    const ParentObject<Device> & device,
+    const ParentObject<ShaderResourceBindingsLayout> & resourceLayout)
     : DeviceResource(device)
-    , m_layout(resourceLayout)
+    , ChildObject<ShaderResourceBindingsLayout>(resourceLayout)
 {
 }
 
@@ -33,7 +35,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindings::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindings::IsValid() const
 {
-    return DeviceResource::IsValid() && m_layout != nullptr && m_layout->IsValid();
+    return DeviceResource::IsValid() && ChildObject<ShaderResourceBindingsLayout>::IsValid();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -100,7 +102,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
 
     // Since the layout does not change during the lifetime of this object
     // the descriptor set is constant as well - only the contents may need updating
-    m_descriptorSet = pools->Allocate(category, m_layout->DescriptorSetLayoutHandle());
+    m_descriptorSet = pools->Allocate(category, ChildObject<ShaderResourceBindingsLayout>::Parent().DescriptorSetLayoutHandle());
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto bufferInfos = MakeReservedVector<vk::DescriptorBufferInfo>(descriptorCount);
@@ -114,7 +116,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                      .setOffset(bufferView->Offset())
                                      .setRange(bufferView->Size()));
 
-        auto const & binding = m_layout->NameToBinding(name);
+        auto const & binding = ChildObject<ShaderResourceBindingsLayout>::Parent().NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
@@ -129,7 +131,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
     {
         imageInfos.emplace_back(vk::DescriptorImageInfo{}.setSampler(sampler->SamplerHandle()));
 
-        auto const & binding = m_layout->NameToBinding(name);
+        auto const & binding = ChildObject<ShaderResourceBindingsLayout>::Parent().NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
@@ -146,7 +148,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                     .setImageView(textureView->ImageViewHandle())
                                     .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal));
 
-        auto const & binding = m_layout->NameToBinding(name);
+        auto const & binding = ChildObject<ShaderResourceBindingsLayout>::Parent().NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}
@@ -164,7 +166,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                     .setImageView(samperAndTextureView.TextureViewPart->ImageViewHandle())
                                     .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal));
 
-        auto const & binding = m_layout->NameToBinding(name);
+        auto const & binding = ChildObject<ShaderResourceBindingsLayout>::Parent().NameToBinding(name);
         GRIS_ALWAYS_ASSERT(binding.descriptorCount == 1, "Descriptor arrays are not supported");
 
         descriptorWrites.emplace_back(vk::WriteDescriptorSet{}

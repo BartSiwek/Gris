@@ -21,10 +21,10 @@ public:
     ShaderResourceBindingsPoolManager(const ShaderResourceBindingsPoolManager &) = delete;
     ShaderResourceBindingsPoolManager & operator=(const ShaderResourceBindingsPoolManager &) = delete;
 
-    ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager &&) noexcept = default;
-    ShaderResourceBindingsPoolManager & operator=(ShaderResourceBindingsPoolManager &&) noexcept = default;
+    ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager && other) noexcept;
+    ShaderResourceBindingsPoolManager & operator=(ShaderResourceBindingsPoolManager && other) noexcept;
 
-    ~ShaderResourceBindingsPoolManager() = default;
+    virtual ~ShaderResourceBindingsPoolManager();
 
     explicit operator bool() const;
 
@@ -38,6 +38,8 @@ public:
     void DeallocatePool(ShaderResourceBindingsPool pool);
 
 private:
+    void Reset();
+
     Backend::ShaderResourceBindingsPoolCategory m_category = {};
     Backend::ShaderResourceBindingsPoolSizes m_sizes = {};
     std::vector<ShaderResourceBindingsPool> m_freePools = {};

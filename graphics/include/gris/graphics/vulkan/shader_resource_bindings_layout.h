@@ -9,7 +9,7 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class ShaderResourceBindingsLayout : public DeviceResource
+class ShaderResourceBindingsLayout : public DeviceResource, public ParentObject<ShaderResourceBindingsLayout>
 {
 public:
     ShaderResourceBindingsLayout();
@@ -19,10 +19,10 @@ public:
     ShaderResourceBindingsLayout(const ShaderResourceBindingsLayout &) = delete;
     ShaderResourceBindingsLayout & operator=(const ShaderResourceBindingsLayout &) = delete;
 
-    ShaderResourceBindingsLayout(ShaderResourceBindingsLayout &&) noexcept = default;
-    ShaderResourceBindingsLayout & operator=(ShaderResourceBindingsLayout &&) noexcept = default;
+    ShaderResourceBindingsLayout(ShaderResourceBindingsLayout && other) noexcept;
+    ShaderResourceBindingsLayout & operator=(ShaderResourceBindingsLayout && other) noexcept;
 
-    ~ShaderResourceBindingsLayout() = default;
+    virtual ~ShaderResourceBindingsLayout();
 
     explicit operator bool() const;
 
@@ -40,7 +40,9 @@ private:
         vk::DescriptorSetLayoutBinding Binding;
     };
 
-    vk::UniqueDescriptorSetLayout m_descriptorSetLayout = {};
+    void Reset();
+
+    vk::DescriptorSetLayout m_descriptorSetLayout = {};
     std::vector<NameAndBinding> m_nameToBinding = {};
 };
 

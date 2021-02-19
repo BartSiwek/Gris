@@ -65,7 +65,8 @@ void Gris::Graphics::Vulkan::Allocation::Reset()
     if (IsValid())
     {
         Parent().FreeMemory(m_allocation);
-        m_allocation = VK_NULL_HANDLE;
-        ResetParent();
+        m_allocation = VK_NULL_HANDLE;        
     }
+
+    ResetParent();
 }

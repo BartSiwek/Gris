@@ -14,12 +14,12 @@ class Buffer;
 class ShaderResourceBindingsLayout;
 class ShaderResourceBindingsPoolCollection;
 
-class ShaderResourceBindings : DeviceResource
+class ShaderResourceBindings : public DeviceResource, private ChildObject<ShaderResourceBindingsLayout>
 {
 public:
     ShaderResourceBindings();
 
-    ShaderResourceBindings(const ParentObject<Device> & device, const ShaderResourceBindingsLayout * resourceLayout);
+    ShaderResourceBindings(const ParentObject<Device> & device, const ParentObject<ShaderResourceBindingsLayout> & resourceLayout);
 
     ShaderResourceBindings(const ShaderResourceBindings &) = delete;
     ShaderResourceBindings & operator=(const ShaderResourceBindings &) = delete;
@@ -27,7 +27,7 @@ public:
     ShaderResourceBindings(ShaderResourceBindings &&) noexcept = default;
     ShaderResourceBindings & operator=(ShaderResourceBindings &&) noexcept = default;
 
-    ~ShaderResourceBindings() = default;
+    virtual ~ShaderResourceBindings() = default;
 
     explicit operator bool() const;
 
@@ -52,7 +52,6 @@ private:
         const TextureView * TextureViewPart;
     };
 
-    const ShaderResourceBindingsLayout * m_layout = nullptr;
     bool m_needsRebuilding = true;
 
     std::unordered_map<std::string, const Sampler *> m_samplers = {};

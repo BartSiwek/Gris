@@ -16,13 +16,45 @@ Gris::Graphics::Vulkan::Shader::Shader(const ParentObject<Device> & device, cons
 
     auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
-    auto createShaderModuleResult = DeviceHandle().createShaderModuleUnique(createInfo, nullptr, Dispatch());
+    auto createShaderModuleResult = DeviceHandle().createShaderModule(createInfo, nullptr, Dispatch());
     if (createShaderModuleResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating shader module", createShaderModuleResult);
     }
 
     m_shaderModule = std::move(createShaderModuleResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Shader::Shader(Shader && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_shaderModule(std::exchange(other.m_shaderModule, {}))
+    , m_entryPoint(std::exchange(other.m_entryPoint, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Shader & Gris::Graphics::Vulkan::Shader::operator=(Shader && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_shaderModule = std::exchange(other.m_shaderModule, {});
+        m_entryPoint = std::exchange(other.m_entryPoint, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Shader::~Shader()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -43,14 +75,14 @@ Gris::Graphics::Vulkan::Shader::operator bool() const
 
 [[nodiscard]] const vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle() const
 {
-    return m_shaderModule.get();
+    return m_shaderModule;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::ShaderModule & Gris::Graphics::Vulkan::Shader::ModuleHandle()
 {
-    return m_shaderModule.get();
+    return m_shaderModule;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -58,4 +90,17 @@ Gris::Graphics::Vulkan::Shader::operator bool() const
 [[nodiscard]] const std::string & Gris::Graphics::Vulkan::Shader::EntryPoint() const
 {
     return m_entryPoint;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Shader::Reset()
+{
+    m_entryPoint = {};
+
+    if (m_shaderModule)
+    {
+        DeviceHandle().destroyShaderModule(m_shaderModule, nullptr, Dispatch());
+        m_shaderModule = nullptr;
+    }
 }

@@ -12,7 +12,7 @@ namespace Gris::Graphics::Vulkan
 class Device;
 class Allocator;
 
-class DeviceResource : public ChildObject<Device>
+class DeviceResource : private ChildObject<Device>
 {
 public:
     virtual ~DeviceResource() = default;
@@ -32,6 +32,9 @@ protected:
 
     [[nodiscard]] bool IsValid() const;
 
+    [[nodiscard]] const Device & ParentDevice() const;
+    [[nodiscard]] Device & ParentDevice();
+
     [[nodiscard]] const vk::Device & DeviceHandle() const;
     [[nodiscard]] vk::Device & DeviceHandle();
 
@@ -40,6 +43,8 @@ protected:
 
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
+
+    using ChildObject::ResetParent;
 };
 
 }  // namespace Gris::Graphics::Vulkan

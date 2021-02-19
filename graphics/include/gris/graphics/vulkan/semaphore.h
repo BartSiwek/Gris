@@ -17,10 +17,10 @@ public:
     Semaphore(const Semaphore &) = delete;
     Semaphore & operator=(const Semaphore &) = delete;
 
-    Semaphore(Semaphore &&) noexcept = default;
-    Semaphore & operator=(Semaphore &&) noexcept = default;
+    Semaphore(Semaphore && other) noexcept;
+    Semaphore & operator=(Semaphore && other) noexcept;
 
-    ~Semaphore() = default;
+    virtual ~Semaphore();
 
     explicit operator bool() const;
 
@@ -30,7 +30,9 @@ public:
     vk::Semaphore & SemaphoreHandle();
 
 private:
-    vk::UniqueSemaphore m_semaphore = {};
+    void Reset();
+
+    vk::Semaphore m_semaphore = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

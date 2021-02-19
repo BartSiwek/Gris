@@ -76,7 +76,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                 .setLineWidth(1.0F);
 
     auto const multisampleInfo = vk::PipelineMultisampleStateCreateInfo{}
-                                     .setRasterizationSamples(Parent().MsaaSamples())
+                                     .setRasterizationSamples(ParentDevice().MsaaSamples())
                                      .setSampleShadingEnable(static_cast<vk::Bool32>(false));
 
     auto const depthStencil = vk::PipelineDepthStencilStateCreateInfo{}
@@ -106,7 +106,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     auto const descriptorSetLayouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}.setSetLayouts(descriptorSetLayouts);
 
-    auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo, nullptr, Dispatch());
+    auto createPipelineLayoutResult = DeviceHandle().createPipelineLayout(pipelineLayoutInfo, nullptr, Dispatch());
     if (createPipelineLayoutResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating pipeline layout", createPipelineLayoutResult);
@@ -125,17 +125,50 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                   .setPDepthStencilState(&depthStencil)
                                   .setPColorBlendState(&colorBlending)
                                   .setPDynamicState({})
-                                  .setLayout(m_pipelineLayout.get())
+                                  .setLayout(m_pipelineLayout)
                                   .setRenderPass(renderPass.RenderPassHandle())
                                   .setSubpass(0);
 
-    auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo, nullptr, Dispatch());
+    auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipeline({}, pipelineInfo, nullptr, Dispatch());
     if (createGraphicsPipelineResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating graphics pipeline", createGraphicsPipelineResult);
     }
 
     m_graphicsPipeline = std::move(createGraphicsPipelineResult.value);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(PipelineStateObject && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_pipelineLayout(std::exchange(other.m_pipelineLayout, {}))
+    , m_graphicsPipeline(std::exchange(other.m_graphicsPipeline, {}))
+
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject & Gris::Graphics::Vulkan::PipelineStateObject::operator=(PipelineStateObject && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_pipelineLayout = std::exchange(other.m_pipelineLayout, {});
+        m_graphicsPipeline = std::exchange(other.m_graphicsPipeline, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject::~PipelineStateObject()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -149,33 +182,50 @@ Gris::Graphics::Vulkan::PipelineStateObject::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::PipelineStateObject::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_graphicsPipeline);
+    return DeviceResource::IsValid() && static_cast<bool>(m_pipelineLayout) && static_cast<bool>(m_graphicsPipeline);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle() const
 {
-    return m_pipelineLayout.get();
+    return m_pipelineLayout;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle()
 {
-    return m_pipelineLayout.get();
+    return m_pipelineLayout;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle() const
 {
-    return m_graphicsPipeline.get();
+    return m_graphicsPipeline;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle()
 {
-    return m_graphicsPipeline.get();
+    return m_graphicsPipeline;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::PipelineStateObject::Reset()
+{
+    if (m_graphicsPipeline)
+    {
+        DeviceHandle().destroyPipeline(m_graphicsPipeline, nullptr, Dispatch());
+        m_graphicsPipeline = nullptr;
+    }
+
+    if (m_pipelineLayout)
+    {
+        DeviceHandle().destroyPipelineLayout(m_pipelineLayout, nullptr, Dispatch());
+        m_pipelineLayout = nullptr;
+    }
 }

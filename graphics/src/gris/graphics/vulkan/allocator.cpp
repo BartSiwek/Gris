@@ -142,5 +142,6 @@ void Gris::Graphics::Vulkan::Allocator::Reset()
     if (m_allocator != VK_NULL_HANDLE)
     {
         vmaDestroyAllocator(m_allocator);
+        m_allocator = VK_NULL_HANDLE;
     }
 }

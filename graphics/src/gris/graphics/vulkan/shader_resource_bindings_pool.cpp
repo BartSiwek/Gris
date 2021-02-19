@@ -13,11 +13,43 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool()
 Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(
     const ParentObject<Device> & device,
     Backend::ShaderResourceBindingsPoolCategory category,
-    vk::UniqueDescriptorPool pool)
+    vk::DescriptorPool pool)
     : DeviceResource(device)
     , m_category(category)
     , m_pool(std::move(pool))
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ShaderResourceBindingsPool(ShaderResourceBindingsPool && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_category(std::exchange(other.m_category, {}))
+    , m_pool(std::exchange(other.m_pool, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPool & Gris::Graphics::Vulkan::ShaderResourceBindingsPool::operator=(ShaderResourceBindingsPool && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_category = std::exchange(other.m_category, {});
+        m_pool = std::exchange(other.m_pool, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPool::~ShaderResourceBindingsPool()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -48,7 +80,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::operator bool() const
     auto layouts = std::array{ layout };
     auto allocInfo = vk::DescriptorSetAllocateInfo{}
                          .setSetLayouts(layouts)
-                         .setDescriptorPool(m_pool.get())
+                         .setDescriptorPool(m_pool)
                          .setDescriptorSetCount(1);
 
     auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
@@ -68,7 +100,20 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ResetPool()
+{
+    DeviceHandle().resetDescriptorPool(m_pool, {}, Dispatch());
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void Gris::Graphics::Vulkan::ShaderResourceBindingsPool::Reset()
 {
-    DeviceHandle().resetDescriptorPool(m_pool.get(), {}, Dispatch());
+    if (m_pool)
+    {
+        DeviceHandle().destroyDescriptorPool(m_pool, nullptr, Dispatch());
+        m_pool = nullptr;
+    }
+
+    m_category = {};
 }

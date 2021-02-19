@@ -18,6 +18,36 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBind
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ShaderResourceBindingsPoolCollection(ShaderResourceBindingsPoolCollection && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_pools(std::exchange(other.m_pools, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection & Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator=(ShaderResourceBindingsPoolCollection && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        DeviceResource::operator=(std::move(other));
+        m_pools = std::exchange(other.m_pools, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::~ShaderResourceBindingsPoolCollection()
+{
+    Reset();
+}
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() const
 {
     return IsValid();
@@ -40,7 +70,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() co
                            { return entry.Category == category; });
     if (it == std::end(m_pools))
     {
-        m_pools.emplace_back(PoolAndCategory{ category, Parent().AllocateShaderResourceBindingsPool(category) });
+        m_pools.emplace_back(PoolAndCategory{ category, ParentDevice().AllocateShaderResourceBindingsPool(category) });
         auto allocateResult = m_pools.back().Pool.Allocate(layout);
         if (!allocateResult)
         {
@@ -53,7 +83,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::operator bool() co
     auto allocateResult = it->Pool.Allocate(layout);
     if (!allocateResult)
     {
-        m_pools.emplace_back(PoolAndCategory{ category, Parent().AllocateShaderResourceBindingsPool(category) });
+        m_pools.emplace_back(PoolAndCategory{ category, ParentDevice().AllocateShaderResourceBindingsPool(category) });
         allocateResult = m_pools.back().Pool.Allocate(layout);
         if (!allocateResult)
         {
@@ -77,7 +107,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ResetAll()
 {
     for (auto & entry : m_pools)
     {
-        entry.Pool.Reset();
+        entry.Pool.ResetPool();
     }
 }
 
@@ -87,7 +117,14 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::DeallocateAll
 {
     for (auto & entry : m_pools)
     {
-        Parent().DeallocateShaderResourceBindingsPool(std::move(entry.Pool));
+        ParentDevice().DeallocateShaderResourceBindingsPool(std::move(entry.Pool));
     }
     m_pools.clear();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::Reset()
+{
+    Clear();
 }

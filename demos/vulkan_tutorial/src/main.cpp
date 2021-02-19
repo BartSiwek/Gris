@@ -273,7 +273,7 @@ private:
             auto & newBuffer = m_uniformBuffers.emplace_back(m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
             m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device.CreateShaderResourceBindings(&m_resourceLayout));
+            auto & newBindings = m_shaderResourceBindings.emplace_back(m_device.CreateShaderResourceBindings(m_resourceLayout));
             newBindings.SetCombinedSamplerAndImageView("texSampler", m_textureSampler, m_textureImageView);
             newBindings.SetUniformBuffer("ubo", m_uniformBufferViews[i]);
             newBindings.PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);

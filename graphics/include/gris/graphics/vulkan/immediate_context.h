@@ -21,10 +21,10 @@ public:
     ImmediateContext(const ImmediateContext &) = delete;
     ImmediateContext & operator=(const ImmediateContext &) = delete;
 
-    ImmediateContext(ImmediateContext &&) noexcept = default;
-    ImmediateContext & operator=(ImmediateContext &&) noexcept = default;
+    ImmediateContext(ImmediateContext && other) noexcept;
+    ImmediateContext & operator=(ImmediateContext && other) noexcept;
 
-    ~ImmediateContext() = default;
+    virtual ~ImmediateContext();
 
     explicit operator bool() const;
 
@@ -37,12 +37,14 @@ public:
     void Submit(DeferredContext * context, const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores, const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores, Fence & fence);
 
 private:
-    [[nodiscard]] vk::UniqueCommandBuffer BeginSingleTimeCommands();
+    [[nodiscard]] vk::CommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const;
 
+    void Reset();
+
     vk::Queue m_graphicsQueue = {};
-    vk::UniqueCommandPool m_commandPool = {};
-    vk::UniqueFence m_fence = {};
+    vk::CommandPool m_commandPool = {};
+    vk::Fence m_fence = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

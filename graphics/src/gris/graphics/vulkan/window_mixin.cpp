@@ -4,6 +4,35 @@
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::WindowMixin::WindowMixin(WindowMixin && other) noexcept
+    : m_surface(std::exchange(other.m_surface, {}))
+{
+
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::WindowMixin & Gris::Graphics::Vulkan::WindowMixin::operator=(WindowMixin && other) noexcept
+{
+    if (this != &other)
+    {
+        Reset();
+
+        m_surface = std::exchange(other.m_surface, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::WindowMixin::~WindowMixin()
+{
+    Reset();
+}
+
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::WindowMixin::operator bool() const
 {
     return IsValid();
@@ -28,4 +57,15 @@ vk::Instance & Gris::Graphics::Vulkan::WindowMixin::InstanceHandle()
 vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::WindowMixin::Dispatch()
 {
     return Instance::Dispatch();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::WindowMixin::Reset()
+{
+    if (m_surface)
+    {
+        InstanceHandle().destroySurfaceKHR(m_surface, nullptr, Dispatch());
+        m_surface = nullptr;    
+    }
 }

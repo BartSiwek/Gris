@@ -46,7 +46,7 @@ public:
         return *this;
     }
 
-    ~ParentObject()
+    virtual ~ParentObject()
     {
         if (m_parent)
         {
@@ -95,7 +95,7 @@ public:
     ChildObject(ChildObject &&) noexcept = default;
     ChildObject & operator=(ChildObject &&) noexcept = default;
 
-    ~ChildObject()
+    virtual ~ChildObject()
     {
         ResetParent();
     }

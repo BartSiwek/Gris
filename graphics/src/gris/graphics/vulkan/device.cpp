@@ -28,10 +28,50 @@ Gris::Graphics::Vulkan::Device::Device() = default;
 Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
     : m_physicalDevice(physicalDevice)
     , m_device(m_physicalDevice.CreateDevice())
-    , m_dispatch(Instance::CreateDispatch(m_device.get()))
-    , m_allocator(m_physicalDevice.CreateAllocator(m_device.get(), m_dispatch))
+    , m_dispatch(Instance::CreateDispatch(m_device))
+    , m_allocator(m_physicalDevice.CreateAllocator(m_device, m_dispatch))
     , m_context(*this)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Device::Device(Device && other) noexcept
+    : ParentObject(std::move(other))
+    , m_physicalDevice(std::exchange(other.m_physicalDevice, {}))
+    , m_device(std::exchange(other.m_device, {}))
+    , m_dispatch(std::exchange(other.m_dispatch, {}))
+    , m_allocator(std::exchange(other.m_allocator, {}))
+    , m_context(std::exchange(other.m_context, {}))
+    , m_poolManagers(std::exchange(other.m_poolManagers, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Device && other)
+{
+    if (this != &other)
+    {
+        Reset();
+
+        ParentObject::operator=(std::move(other));
+        m_physicalDevice = std::exchange(other.m_physicalDevice, {});
+        m_device = std::exchange(other.m_device, {});
+        m_dispatch = std::exchange(other.m_dispatch, {});
+        m_allocator = std::exchange(other.m_allocator, {});
+        m_context = std::exchange(other.m_context, {});
+        m_poolManagers = std::exchange(other.m_poolManagers, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Device::~Device()
+{
+    Reset();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -45,7 +85,7 @@ Gris::Graphics::Vulkan::Device::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Device::IsValid() const
 {
-    return m_physicalDevice.IsValid() && static_cast<bool>(m_device);
+    return static_cast<bool>(m_physicalDevice) && static_cast<bool>(m_device) && static_cast<bool>(m_allocator) && static_cast<bool>(m_context);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -87,7 +127,7 @@ Gris::Graphics::Vulkan::Device::operator bool() const
 
 void Gris::Graphics::Vulkan::Device::WaitIdle()
 {
-    auto const waitResult = m_device->waitIdle(m_dispatch);
+    auto const waitResult = m_device.waitIdle(m_dispatch);
     if (waitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Idle wait failed", waitResult);
@@ -136,14 +176,14 @@ void Gris::Graphics::Vulkan::Device::UpdateShaderResourceBindingsPoolCategory(
 
 const vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle() const
 {
-    return m_device.get();
+    return m_device;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 {
-    return m_device.get();
+    return m_device;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -233,7 +273,7 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindings Gris::Graphics::Vulkan::Device::CreateShaderResourceBindings(const ShaderResourceBindingsLayout * resourceLayout)
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindings Gris::Graphics::Vulkan::Device::CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout)
 {
     return ShaderResourceBindings(*this, resourceLayout);
 }
@@ -288,9 +328,9 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category, vk::UniqueDescriptorPool pool)
+[[nodiscard]] Gris::Graphics::Vulkan::ShaderResourceBindingsPool Gris::Graphics::Vulkan::Device::CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category, vk::DescriptorPool pool)
 {
-    return ShaderResourceBindingsPool(*this, category, std::move(pool));
+    return ShaderResourceBindingsPool(*this, category, pool);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -339,4 +379,34 @@ void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(Shader
 [[nodiscard]] vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Device::DispatchHandle()
 {
     return m_dispatch;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Device::Reset()
+{
+    m_poolManagers.clear();
+
+    if (m_context)
+    {
+        m_context = {};
+    }
+    
+    if (m_allocator)
+    {
+        m_allocator = {};
+    }
+
+    m_dispatch = {};
+
+    if (m_device)
+    {
+        m_device.destroy(nullptr, Instance::Dispatch());
+        m_device = nullptr;
+    }
+
+    if (m_physicalDevice)
+    {
+        m_physicalDevice = {};
+    }
 }

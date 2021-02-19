@@ -21,8 +21,7 @@ Gris::Graphics::Vulkan::Glfw::Window::Window(uint32_t width, uint32_t height, co
         throw VulkanEngineException("Failed to create GLFW window surface", createSurfaceResult);
     }
 
-    const vk::ObjectDestroy<vk::Instance, VULKAN_HPP_DEFAULT_DISPATCHER_TYPE> deleter(InstanceHandle(), nullptr, Dispatch());
-    SetSurfaceHandle(vk::UniqueSurfaceKHR(vk::SurfaceKHR(surface), deleter));
+    SetSurfaceHandle(vk::SurfaceKHR(surface));
 }
 
 // -------------------------------------------------------------------------------------------------

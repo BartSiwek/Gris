@@ -15,10 +15,10 @@ public:
     RenderPass(const RenderPass &) = delete;
     RenderPass & operator=(const RenderPass &) = delete;
 
-    RenderPass(RenderPass &&) noexcept = default;
-    RenderPass & operator=(RenderPass &&) noexcept = default;
+    RenderPass(RenderPass && other) noexcept;
+    RenderPass & operator=(RenderPass && other) noexcept;
 
-    ~RenderPass() = default;
+    virtual ~RenderPass();
 
     explicit operator bool() const;
 
@@ -30,7 +30,9 @@ public:
 private:
     void CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
 
-    vk::UniqueRenderPass m_renderPass = {};
+    void Reset();
+
+    vk::RenderPass m_renderPass = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

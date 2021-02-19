@@ -21,10 +21,10 @@ public:
     ShaderResourceBindingsPoolCollection(const ShaderResourceBindingsPoolCollection &) = default;
     ShaderResourceBindingsPoolCollection & operator=(const ShaderResourceBindingsPoolCollection &) = default;
 
-    ShaderResourceBindingsPoolCollection(ShaderResourceBindingsPoolCollection &&) noexcept = default;
-    ShaderResourceBindingsPoolCollection & operator=(ShaderResourceBindingsPoolCollection &&) noexcept = default;
+    ShaderResourceBindingsPoolCollection(ShaderResourceBindingsPoolCollection && other) noexcept;
+    ShaderResourceBindingsPoolCollection & operator=(ShaderResourceBindingsPoolCollection && other) noexcept;
 
-    ~ShaderResourceBindingsPoolCollection() = default;
+    virtual ~ShaderResourceBindingsPoolCollection();
 
     explicit operator bool() const;
 
@@ -41,6 +41,8 @@ public:
     void DeallocateAll();
 
 private:
+    void Reset();
+
     struct PoolAndCategory
     {
         Backend::ShaderResourceBindingsPoolCategory Category;

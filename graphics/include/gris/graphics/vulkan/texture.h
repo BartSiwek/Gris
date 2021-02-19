@@ -24,10 +24,10 @@ public:
     Texture(const Texture &) = delete;
     Texture & operator=(const Texture &) = delete;
 
-    Texture(Texture &&) noexcept = default;
-    Texture & operator=(Texture &&) noexcept = default;
+    Texture(Texture && other) noexcept;
+    Texture & operator=(Texture && other) noexcept;
 
-    ~Texture() = default;
+    virtual ~Texture();
 
     explicit operator bool() const;
 
@@ -42,7 +42,9 @@ public:
     [[nodiscard]] vk::Image & ImageHandle();
 
 private:
-    vk::UniqueImage m_image = {};
+    void Reset();
+
+    vk::Image m_image = {};
     Allocation m_imageMemory = {};
 
     uint32_t m_mipLevels = 1;
