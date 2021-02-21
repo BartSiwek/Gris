@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::Sampler::Sampler(const ParentObject<Device> & device, fl
         throw VulkanEngineException("Error creating sampler", createSamplerResult);
     }
 
-    m_sampler = std::move(createSamplerResult.value);
+    m_sampler = createSamplerResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -53,8 +53,8 @@ Gris::Graphics::Vulkan::Sampler & Gris::Graphics::Vulkan::Sampler::operator=(Sam
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_sampler = std::exchange(other.m_sampler, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

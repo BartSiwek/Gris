@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(const ParentObject<De
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
     }
 
-    m_commandPool = std::move(createCommandPoolResult.value);
+    m_commandPool = createCommandPoolResult.value;
 
     auto const fenceInfo = vk::FenceCreateInfo{};
     auto fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
@@ -43,7 +43,7 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(const ParentObject<De
         throw VulkanEngineException("Error creating immediate context fence", fenceCreateResult);
     }
 
-    m_fence = std::move(fenceCreateResult.value);
+    m_fence = fenceCreateResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -64,10 +64,10 @@ Gris::Graphics::Vulkan::ImmediateContext & Gris::Graphics::Vulkan::ImmediateCont
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_graphicsQueue = std::exchange(other.m_graphicsQueue, {});
         m_commandPool = std::exchange(other.m_commandPool, {});
         m_fence = std::exchange(other.m_fence, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;
@@ -329,7 +329,7 @@ void Gris::Graphics::Vulkan::ImmediateContext::Reset()
         throw VulkanEngineException("Error beginning the command buffer", beginResult);
     }
 
-    return std::move(commandBuffer);
+    return commandBuffer;
 }
 
 // -------------------------------------------------------------------------------------------------

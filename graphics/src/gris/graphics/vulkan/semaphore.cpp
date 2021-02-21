@@ -19,7 +19,7 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(const ParentObject<Device> & device
         throw VulkanEngineException("Error creating frame image available semaphore", imageSemaphoreCreateResult);
     }
 
-    m_semaphore = std::move(imageSemaphoreCreateResult.value);
+    m_semaphore = imageSemaphoreCreateResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -38,8 +38,8 @@ Gris::Graphics::Vulkan::Semaphore & Gris::Graphics::Vulkan::Semaphore::operator=
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_semaphore = std::exchange(other.m_semaphore, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

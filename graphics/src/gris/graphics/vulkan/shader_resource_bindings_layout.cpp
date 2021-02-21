@@ -62,7 +62,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
         throw VulkanEngineException("Error creating descriptor set layout", createDescriptorSetLayoutResult);
     }
 
-    m_descriptorSetLayout = std::move(createDescriptorSetLayoutResult.value);
+    m_descriptorSetLayout = createDescriptorSetLayoutResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -82,9 +82,9 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout & Gris::Graphics::Vulkan::S
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_descriptorSetLayout = std::exchange(other.m_descriptorSetLayout, {});
         m_nameToBinding = std::exchange(other.m_nameToBinding, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

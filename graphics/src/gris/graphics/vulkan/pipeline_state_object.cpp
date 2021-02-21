@@ -112,7 +112,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
         throw VulkanEngineException("Error creating pipeline layout", createPipelineLayoutResult);
     }
 
-    m_pipelineLayout = std::move(createPipelineLayoutResult.value);
+    m_pipelineLayout = createPipelineLayoutResult.value;
 
     auto const pipelineInfo = vk::GraphicsPipelineCreateInfo{}
                                   .setStages(shaderStages)
@@ -135,7 +135,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
         throw VulkanEngineException("Error creating graphics pipeline", createGraphicsPipelineResult);
     }
 
-    m_graphicsPipeline = std::move(createGraphicsPipelineResult.value);
+    m_graphicsPipeline = createGraphicsPipelineResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -156,9 +156,9 @@ Gris::Graphics::Vulkan::PipelineStateObject & Gris::Graphics::Vulkan::PipelineSt
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_pipelineLayout = std::exchange(other.m_pipelineLayout, {});
         m_graphicsPipeline = std::exchange(other.m_graphicsPipeline, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

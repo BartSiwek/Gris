@@ -32,8 +32,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection & Gris::Graphics::V
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_pools = std::exchange(other.m_pools, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

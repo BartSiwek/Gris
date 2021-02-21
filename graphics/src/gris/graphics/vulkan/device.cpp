@@ -49,19 +49,19 @@ Gris::Graphics::Vulkan::Device::Device(Device && other) noexcept
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Device && other)
+Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Device && other) noexcept
 {
     if (this != &other)
     {
         ReleaseResources();
 
+        ParentObject::operator=(std::move(static_cast<ParentObject &&>(other)));
         m_physicalDevice = std::exchange(other.m_physicalDevice, {});
         m_device = std::exchange(other.m_device, {});
         m_dispatch = std::exchange(other.m_dispatch, {});
         m_allocator = std::exchange(other.m_allocator, {});
         m_context = std::exchange(other.m_context, {});
         m_poolManagers = std::exchange(other.m_poolManagers, {});
-        ParentObject::operator=(std::move(other));
     }
 
     return *this;

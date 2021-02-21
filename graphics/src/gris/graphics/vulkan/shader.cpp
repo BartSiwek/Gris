@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::Shader::Shader(const ParentObject<Device> & device, cons
         throw VulkanEngineException("Error creating shader module", createShaderModuleResult);
     }
 
-    m_shaderModule = std::move(createShaderModuleResult.value);
+    m_shaderModule = createShaderModuleResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -42,9 +42,9 @@ Gris::Graphics::Vulkan::Shader & Gris::Graphics::Vulkan::Shader::operator=(Shade
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_shaderModule = std::exchange(other.m_shaderModule, {});
         m_entryPoint = std::exchange(other.m_entryPoint, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

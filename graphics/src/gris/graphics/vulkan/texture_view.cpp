@@ -46,7 +46,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView(const ParentObject<Device> & de
         throw VulkanEngineException("Error creating image view", createImageViewResult);
     }
 
-    m_imageView = std::move(createImageViewResult.value);
+    m_imageView = createImageViewResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -65,8 +65,8 @@ Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::TextureView::opera
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_imageView = std::exchange(other.m_imageView, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

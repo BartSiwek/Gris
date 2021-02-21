@@ -271,7 +271,7 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
         throw VulkanEngineException("Error creating Vulkan instance", createInstanceResult);
     }
 
-    m_instance = std::move(createInstanceResult.value);
+    m_instance = createInstanceResult.value;
     m_dispatch.init(m_instance);
 }
 
@@ -295,7 +295,7 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
         throw VulkanEngineException("Error creating debug messenger", createDebugUtilsMessengerResult);
     }
 
-    m_debugMessenger = std::move(createDebugUtilsMessengerResult.value);
+    m_debugMessenger = createDebugUtilsMessengerResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------

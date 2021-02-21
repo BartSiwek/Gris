@@ -80,7 +80,7 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass(const ParentObject<Device> & devi
         throw VulkanEngineException("Error creating render pass", createRenderPassResult);
     }
 
-    m_renderPass = std::move(createRenderPassResult.value);
+    m_renderPass = createRenderPassResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -99,8 +99,8 @@ Gris::Graphics::Vulkan::RenderPass & Gris::Graphics::Vulkan::RenderPass::operato
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_renderPass = std::exchange(other.m_renderPass, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

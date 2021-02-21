@@ -50,7 +50,7 @@ public:
     Device & operator=(const Device &) = delete;
 
     Device(Device && other) noexcept;
-    Device & operator=(Device && other);
+    Device & operator=(Device && other) noexcept;
 
     virtual ~Device();
 

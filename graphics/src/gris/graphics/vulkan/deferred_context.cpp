@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Devi
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
     }
 
-    m_commandPool = std::move(createCommandPoolResult.value);
+    m_commandPool = createCommandPoolResult.value;
 
     auto const allocInfo = vk::CommandBufferAllocateInfo{}
                                .setCommandPool(m_commandPool)
@@ -42,7 +42,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Devi
     }
 
     GRIS_ALWAYS_ASSERT(allocateCommandBuffersResult.value.size() == 1, "Number of allocated command buffers should be one");
-    m_commandBuffer = std::move(allocateCommandBuffersResult.value.front());
+    m_commandBuffer = allocateCommandBuffersResult.value.front();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -62,9 +62,9 @@ Gris::Graphics::Vulkan::DeferredContext & Gris::Graphics::Vulkan::DeferredContex
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_commandPool = std::exchange(other.m_commandPool, {});
         m_commandBuffer = std::exchange(other.m_commandBuffer, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

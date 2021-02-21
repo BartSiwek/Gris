@@ -25,7 +25,7 @@ Gris::Graphics::Vulkan::Fence::Fence(const ParentObject<Device> & device, bool s
         throw VulkanEngineException("Error creating frame fence", fenceCreateResult);
     }
 
-    m_fence = std::move(fenceCreateResult.value);
+    m_fence = fenceCreateResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -44,8 +44,8 @@ Gris::Graphics::Vulkan::Fence & Gris::Graphics::Vulkan::Fence::operator=(Fence &
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_fence = std::exchange(other.m_fence, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

@@ -30,8 +30,8 @@ Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operato
     {
         ReleaseResources();
 
+        ChildObject::operator=(std::move(static_cast<ChildObject &&>(other)));
         m_allocation = std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE));
-        ChildObject::operator=(std::move(other));
     }
 
     return *this;

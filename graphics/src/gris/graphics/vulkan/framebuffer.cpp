@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(const ParentObject<Device> & de
         throw VulkanEngineException("Error creating framebuffer", createFramebufferResult);
     }
 
-    m_framebuffer = std::move(createFramebufferResult.value);
+    m_framebuffer = createFramebufferResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -47,8 +47,8 @@ Gris::Graphics::Vulkan::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::opera
     {
         ReleaseResources();
 
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_framebuffer = std::exchange(other.m_framebuffer, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

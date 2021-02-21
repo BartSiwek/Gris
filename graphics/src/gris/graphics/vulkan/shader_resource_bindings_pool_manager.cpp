@@ -112,10 +112,10 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulk
 {
     if (this != &other)
     {
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_category = std::exchange(other.m_category, {});
         m_sizes = std::exchange(other.m_sizes, {});
         m_freePools = std::exchange(other.m_freePools, {});
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;
@@ -166,7 +166,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
     }
 
     auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
-    return ParentDevice().CreateShaderResourceBindingsPool(m_category, std::move(descriptorPool));
+    return ParentDevice().CreateShaderResourceBindingsPool(m_category, descriptorPool);
 }
 
 // -------------------------------------------------------------------------------------------------
