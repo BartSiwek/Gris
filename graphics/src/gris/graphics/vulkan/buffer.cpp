@@ -57,10 +57,10 @@ Gris::Graphics::Vulkan::Buffer & Gris::Graphics::Vulkan::Buffer::operator=(Buffe
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
-        ParentObject::operator=(std::move(other));
         m_buffer = std::exchange(other.m_buffer, {});
         m_bufferMemory = std::exchange(other.m_bufferMemory, {});
+        ParentObject::operator=(std::move(other));
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

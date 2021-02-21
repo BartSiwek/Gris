@@ -44,8 +44,8 @@ Gris::Graphics::Vulkan::Fence & Gris::Graphics::Vulkan::Fence::operator=(Fence &
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_fence = std::exchange(other.m_fence, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

@@ -65,8 +65,8 @@ Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::TextureView::opera
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_imageView = std::exchange(other.m_imageView, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

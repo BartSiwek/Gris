@@ -47,8 +47,8 @@ Gris::Graphics::Vulkan::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::opera
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_framebuffer = std::exchange(other.m_framebuffer, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

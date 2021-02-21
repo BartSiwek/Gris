@@ -119,7 +119,6 @@ Gris::Graphics::Vulkan::SwapChain & Gris::Graphics::Vulkan::SwapChain::operator=
     {
         Reset();
 
-        DeviceResource::operator=(std::move(other));
         m_swapChain = std::exchange(other.m_swapChain, {});
         m_swapChainImages = std::exchange(other.m_swapChainImages, {});
         m_presentQueue = std::exchange(other.m_presentQueue, {});
@@ -132,6 +131,7 @@ Gris::Graphics::Vulkan::SwapChain & Gris::Graphics::Vulkan::SwapChain::operator=
         m_currentVirtualFrame = std::exchange(other.m_currentVirtualFrame, 0);
         m_virtualFrameCount = std::exchange(other.m_virtualFrameCount, 1);
         m_swapChainImageToVirtualFrame = std::exchange(other.m_swapChainImageToVirtualFrame, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

@@ -29,8 +29,8 @@ Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Allocator::operator=
     {
         ReleaseResources();
 
-        ParentObject::operator=(std::move(other));
         m_allocator = std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE));
+        ParentObject::operator=(std::move(other));
     }
 
     return *this;

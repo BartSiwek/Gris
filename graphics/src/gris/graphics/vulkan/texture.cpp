@@ -73,10 +73,10 @@ Gris::Graphics::Vulkan::Texture & Gris::Graphics::Vulkan::Texture::operator=(Tex
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_image = std::exchange(other.m_image, {});
         m_imageMemory = std::exchange(other.m_imageMemory, {});
         m_mipLevels = std::exchange(other.m_mipLevels, 1);
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

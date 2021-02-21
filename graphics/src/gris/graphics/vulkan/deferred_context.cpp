@@ -62,9 +62,9 @@ Gris::Graphics::Vulkan::DeferredContext & Gris::Graphics::Vulkan::DeferredContex
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_commandPool = std::exchange(other.m_commandPool, {});
         m_commandBuffer = std::exchange(other.m_commandBuffer, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

@@ -38,8 +38,8 @@ Gris::Graphics::Vulkan::Semaphore & Gris::Graphics::Vulkan::Semaphore::operator=
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_semaphore = std::exchange(other.m_semaphore, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

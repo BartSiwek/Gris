@@ -53,8 +53,8 @@ Gris::Graphics::Vulkan::Sampler & Gris::Graphics::Vulkan::Sampler::operator=(Sam
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_sampler = std::exchange(other.m_sampler, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

@@ -99,8 +99,8 @@ Gris::Graphics::Vulkan::RenderPass & Gris::Graphics::Vulkan::RenderPass::operato
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_renderPass = std::exchange(other.m_renderPass, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

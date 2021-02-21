@@ -82,9 +82,9 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout & Gris::Graphics::Vulkan::S
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_descriptorSetLayout = std::exchange(other.m_descriptorSetLayout, {});
         m_nameToBinding = std::exchange(other.m_nameToBinding, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

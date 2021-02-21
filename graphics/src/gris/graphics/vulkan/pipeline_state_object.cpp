@@ -156,9 +156,9 @@ Gris::Graphics::Vulkan::PipelineStateObject & Gris::Graphics::Vulkan::PipelineSt
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_pipelineLayout = std::exchange(other.m_pipelineLayout, {});
         m_graphicsPipeline = std::exchange(other.m_graphicsPipeline, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

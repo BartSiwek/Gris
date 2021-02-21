@@ -37,9 +37,9 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool & Gris::Graphics::Vulkan::Sha
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_category = std::exchange(other.m_category, {});
         m_pool = std::exchange(other.m_pool, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

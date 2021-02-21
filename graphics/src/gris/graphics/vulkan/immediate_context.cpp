@@ -64,10 +64,10 @@ Gris::Graphics::Vulkan::ImmediateContext & Gris::Graphics::Vulkan::ImmediateCont
     {
         ReleaseResources();
 
-        DeviceResource::operator=(std::move(other));
         m_graphicsQueue = std::exchange(other.m_graphicsQueue, {});
         m_commandPool = std::exchange(other.m_commandPool, {});
         m_fence = std::exchange(other.m_fence, {});
+        DeviceResource::operator=(std::move(other));
     }
 
     return *this;

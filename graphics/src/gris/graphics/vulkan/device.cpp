@@ -55,13 +55,13 @@ Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Devic
     {
         ReleaseResources();
 
-        ParentObject::operator=(std::move(other));
         m_physicalDevice = std::exchange(other.m_physicalDevice, {});
         m_device = std::exchange(other.m_device, {});
         m_dispatch = std::exchange(other.m_dispatch, {});
         m_allocator = std::exchange(other.m_allocator, {});
         m_context = std::exchange(other.m_context, {});
         m_poolManagers = std::exchange(other.m_poolManagers, {});
+        ParentObject::operator=(std::move(other));
     }
 
     return *this;
