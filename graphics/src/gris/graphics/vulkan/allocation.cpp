@@ -9,7 +9,7 @@ Gris::Graphics::Vulkan::Allocation::Allocation() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, const ParentObject<Allocator> & owner)
-    : ChildObject(owner)
+    : ChildObject<Allocator>(owner)
     , m_allocation(allocation)
 {
 }
@@ -17,7 +17,7 @@ Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, const P
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Allocation::Allocation(Allocation && other) noexcept
-    : ChildObject(std::move(other))
+    : ChildObject<Allocator>(std::move(other))
     , m_allocation(std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE)))
 {
 }
@@ -30,7 +30,7 @@ Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operato
     {
         ReleaseResources();
 
-        ChildObject::operator=(std::move(other));
+        ChildObject<Allocator>::operator=(std::move(other));
         m_allocation = std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE));
     }
 
@@ -55,7 +55,7 @@ Gris::Graphics::Vulkan::Allocation::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Allocation::IsValid() const
 {
-    return ChildObject::IsValid() && m_allocation != VK_NULL_HANDLE;
+    return ChildObject<Allocator>::IsValid() && m_allocation != VK_NULL_HANDLE;
 }
 
 // -------------------------------------------------------------------------------------------------

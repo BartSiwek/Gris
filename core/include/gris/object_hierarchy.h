@@ -55,13 +55,7 @@ public:
     }
 
 private:
-    const PatentPointerType ParentPointer() const
-    {
-        GRIS_ALWAYS_ASSERT(static_cast<bool>(m_parent), "The parent pointer pointer cannot be null");
-        return m_parent.get();
-    }
-
-    PatentPointerType ParentPointer()
+    PatentPointerType ParentPointer() const
     {
         GRIS_ALWAYS_ASSERT(static_cast<bool>(m_parent), "The parent pointer pointer cannot be null");
         return m_parent.get();
