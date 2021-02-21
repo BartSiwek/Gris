@@ -11,7 +11,6 @@ Gris::Graphics::Vulkan::Buffer::Buffer() = default;
 
 Gris::Graphics::Vulkan::Buffer::Buffer(const ParentObject<Device> & device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
-    , ParentObject()
 {
     auto const bufferInfo = vk::BufferCreateInfo{}
                                 .setSize(size)
@@ -57,10 +56,10 @@ Gris::Graphics::Vulkan::Buffer & Gris::Graphics::Vulkan::Buffer::operator=(Buffe
     {
         ReleaseResources();
 
+        ParentObject::operator=(std::move(static_cast<ParentObject &&>(other)));
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
         m_buffer = std::exchange(other.m_buffer, {});
         m_bufferMemory = std::exchange(other.m_bufferMemory, {});
-        ParentObject::operator=(std::move(other));
-        DeviceResource::operator=(std::move(other));
     }
 
     return *this;
