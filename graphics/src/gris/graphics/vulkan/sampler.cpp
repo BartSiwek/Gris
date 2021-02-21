@@ -51,7 +51,7 @@ Gris::Graphics::Vulkan::Sampler & Gris::Graphics::Vulkan::Sampler::operator=(Sam
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_sampler = std::exchange(other.m_sampler, {});
@@ -64,7 +64,7 @@ Gris::Graphics::Vulkan::Sampler & Gris::Graphics::Vulkan::Sampler::operator=(Sam
 
 Gris::Graphics::Vulkan::Sampler::~Sampler()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -99,11 +99,17 @@ vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
 
 void Gris::Graphics::Vulkan::Sampler::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Sampler::ReleaseResources()
+{
     if (m_sampler)
     {
         DeviceHandle().destroySampler(m_sampler, nullptr, Dispatch());
         m_sampler = nullptr;
     }
-
-    ResetParent();
 }

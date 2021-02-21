@@ -137,6 +137,8 @@ private:
     [[nodiscard]] const vk::DispatchLoaderDynamic & DispatchHandle() const;
     [[nodiscard]] vk::DispatchLoaderDynamic & DispatchHandle();
 
+    void ReleaseResources();
+
     PhysicalDevice m_physicalDevice = {};
     vk::Device m_device = {};
     vk::DispatchLoaderDynamic m_dispatch = {};

@@ -42,6 +42,8 @@ private:
         vk::DescriptorSetLayoutBinding Binding;
     };
 
+    void ReleaseResources();
+
     vk::DescriptorSetLayout m_descriptorSetLayout = {};
     std::vector<NameAndBinding> m_nameToBinding = {};
 };

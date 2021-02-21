@@ -42,6 +42,8 @@ private:
     [[nodiscard]] vk::CommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const;
 
+    void ReleaseResources();
+
     vk::Queue m_graphicsQueue = {};
     vk::CommandPool m_commandPool = {};
     vk::Fence m_fence = {};

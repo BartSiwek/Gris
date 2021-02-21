@@ -55,7 +55,7 @@ Gris::Graphics::Vulkan::Buffer & Gris::Graphics::Vulkan::Buffer::operator=(Buffe
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         ParentObject::operator=(std::move(other));
@@ -70,7 +70,7 @@ Gris::Graphics::Vulkan::Buffer & Gris::Graphics::Vulkan::Buffer::operator=(Buffe
 
 Gris::Graphics::Vulkan::Buffer::~Buffer()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -119,11 +119,17 @@ void Gris::Graphics::Vulkan::Buffer::Reset()
         m_bufferMemory.Reset();
     }
 
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Buffer::ReleaseResources()
+{
     if (m_buffer)
     {
         DeviceHandle().destroyBuffer(m_buffer, nullptr, Dispatch());
         m_buffer = nullptr;
     }
-
-    ResetParent();
 }

@@ -42,6 +42,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::ImageView m_imageView = {};
 };
 

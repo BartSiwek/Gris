@@ -33,6 +33,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::Framebuffer m_framebuffer = {};
 };
 

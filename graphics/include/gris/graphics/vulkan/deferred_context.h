@@ -46,6 +46,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::CommandPool m_commandPool = {};
     vk::CommandBuffer m_commandBuffer = {};
 };

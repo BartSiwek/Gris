@@ -40,7 +40,7 @@ Gris::Graphics::Vulkan::Shader & Gris::Graphics::Vulkan::Shader::operator=(Shade
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_shaderModule = std::exchange(other.m_shaderModule, {});
@@ -54,7 +54,7 @@ Gris::Graphics::Vulkan::Shader & Gris::Graphics::Vulkan::Shader::operator=(Shade
 
 Gris::Graphics::Vulkan::Shader::~Shader()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -97,12 +97,17 @@ Gris::Graphics::Vulkan::Shader::operator bool() const
 void Gris::Graphics::Vulkan::Shader::Reset()
 {
     m_entryPoint.clear();
+    ReleaseResources();
+    ResetParent();
+}
 
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Shader::ReleaseResources()
+{
     if (m_shaderModule)
     {
         DeviceHandle().destroyShaderModule(m_shaderModule, nullptr, Dispatch());
         m_shaderModule = nullptr;
     }
-
-    ResetParent();
 }

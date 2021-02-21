@@ -112,8 +112,6 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulk
 {
     if (this != &other)
     {
-        Reset();
-
         DeviceResource::operator=(std::move(other));
         m_category = std::exchange(other.m_category, {});
         m_sizes = std::exchange(other.m_sizes, {});
@@ -125,10 +123,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager & Gris::Graphics::Vulk
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::~ShaderResourceBindingsPoolManager()
-{
-    Reset();
-}
+Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::~ShaderResourceBindingsPoolManager() = default;
 
 // -------------------------------------------------------------------------------------------------
 

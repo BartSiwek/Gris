@@ -97,7 +97,7 @@ Gris::Graphics::Vulkan::RenderPass & Gris::Graphics::Vulkan::RenderPass::operato
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_renderPass = std::exchange(other.m_renderPass, {});
@@ -110,7 +110,7 @@ Gris::Graphics::Vulkan::RenderPass & Gris::Graphics::Vulkan::RenderPass::operato
 
 Gris::Graphics::Vulkan::RenderPass::~RenderPass()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -145,11 +145,17 @@ Gris::Graphics::Vulkan::RenderPass::operator bool() const
 
 void Gris::Graphics::Vulkan::RenderPass::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::RenderPass::ReleaseResources()
+{
     if (m_renderPass)
     {
         DeviceHandle().destroyRenderPass(m_renderPass, nullptr, Dispatch());
         m_renderPass = nullptr;
     }
-
-    ResetParent();
 }

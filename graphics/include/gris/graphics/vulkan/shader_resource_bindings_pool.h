@@ -40,6 +40,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     Backend::ShaderResourceBindingsPoolCategory m_category = {};
     vk::DescriptorPool m_pool = {};
 };

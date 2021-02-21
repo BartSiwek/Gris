@@ -154,7 +154,7 @@ Gris::Graphics::Vulkan::PipelineStateObject & Gris::Graphics::Vulkan::PipelineSt
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_pipelineLayout = std::exchange(other.m_pipelineLayout, {});
@@ -168,7 +168,7 @@ Gris::Graphics::Vulkan::PipelineStateObject & Gris::Graphics::Vulkan::PipelineSt
 
 Gris::Graphics::Vulkan::PipelineStateObject::~PipelineStateObject()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -217,6 +217,14 @@ Gris::Graphics::Vulkan::PipelineStateObject::operator bool() const
 
 void Gris::Graphics::Vulkan::PipelineStateObject::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::PipelineStateObject::ReleaseResources()
+{
     if (m_graphicsPipeline)
     {
         DeviceHandle().destroyPipeline(m_graphicsPipeline, nullptr, Dispatch());
@@ -228,6 +236,4 @@ void Gris::Graphics::Vulkan::PipelineStateObject::Reset()
         DeviceHandle().destroyPipelineLayout(m_pipelineLayout, nullptr, Dispatch());
         m_pipelineLayout = nullptr;
     }
-
-    ResetParent();
 }

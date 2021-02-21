@@ -28,7 +28,6 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(Semaphore && other) noexcept
     : DeviceResource(std::move(other))
     , m_semaphore(std::exchange(other.m_semaphore, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------    
@@ -37,7 +36,7 @@ Gris::Graphics::Vulkan::Semaphore & Gris::Graphics::Vulkan::Semaphore::operator=
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_semaphore = std::exchange(other.m_semaphore, {});
@@ -50,7 +49,7 @@ Gris::Graphics::Vulkan::Semaphore & Gris::Graphics::Vulkan::Semaphore::operator=
 
 Gris::Graphics::Vulkan::Semaphore::~Semaphore()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -85,11 +84,17 @@ vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle()
 
 void Gris::Graphics::Vulkan::Semaphore::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Semaphore::ReleaseResources()
+{
     if (m_semaphore)
     {
         DeviceHandle().destroySemaphore(m_semaphore, nullptr, Dispatch());
         m_semaphore = nullptr;
     }
-
-    ResetParent();
 }

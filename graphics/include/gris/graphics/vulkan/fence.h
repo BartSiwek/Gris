@@ -30,6 +30,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::Fence m_fence = {};
 };
 

@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operato
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         ChildObject::operator=(std::move(other));
         m_allocation = std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE));
@@ -41,7 +41,7 @@ Gris::Graphics::Vulkan::Allocation & Gris::Graphics::Vulkan::Allocation::operato
 
 Gris::Graphics::Vulkan::Allocation::~Allocation()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -62,11 +62,17 @@ Gris::Graphics::Vulkan::Allocation::operator bool() const
 
 void Gris::Graphics::Vulkan::Allocation::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Allocation::ReleaseResources()
+{
     if (m_allocation != VK_NULL_HANDLE)
     {
         Parent().FreeMemory(m_allocation);
-        m_allocation = VK_NULL_HANDLE;        
+        m_allocation = VK_NULL_HANDLE;
     }
-
-    ResetParent();
 }

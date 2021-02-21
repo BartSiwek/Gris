@@ -27,7 +27,7 @@ Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Allocator::operator=
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         ParentObject::operator=(std::move(other));
         m_allocator = std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE));
@@ -40,7 +40,7 @@ Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Allocator::operator=
 
 Gris::Graphics::Vulkan::Allocator::~Allocator()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -138,6 +138,13 @@ void Gris::Graphics::Vulkan::Allocator::Unmap(const Allocation & allocation) con
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::Allocator::Reset()
+{
+    ReleaseResources();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Allocator::ReleaseResources()
 {
     if (m_allocator != VK_NULL_HANDLE)
     {

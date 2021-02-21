@@ -43,7 +43,7 @@ Gris::Graphics::Vulkan::Fence & Gris::Graphics::Vulkan::Fence::operator=(Fence &
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_fence = std::exchange(other.m_fence, {});
@@ -56,7 +56,7 @@ Gris::Graphics::Vulkan::Fence & Gris::Graphics::Vulkan::Fence::operator=(Fence &
 
 Gris::Graphics::Vulkan::Fence::~Fence()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -91,11 +91,17 @@ Gris::Graphics::Vulkan::Fence::operator bool() const
 
 void Gris::Graphics::Vulkan::Fence::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Fence::ReleaseResources()
+{
     if (m_fence)
     {
         DeviceHandle().destroyFence(m_fence, nullptr, Dispatch());
         m_fence = nullptr;
     }
-
-    ResetParent();
 }

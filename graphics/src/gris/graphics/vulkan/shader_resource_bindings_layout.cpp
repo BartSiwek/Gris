@@ -81,7 +81,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout & Gris::Graphics::Vulkan::S
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_descriptorSetLayout = std::exchange(other.m_descriptorSetLayout, {});
@@ -95,7 +95,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout & Gris::Graphics::Vulkan::S
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::~ShaderResourceBindingsLayout()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -141,12 +141,17 @@ const vk::DescriptorSetLayoutBinding & Gris::Graphics::Vulkan::ShaderResourceBin
 void Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::Reset()
 {
     m_nameToBinding.clear();
+    ReleaseResources();
+    ResetParent();
+}
 
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ReleaseResources()
+{
     if (m_descriptorSetLayout)
     {
         DeviceHandle().destroyDescriptorSetLayout(m_descriptorSetLayout, nullptr, Dispatch());
         m_descriptorSetLayout = nullptr;
     }
-
-    ResetParent();
 }

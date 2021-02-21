@@ -42,6 +42,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     VmaAllocator m_allocator = VK_NULL_HANDLE;
 };
 

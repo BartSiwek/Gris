@@ -46,7 +46,7 @@ Gris::Graphics::Vulkan::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::opera
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_framebuffer = std::exchange(other.m_framebuffer, {});
@@ -59,7 +59,7 @@ Gris::Graphics::Vulkan::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::opera
 
 Gris::Graphics::Vulkan::Framebuffer::~Framebuffer()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -94,11 +94,17 @@ vk::Framebuffer & Gris::Graphics::Vulkan::Framebuffer::FramebufferHandle()
 
 void Gris::Graphics::Vulkan::Framebuffer::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Framebuffer::ReleaseResources()
+{
     if (m_framebuffer)
     {
         DeviceHandle().destroyFramebuffer(m_framebuffer, nullptr, Dispatch());
         m_framebuffer = nullptr;
     }
-
-    ResetParent();
 }

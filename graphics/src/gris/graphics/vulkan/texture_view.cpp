@@ -64,7 +64,7 @@ Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::TextureView::opera
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_imageView = std::exchange(other.m_imageView, {});
@@ -77,7 +77,7 @@ Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::TextureView::opera
 
 Gris::Graphics::Vulkan::TextureView::~TextureView()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -112,11 +112,17 @@ Gris::Graphics::Vulkan::TextureView::operator bool() const
 
 void Gris::Graphics::Vulkan::TextureView::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::TextureView::ReleaseResources()
+{
     if (m_imageView)
     {
         DeviceHandle().destroyImageView(m_imageView, nullptr, Dispatch());
         m_imageView = nullptr;
     }
-
-    ResetParent();
 }

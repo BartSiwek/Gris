@@ -32,6 +32,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::Semaphore m_semaphore = {};
 };
 

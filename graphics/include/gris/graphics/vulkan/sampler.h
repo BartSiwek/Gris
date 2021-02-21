@@ -30,6 +30,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::Sampler m_sampler = {};
 };
 

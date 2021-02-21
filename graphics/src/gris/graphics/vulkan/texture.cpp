@@ -72,7 +72,7 @@ Gris::Graphics::Vulkan::Texture & Gris::Graphics::Vulkan::Texture::operator=(Tex
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_image = std::exchange(other.m_image, {});
@@ -87,7 +87,7 @@ Gris::Graphics::Vulkan::Texture & Gris::Graphics::Vulkan::Texture::operator=(Tex
 
 Gris::Graphics::Vulkan::Texture::~Texture()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -129,11 +129,17 @@ void Gris::Graphics::Vulkan::Texture::Reset()
         m_imageMemory.Reset();
     }
 
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Texture::ReleaseResources()
+{
     if (m_image)
     {
         DeviceHandle().destroyImage(m_image, nullptr, Dispatch());
         m_image = nullptr;
     }
-
-    ResetParent();
 }

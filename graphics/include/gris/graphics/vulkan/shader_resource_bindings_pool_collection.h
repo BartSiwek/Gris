@@ -43,6 +43,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     struct PoolAndCategory
     {
         Backend::ShaderResourceBindingsPoolCategory Category;

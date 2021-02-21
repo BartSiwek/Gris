@@ -46,6 +46,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::PipelineLayout m_pipelineLayout = {};
     vk::Pipeline m_graphicsPipeline = {};
 };

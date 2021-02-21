@@ -35,6 +35,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::Buffer m_buffer = {};
     Allocation m_bufferMemory = {};
 };

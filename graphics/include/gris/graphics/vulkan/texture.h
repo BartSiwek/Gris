@@ -44,6 +44,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::Image m_image = {};
     Allocation m_imageMemory = {};
 

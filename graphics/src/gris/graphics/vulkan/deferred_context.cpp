@@ -61,7 +61,7 @@ Gris::Graphics::Vulkan::DeferredContext & Gris::Graphics::Vulkan::DeferredContex
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_commandPool = std::exchange(other.m_commandPool, {});
@@ -75,7 +75,7 @@ Gris::Graphics::Vulkan::DeferredContext & Gris::Graphics::Vulkan::DeferredContex
 
 Gris::Graphics::Vulkan::DeferredContext::~DeferredContext()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -190,6 +190,14 @@ void Gris::Graphics::Vulkan::DeferredContext::End()
 
 void Gris::Graphics::Vulkan::DeferredContext::Reset()
 {
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::ReleaseResources()
+{
     if (m_commandBuffer)
     {
         auto commandBuffers = { m_commandBuffer };
@@ -197,11 +205,9 @@ void Gris::Graphics::Vulkan::DeferredContext::Reset()
         m_commandBuffer = nullptr;
     }
 
-    if(m_commandPool)
+    if (m_commandPool)
     {
         DeviceHandle().destroyCommandPool(m_commandPool, nullptr, Dispatch());
         m_commandPool = nullptr;
     }
-
-    ResetParent();
 }

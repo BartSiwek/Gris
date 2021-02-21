@@ -30,7 +30,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection & Gris::Graphics::V
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_pools = std::exchange(other.m_pools, {});
@@ -43,7 +43,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection & Gris::Graphics::V
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::~ShaderResourceBindingsPoolCollection()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -115,18 +115,24 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ResetAll()
 
 void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::DeallocateAll()
 {
-    for (auto & entry : m_pools)
-    {
-        ParentDevice().DeallocateShaderResourceBindingsPool(std::move(entry.Pool));
-    }
-    m_pools.clear();
+    ReleaseResources();
+    Clear();
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::Reset()
 {
-    Clear();
-
+    DeallocateAll();
     ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::ReleaseResources()
+{
+    for (auto & entry : m_pools)
+    {
+        ParentDevice().DeallocateShaderResourceBindingsPool(std::move(entry.Pool));
+    }
 }

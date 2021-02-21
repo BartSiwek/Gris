@@ -33,6 +33,8 @@ public:
 private:
     friend class Allocator;
 
+    void ReleaseResources();
+
     VmaAllocation m_allocation = VK_NULL_HANDLE;
 };
 

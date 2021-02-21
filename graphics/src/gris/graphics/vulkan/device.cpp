@@ -26,7 +26,7 @@ Gris::Graphics::Vulkan::Device::Device() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Device::Device(PhysicalDevice physicalDevice)
-    : m_physicalDevice(physicalDevice)
+    : m_physicalDevice(std::move(physicalDevice))
     , m_device(m_physicalDevice.CreateDevice())
     , m_dispatch(Instance::CreateDispatch(m_device))
     , m_allocator(m_physicalDevice.CreateAllocator(m_device, m_dispatch))
@@ -53,7 +53,7 @@ Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Devic
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         ParentObject::operator=(std::move(other));
         m_physicalDevice = std::exchange(other.m_physicalDevice, {});
@@ -71,7 +71,7 @@ Gris::Graphics::Vulkan::Device & Gris::Graphics::Vulkan::Device::operator=(Devic
 
 Gris::Graphics::Vulkan::Device::~Device()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -357,25 +357,7 @@ void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(Shader
 
 void Gris::Graphics::Vulkan::Device::Reset()
 {
-    m_poolManagers.clear();
-
-    if (m_context)
-    {
-        m_context.Reset();
-    }
-
-    if (m_allocator)
-    {
-        m_allocator.Reset();
-    }
-
-    m_dispatch = {};
-
-    if (m_device)
-    {
-        m_device.destroy(nullptr, Instance::Dispatch());
-        m_device = nullptr;
-    }
+    ReleaseResources();
 
     if (m_physicalDevice)
     {
@@ -409,4 +391,29 @@ void Gris::Graphics::Vulkan::Device::Reset()
 [[nodiscard]] vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Device::DispatchHandle()
 {
     return m_dispatch;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Device::ReleaseResources()
+{
+    m_poolManagers.clear();
+
+    if (m_context)
+    {
+        m_context.Reset();
+    }
+
+    if (m_allocator)
+    {
+        m_allocator.Reset();
+    }
+
+    m_dispatch = {};
+
+    if (m_device)
+    {
+        m_device.destroy(nullptr, Instance::Dispatch());
+        m_device = nullptr;
+    }
 }

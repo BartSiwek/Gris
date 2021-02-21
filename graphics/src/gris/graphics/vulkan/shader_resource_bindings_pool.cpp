@@ -35,7 +35,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool & Gris::Graphics::Vulkan::Sha
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         DeviceResource::operator=(std::move(other));
         m_category = std::exchange(other.m_category, {});
@@ -49,7 +49,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool & Gris::Graphics::Vulkan::Sha
 
 Gris::Graphics::Vulkan::ShaderResourceBindingsPool::~ShaderResourceBindingsPool()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -109,13 +109,18 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ResetPool()
 
 void Gris::Graphics::Vulkan::ShaderResourceBindingsPool::Reset()
 {
+    ReleaseResources();
+    m_category = {};
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsPool::ReleaseResources()
+{
     if (m_pool)
     {
         DeviceHandle().destroyDescriptorPool(m_pool, nullptr, Dispatch());
         m_pool = nullptr;
     }
-
-    m_category = {};
-
-    ResetParent();
 }

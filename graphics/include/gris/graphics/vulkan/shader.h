@@ -32,6 +32,8 @@ public:
     void Reset();
 
 private:
+    void ReleaseResources();
+
     vk::ShaderModule m_shaderModule = {};
     std::string m_entryPoint = {};
 };
