@@ -147,4 +147,6 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::Reset()
         DeviceHandle().destroyDescriptorSetLayout(m_descriptorSetLayout, nullptr, Dispatch());
         m_descriptorSetLayout = nullptr;
     }
+
+    ResetParent();
 }

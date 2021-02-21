@@ -116,7 +116,7 @@ void Gris::Graphics::Vulkan::Buffer::Reset()
 {
     if (m_bufferMemory)
     {
-        m_bufferMemory = {};
+        m_bufferMemory.Reset();
     }
 
     if (m_buffer)

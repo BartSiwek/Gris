@@ -116,4 +116,6 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPool::Reset()
     }
 
     m_category = {};
+
+    ResetParent();
 }

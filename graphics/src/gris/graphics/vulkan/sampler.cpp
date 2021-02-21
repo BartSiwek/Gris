@@ -104,4 +104,6 @@ void Gris::Graphics::Vulkan::Sampler::Reset()
         DeviceHandle().destroySampler(m_sampler, nullptr, Dispatch());
         m_sampler = nullptr;
     }
+
+    ResetParent();
 }

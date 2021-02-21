@@ -361,12 +361,12 @@ void Gris::Graphics::Vulkan::Device::Reset()
 
     if (m_context)
     {
-        m_context = {};
+        m_context.Reset();
     }
 
     if (m_allocator)
     {
-        m_allocator = {};
+        m_allocator.Reset();
     }
 
     m_dispatch = {};
@@ -379,7 +379,7 @@ void Gris::Graphics::Vulkan::Device::Reset()
 
     if (m_physicalDevice)
     {
-        m_physicalDevice = {};
+        m_physicalDevice.Reset();
     }
 }
 

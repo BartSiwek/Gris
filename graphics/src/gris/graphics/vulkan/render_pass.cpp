@@ -150,4 +150,6 @@ void Gris::Graphics::Vulkan::RenderPass::Reset()
         DeviceHandle().destroyRenderPass(m_renderPass, nullptr, Dispatch());
         m_renderPass = nullptr;
     }
+
+    ResetParent();
 }

@@ -228,4 +228,6 @@ void Gris::Graphics::Vulkan::PipelineStateObject::Reset()
         DeviceHandle().destroyPipelineLayout(m_pipelineLayout, nullptr, Dispatch());
         m_pipelineLayout = nullptr;
     }
+
+    ResetParent();
 }

@@ -90,4 +90,6 @@ void Gris::Graphics::Vulkan::Semaphore::Reset()
         DeviceHandle().destroySemaphore(m_semaphore, nullptr, Dispatch());
         m_semaphore = nullptr;
     }
+
+    ResetParent();
 }

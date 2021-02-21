@@ -117,4 +117,6 @@ void Gris::Graphics::Vulkan::TextureView::Reset()
         DeviceHandle().destroyImageView(m_imageView, nullptr, Dispatch());
         m_imageView = nullptr;
     }
+
+    ResetParent();
 }

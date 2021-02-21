@@ -190,4 +190,6 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Reset()
     m_freePools.clear();
     m_sizes = {};
     m_category = {};
+
+    ResetParent();
 }

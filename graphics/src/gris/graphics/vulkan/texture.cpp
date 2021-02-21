@@ -126,7 +126,7 @@ void Gris::Graphics::Vulkan::Texture::Reset()
 
     if (m_imageMemory)
     {
-        m_imageMemory = {};
+        m_imageMemory.Reset();
     }
 
     if (m_image)
@@ -134,4 +134,6 @@ void Gris::Graphics::Vulkan::Texture::Reset()
         DeviceHandle().destroyImage(m_image, nullptr, Dispatch());
         m_image = nullptr;
     }
+
+    ResetParent();
 }

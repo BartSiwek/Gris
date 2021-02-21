@@ -127,4 +127,6 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::DeallocateAll
 void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection::Reset()
 {
     Clear();
+
+    ResetParent();
 }

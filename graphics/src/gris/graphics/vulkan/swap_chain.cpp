@@ -299,6 +299,8 @@ void Gris::Graphics::Vulkan::SwapChain::Reset()
         DeviceHandle().destroySwapchainKHR(m_swapChain, nullptr, Dispatch());
         m_swapChain = nullptr;
     }
+
+    ResetParent();
 }
 
 // -------------------------------------------------------------------------------------------------

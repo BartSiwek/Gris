@@ -96,11 +96,13 @@ Gris::Graphics::Vulkan::Shader::operator bool() const
 
 void Gris::Graphics::Vulkan::Shader::Reset()
 {
-    m_entryPoint = {};
+    m_entryPoint.clear();
 
     if (m_shaderModule)
     {
         DeviceHandle().destroyShaderModule(m_shaderModule, nullptr, Dispatch());
         m_shaderModule = nullptr;
     }
+
+    ResetParent();
 }
