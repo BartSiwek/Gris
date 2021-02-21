@@ -18,8 +18,8 @@ public:
 
     BufferView(const ParentObject<Buffer> & buffer, uint32_t offset, uint32_t size);
 
-    BufferView(const BufferView &) = default;
-    BufferView & operator=(const BufferView &) = default;
+    BufferView(const BufferView &) = delete;
+    BufferView & operator=(const BufferView &) = delete;
 
     BufferView(BufferView &&) noexcept = default;
     BufferView & operator=(BufferView &&) noexcept = default;

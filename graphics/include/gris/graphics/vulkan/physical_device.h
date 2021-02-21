@@ -21,8 +21,8 @@ public:
 
     PhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies);
 
-    PhysicalDevice(const PhysicalDevice &) = default;
-    PhysicalDevice & operator=(const PhysicalDevice &) = default;
+    PhysicalDevice(const PhysicalDevice &) = delete;
+    PhysicalDevice & operator=(const PhysicalDevice &) = delete;
 
     PhysicalDevice(PhysicalDevice &&) noexcept = default;
     PhysicalDevice & operator=(PhysicalDevice &&) noexcept = default;
