@@ -13,15 +13,15 @@ class Framebuffer : public DeviceResource
 public:
     Framebuffer();
 
-    Framebuffer(std::shared_ptr<DeviceSharedData> sharedData, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
+    Framebuffer(const ParentObject<Device> & device, const TextureView & colorImageView, const TextureView & depthImageView, const TextureView & swapChainImageView, const RenderPass & renderPass, uint32_t width, uint32_t height);
 
     Framebuffer(const Framebuffer &) = delete;
     Framebuffer & operator=(const Framebuffer &) = delete;
 
-    Framebuffer(Framebuffer &&) noexcept = default;
-    Framebuffer & operator=(Framebuffer &&) noexcept = default;
+    Framebuffer(Framebuffer && other) noexcept;
+    Framebuffer & operator=(Framebuffer && other) noexcept;
 
-    ~Framebuffer() = default;
+    virtual ~Framebuffer();
 
     explicit operator bool() const;
 
@@ -30,8 +30,12 @@ public:
     const vk::Framebuffer & FramebufferHandle() const;
     vk::Framebuffer & FramebufferHandle();
 
+    void Reset();
+
 private:
-    vk::UniqueFramebuffer m_framebuffer = {};
+    void ReleaseResources();
+
+    vk::Framebuffer m_framebuffer = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

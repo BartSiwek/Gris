@@ -3,23 +3,25 @@
 #include <gris/graphics/vulkan/allocation.h>
 #include <gris/graphics/vulkan/device_resource.h>
 
+#include <gris/object_hierarchy.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
-class Buffer : public DeviceResource
+class Buffer : public DeviceResource, public ParentObject<Buffer>
 {
 public:
     Buffer();
 
-    Buffer(std::shared_ptr<DeviceSharedData> sharedData, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    Buffer(const ParentObject<Device> & device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
 
     Buffer(const Buffer &) = delete;
     Buffer & operator=(const Buffer &) = delete;
 
-    Buffer(Buffer &&) noexcept = default;
-    Buffer & operator=(Buffer &&) noexcept = default;
+    Buffer(Buffer && other) noexcept;
+    Buffer & operator=(Buffer && other) noexcept;
 
-    ~Buffer() = default;
+    virtual ~Buffer();
 
     explicit operator bool() const;
 
@@ -30,8 +32,12 @@ public:
 
     void SetData(const void * data, size_t size);
 
+    void Reset();
+
 private:
-    vk::UniqueBuffer m_buffer = {};
+    void ReleaseResources();
+
+    vk::Buffer m_buffer = {};
     Allocation m_bufferMemory = {};
 };
 

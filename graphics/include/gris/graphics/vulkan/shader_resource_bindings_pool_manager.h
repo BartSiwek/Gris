@@ -14,17 +14,17 @@ public:
     ShaderResourceBindingsPoolManager();
 
     ShaderResourceBindingsPoolManager(
-        std::shared_ptr<DeviceSharedData> sharedData,
+        const ParentObject<Device> & device,
         Backend::ShaderResourceBindingsPoolCategory category,
         const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
     ShaderResourceBindingsPoolManager(const ShaderResourceBindingsPoolManager &) = delete;
     ShaderResourceBindingsPoolManager & operator=(const ShaderResourceBindingsPoolManager &) = delete;
 
-    ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager &&) noexcept = default;
-    ShaderResourceBindingsPoolManager & operator=(ShaderResourceBindingsPoolManager &&) noexcept = default;
+    ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager && other) noexcept;
+    ShaderResourceBindingsPoolManager & operator=(ShaderResourceBindingsPoolManager && other) noexcept;
 
-    ~ShaderResourceBindingsPoolManager() = default;
+    virtual ~ShaderResourceBindingsPoolManager();
 
     explicit operator bool() const;
 
@@ -36,6 +36,8 @@ public:
 
     [[nodiscard]] ShaderResourceBindingsPool AllocatePool();
     void DeallocatePool(ShaderResourceBindingsPool pool);
+
+    void Reset();
 
 private:
     Backend::ShaderResourceBindingsPoolCategory m_category = {};

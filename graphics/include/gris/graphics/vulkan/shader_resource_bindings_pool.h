@@ -15,17 +15,17 @@ public:
     ShaderResourceBindingsPool();
 
     ShaderResourceBindingsPool(
-        std::shared_ptr<DeviceSharedData> sharedData,
+        const ParentObject<Device> & device,
         Backend::ShaderResourceBindingsPoolCategory category,
-        vk::UniqueDescriptorPool pool);
+        vk::DescriptorPool pool);
 
     ShaderResourceBindingsPool(const ShaderResourceBindingsPool &) = delete;
     ShaderResourceBindingsPool & operator=(const ShaderResourceBindingsPool &) = delete;
 
-    ShaderResourceBindingsPool(ShaderResourceBindingsPool &&) noexcept = default;
-    ShaderResourceBindingsPool & operator=(ShaderResourceBindingsPool &&) noexcept = default;
+    ShaderResourceBindingsPool(ShaderResourceBindingsPool && other) noexcept;
+    ShaderResourceBindingsPool & operator=(ShaderResourceBindingsPool && other) noexcept;
 
-    ~ShaderResourceBindingsPool() = default;
+    virtual ~ShaderResourceBindingsPool();
 
     explicit operator bool() const;
 
@@ -35,12 +35,15 @@ public:
 
     [[nodiscard]] std::optional<vk::DescriptorSet> Allocate(const vk::DescriptorSetLayout & layout);
 
+    void ResetPool();
+
     void Reset();
 
 private:
-    Backend::ShaderResourceBindingsPoolCategory m_category = {};
+    void ReleaseResources();
 
-    vk::UniqueDescriptorPool m_pool = {};
+    Backend::ShaderResourceBindingsPoolCategory m_category = {};
+    vk::DescriptorPool m_pool = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

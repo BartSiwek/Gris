@@ -12,13 +12,13 @@ class TextureView : public DeviceResource
 public:
     TextureView();
 
-    TextureView(std::shared_ptr<DeviceSharedData> sharedData,
+    TextureView(const ParentObject<Device> & device,
                 const Texture & image,
                 vk::Format format,
                 const vk::ImageAspectFlags & aspectFlags,
                 uint32_t mipLevels);
 
-    TextureView(std::shared_ptr<DeviceSharedData> sharedData,
+    TextureView(const ParentObject<Device> & device,
                 const vk::Image & image,
                 vk::Format format,
                 const vk::ImageAspectFlags & aspectFlags,
@@ -27,10 +27,10 @@ public:
     TextureView(const TextureView &) = delete;
     TextureView & operator=(const TextureView &) = delete;
 
-    TextureView(TextureView &&) noexcept = default;
-    TextureView & operator=(TextureView &&) noexcept = default;
+    TextureView(TextureView && other) noexcept;
+    TextureView & operator=(TextureView && other) noexcept;
 
-    ~TextureView() = default;
+    virtual ~TextureView();
 
     explicit operator bool() const;
 
@@ -39,8 +39,12 @@ public:
     [[nodiscard]] const vk::ImageView & ImageViewHandle() const;
     [[nodiscard]] vk::ImageView & ImageViewHandle();
 
+    void Reset();
+
 private:
-    vk::UniqueImageView m_imageView = {};
+    void ReleaseResources();
+
+    vk::ImageView m_imageView = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

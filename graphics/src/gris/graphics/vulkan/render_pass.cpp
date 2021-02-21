@@ -9,43 +9,8 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::RenderPass::RenderPass(std::shared_ptr<DeviceSharedData> sharedData, vk::Format swapChainFormat, vk::Format depthFormat)
-    : DeviceResource(std::move(sharedData))
-{
-    CreateRenderPass(swapChainFormat, depthFormat);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Vulkan::RenderPass::operator bool() const
-{
-    return IsValid();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
-{
-    return DeviceResource::IsValid() && static_cast<bool>(m_renderPass);
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle() const
-{
-    return m_renderPass.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle()
-{
-    return m_renderPass.get();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat)
+Gris::Graphics::Vulkan::RenderPass::RenderPass(const ParentObject<Device> & device, vk::Format swapChainFormat, vk::Format depthFormat)
+    : DeviceResource(device)
 {
     auto const colorAttachment = vk::AttachmentDescription{}
                                      .setFormat(swapChainFormat)
@@ -109,11 +74,88 @@ void Gris::Graphics::Vulkan::RenderPass::CreateRenderPass(vk::Format swapChainFo
                                     .setSubpasses(subpasses)
                                     .setDependencies(dependencies);
 
-    auto createRenderPassResult = DeviceHandle().createRenderPassUnique(renderPassInfo, nullptr, Dispatch());
+    auto createRenderPassResult = DeviceHandle().createRenderPass(renderPassInfo, nullptr, Dispatch());
     if (createRenderPassResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating render pass", createRenderPassResult);
     }
 
-    m_renderPass = std::move(createRenderPassResult.value);
+    m_renderPass = createRenderPassResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::RenderPass::RenderPass(RenderPass && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_renderPass(std::exchange(other.m_renderPass, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::RenderPass & Gris::Graphics::Vulkan::RenderPass::operator=(RenderPass && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_renderPass = std::exchange(other.m_renderPass, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::RenderPass::~RenderPass()
+{
+    ReleaseResources();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::RenderPass::operator bool() const
+{
+    return IsValid();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
+{
+    return DeviceResource::IsValid() && static_cast<bool>(m_renderPass);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] const vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle() const
+{
+    return m_renderPass;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::RenderPass & Gris::Graphics::Vulkan::RenderPass::RenderPassHandle()
+{
+    return m_renderPass;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::RenderPass::Reset()
+{
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::RenderPass::ReleaseResources()
+{
+    if (m_renderPass)
+    {
+        DeviceHandle().destroyRenderPass(m_renderPass, nullptr, Dispatch());
+        m_renderPass = nullptr;
+    }
 }

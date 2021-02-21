@@ -39,7 +39,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::PhysicalDevice::IsValid() const
 {
-    return static_cast<bool>(m_physicalDevice);
+    return static_cast<bool>(m_physicalDevice) && m_queueFamilies.IsComplete();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueDevice Gris::Graphics::Vulkan::PhysicalDevice::CreateDevice() const
+[[nodiscard]] vk::Device Gris::Graphics::Vulkan::PhysicalDevice::CreateDevice() const
 {
     auto uniqueQueueFamilies = std::set<uint32_t>{
         m_queueFamilies.graphicsFamily.value(),
@@ -120,13 +120,13 @@ Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
                                 .setPEnabledExtensionNames(REQUIRED_EXTENSIONS)
                                 .setPEnabledFeatures(&deviceFeatures);
 
-    auto createDeviceResult = m_physicalDevice.createDeviceUnique(createInfo, nullptr, Instance::Dispatch());
+    auto createDeviceResult = m_physicalDevice.createDevice(createInfo, nullptr, Instance::Dispatch());
     if (createDeviceResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating logical device", createDeviceResult);
     }
 
-    return std::move(createDeviceResult.value);
+    return createDeviceResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -134,4 +134,13 @@ Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
 [[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::PhysicalDevice::CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic dispatch) const
 {
     return Instance::CreateAllocator(m_physicalDevice, device, dispatch);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::PhysicalDevice::Reset()
+{
+    m_queueFamilies = {};
+    m_msaaSamples = vk::SampleCountFlagBits::e1;
+    m_physicalDevice = nullptr;
 }

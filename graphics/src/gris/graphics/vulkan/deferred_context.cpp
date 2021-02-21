@@ -14,35 +14,67 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeferredContext::DeferredContext(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
     auto const poolInfo = vk::CommandPoolCreateInfo{}.setQueueFamilyIndex(graphicsQueueFamily);
 
-    auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo, nullptr, Dispatch());
+    auto createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
     if (createCommandPoolResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
     }
 
-    m_commandPool = std::move(createCommandPoolResult.value);
+    m_commandPool = createCommandPoolResult.value;
 
     auto const allocInfo = vk::CommandBufferAllocateInfo{}
-                               .setCommandPool(m_commandPool.get())
+                               .setCommandPool(m_commandPool)
                                .setLevel(vk::CommandBufferLevel::ePrimary)
                                .setCommandBufferCount(1);
 
-    auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo, Dispatch());
+    auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffers(allocInfo, Dispatch());
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error allocating command buffers", allocateCommandBuffersResult);
     }
 
     GRIS_ALWAYS_ASSERT(allocateCommandBuffersResult.value.size() == 1, "Number of allocated command buffers should be one");
-    m_commandBuffer = std::move(allocateCommandBuffersResult.value.front());
+    m_commandBuffer = allocateCommandBuffersResult.value.front();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(DeferredContext && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_commandPool(std::exchange(other.m_commandPool, {}))
+    , m_commandBuffer(std::exchange(other.m_commandBuffer, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::DeferredContext & Gris::Graphics::Vulkan::DeferredContext::operator=(DeferredContext && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_commandPool = std::exchange(other.m_commandPool, {});
+        m_commandBuffer = std::exchange(other.m_commandBuffer, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::DeferredContext::~DeferredContext()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -56,14 +88,14 @@ Gris::Graphics::Vulkan::DeferredContext::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool) && static_cast<bool>(m_commandBuffer);
+    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::CommandBuffer & Gris::Graphics::Vulkan::DeferredContext::CommandBufferHandle()
 {
-    return m_commandBuffer.get();
+    return m_commandBuffer;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -72,7 +104,7 @@ void Gris::Graphics::Vulkan::DeferredContext::Begin()
 {
     auto const beginInfo = vk::CommandBufferBeginInfo{};
 
-    auto const beginResult = m_commandBuffer->begin(beginInfo, Dispatch());
+    auto const beginResult = m_commandBuffer.begin(beginInfo, Dispatch());
     if (beginResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error beginning command buffer", beginResult);
@@ -94,14 +126,14 @@ void Gris::Graphics::Vulkan::DeferredContext::BeginRenderPass(const RenderPass &
                                     .setRenderArea(vk::Rect2D({ 0, 0 }, extent))
                                     .setClearValues(clearValues);
 
-    m_commandBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline, Dispatch());
+    m_commandBuffer.beginRenderPass(renderPassInfo, vk::SubpassContents::eInline, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::BindPipeline(const PipelineStateObject & pso)
 {
-    m_commandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, pso.GraphicsPipelineHandle(), Dispatch());
+    m_commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, pso.GraphicsPipelineHandle(), Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -110,14 +142,14 @@ void Gris::Graphics::Vulkan::DeferredContext::BindVertexBuffer(const BufferView 
 {
     std::array vertexBuffers = { bufferView.BufferHandle() };
     std::array offsets = { static_cast<vk::DeviceSize>(bufferView.Offset()) };
-    m_commandBuffer->bindVertexBuffers(0, vertexBuffers, offsets, Dispatch());
+    m_commandBuffer.bindVertexBuffers(0, vertexBuffers, offsets, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView & bufferView)
 {
-    m_commandBuffer->bindIndexBuffer(bufferView.BufferHandle(), bufferView.Offset(), vk::IndexType::eUint32, Dispatch());
+    m_commandBuffer.bindIndexBuffer(bufferView.BufferHandle(), bufferView.Offset(), vk::IndexType::eUint32, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -125,30 +157,56 @@ void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView &
 void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBindings & srb)
 {
     std::array descriptorSets = { srb.DescriptorSetHandle() };
-    m_commandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {}, Dispatch());
+    m_commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {}, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::DrawIndexed(uint32_t indexCount)
 {
-    m_commandBuffer->drawIndexed(indexCount, 1, 0, 0, 0, Dispatch());
+    m_commandBuffer.drawIndexed(indexCount, 1, 0, 0, 0, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::EndRenderPass()
 {
-    m_commandBuffer->endRenderPass(Dispatch());
+    m_commandBuffer.endRenderPass(Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Vulkan::DeferredContext::End()
 {
-    auto const endResult = m_commandBuffer->end(Dispatch());
+    auto const endResult = m_commandBuffer.end(Dispatch());
     if (endResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error ending command buffer", endResult);
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::Reset()
+{
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::ReleaseResources()
+{
+    if (m_commandBuffer)
+    {
+        auto commandBuffers = { m_commandBuffer };
+        DeviceHandle().freeCommandBuffers(m_commandPool, commandBuffers, Dispatch());
+        m_commandBuffer = nullptr;
+    }
+
+    if (m_commandPool)
+    {
+        DeviceHandle().destroyCommandPool(m_commandPool, nullptr, Dispatch());
+        m_commandPool = nullptr;
     }
 }

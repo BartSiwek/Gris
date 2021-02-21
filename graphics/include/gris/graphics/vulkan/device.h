@@ -1,10 +1,11 @@
 #pragma once
 
 #include <gris/graphics/vulkan/allocator.h>
-#include <gris/graphics/vulkan/device_shared_data.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/physical_device.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
+
+#include <gris/object_hierarchy.h>
 
 namespace Gris::Graphics::Backend
 {
@@ -36,7 +37,7 @@ class Fence;
 class Semaphore;
 class RenderPass;
 
-class Device
+class Device : public ParentObject<Device>
 {
 public:
     friend class DeviceResource;
@@ -51,7 +52,7 @@ public:
     Device(Device && other) noexcept;
     Device & operator=(Device && other) noexcept;
 
-    ~Device();
+    virtual ~Device();
 
     explicit operator bool() const;
 
@@ -75,12 +76,8 @@ public:
     void RegisterShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
     void UpdateShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
-    [[nodiscard]] const vk::Device & DeviceHandle() const;
-    [[nodiscard]] vk::Device & DeviceHandle();
-
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain);
-
     [[nodiscard]] DeferredContext CreateDeferredContext();
     [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint);
     [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
@@ -104,7 +101,7 @@ public:
         const ShaderResourceBindingsLayout & resourceLayout,
         const Shader & vertexShader,
         const Shader & fragmentShader);
-    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ShaderResourceBindingsLayout * resourceLayout);
+    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout);
     [[nodiscard]] Framebuffer CreateFramebuffer(
         const TextureView & colorImageView,
         const TextureView & depthImageView,
@@ -116,11 +113,13 @@ public:
     [[nodiscard]] Semaphore CreateSemaphore();
     [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
     [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection();
+    [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
+    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::DescriptorPool pool);
+
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
     void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
-    [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
-    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::UniqueDescriptorPool pool);
+    void Reset();
 
 private:
     struct CategoryAndPoolManager
@@ -129,12 +128,20 @@ private:
         ShaderResourceBindingsPoolManager PoolManager;
     };
 
+    [[nodiscard]] const vk::Device & DeviceHandle() const;
+    [[nodiscard]] vk::Device & DeviceHandle();
+
     [[nodiscard]] const Allocator & AllocatorHandle() const;
     [[nodiscard]] Allocator & AllocatorHandle();
 
+    [[nodiscard]] const vk::DispatchLoaderDynamic & DispatchHandle() const;
+    [[nodiscard]] vk::DispatchLoaderDynamic & DispatchHandle();
+
+    void ReleaseResources();
+
     PhysicalDevice m_physicalDevice = {};
-    vk::UniqueDevice m_device = {};
-    std::shared_ptr<DeviceSharedData> m_sharedData;
+    vk::Device m_device = {};
+    vk::DispatchLoaderDynamic m_dispatch = {};
     Allocator m_allocator = {};
     ImmediateContext m_context = {};
     std::vector<CategoryAndPoolManager> m_poolManagers;

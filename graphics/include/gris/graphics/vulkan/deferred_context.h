@@ -17,15 +17,15 @@ class DeferredContext : public DeviceResource
 public:
     DeferredContext();
 
-    explicit DeferredContext(std::shared_ptr<DeviceSharedData> sharedData);
+    explicit DeferredContext(const ParentObject<Device> & device);
 
     DeferredContext(const DeferredContext &) = delete;
     DeferredContext & operator=(const DeferredContext &) = delete;
 
-    DeferredContext(DeferredContext &&) noexcept = default;
-    DeferredContext & operator=(DeferredContext &&) noexcept = default;
+    DeferredContext(DeferredContext && other) noexcept;
+    DeferredContext & operator=(DeferredContext && other) noexcept;
 
-    ~DeferredContext() = default;
+    virtual ~DeferredContext();
 
     explicit operator bool() const;
 
@@ -43,9 +43,13 @@ public:
     void EndRenderPass();
     void End();
 
+    void Reset();
+
 private:
-    vk::UniqueCommandPool m_commandPool = {};
-    vk::UniqueCommandBuffer m_commandBuffer = {};
+    void ReleaseResources();
+
+    vk::CommandPool m_commandPool = {};
+    vk::CommandBuffer m_commandBuffer = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

@@ -9,20 +9,20 @@
 namespace Gris::Graphics::Vulkan
 {
 
-class ShaderResourceBindingsLayout : public DeviceResource
+class ShaderResourceBindingsLayout : public DeviceResource, public ParentObject<ShaderResourceBindingsLayout>
 {
 public:
     ShaderResourceBindingsLayout();
 
-    ShaderResourceBindingsLayout(std::shared_ptr<DeviceSharedData> sharedData, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout);
+    ShaderResourceBindingsLayout(const ParentObject<Device> & device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout);
 
     ShaderResourceBindingsLayout(const ShaderResourceBindingsLayout &) = delete;
     ShaderResourceBindingsLayout & operator=(const ShaderResourceBindingsLayout &) = delete;
 
-    ShaderResourceBindingsLayout(ShaderResourceBindingsLayout &&) noexcept = default;
-    ShaderResourceBindingsLayout & operator=(ShaderResourceBindingsLayout &&) noexcept = default;
+    ShaderResourceBindingsLayout(ShaderResourceBindingsLayout && other) noexcept;
+    ShaderResourceBindingsLayout & operator=(ShaderResourceBindingsLayout && other) noexcept;
 
-    ~ShaderResourceBindingsLayout() = default;
+    virtual ~ShaderResourceBindingsLayout();
 
     explicit operator bool() const;
 
@@ -33,6 +33,8 @@ public:
 
     const vk::DescriptorSetLayoutBinding & NameToBinding(const std::string_view & name) const;
 
+    void Reset();
+
 private:
     struct NameAndBinding
     {
@@ -40,7 +42,9 @@ private:
         vk::DescriptorSetLayoutBinding Binding;
     };
 
-    vk::UniqueDescriptorSetLayout m_descriptorSetLayout = {};
+    void ReleaseResources();
+
+    vk::DescriptorSetLayout m_descriptorSetLayout = {};
     std::vector<NameAndBinding> m_nameToBinding = {};
 };
 

@@ -12,8 +12,8 @@ class InputLayout
 public:
     InputLayout() = default;
 
-    InputLayout(const InputLayout &) = default;
-    InputLayout & operator=(const InputLayout &) = default;
+    InputLayout(const InputLayout &) = delete;
+    InputLayout & operator=(const InputLayout &) = delete;
 
     InputLayout(InputLayout &&) noexcept = default;
     InputLayout & operator=(InputLayout &&) noexcept = default;
@@ -25,6 +25,8 @@ public:
 
     [[nodiscard]] const std::vector<vk::VertexInputBindingDescription> & BindingDescription() const;
     [[nodiscard]] const std::vector<vk::VertexInputAttributeDescription> & AttributeDescriptions() const;
+
+    void Reset();
 
 private:
     std::vector<vk::VertexInputBindingDescription> m_bindings = {};

@@ -8,8 +8,8 @@ Gris::Graphics::Vulkan::Sampler::Sampler() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Sampler::Sampler(std::shared_ptr<DeviceSharedData> sharedData, float minLod, float maxLod)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::Sampler::Sampler(const ParentObject<Device> & device, float minLod, float maxLod)
+    : DeviceResource(device)
 {
     auto const samplerInfo = vk::SamplerCreateInfo{}
                                  .setMinFilter(vk::Filter::eLinear)
@@ -28,13 +28,43 @@ Gris::Graphics::Vulkan::Sampler::Sampler(std::shared_ptr<DeviceSharedData> share
                                  .setBorderColor(vk::BorderColor::eIntOpaqueBlack)
                                  .setUnnormalizedCoordinates(static_cast<vk::Bool32>(false));
 
-    auto createSamplerResult = DeviceHandle().createSamplerUnique(samplerInfo, nullptr, Dispatch());
+    auto createSamplerResult = DeviceHandle().createSampler(samplerInfo, nullptr, Dispatch());
     if (createSamplerResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating sampler", createSamplerResult);
     }
 
-    m_sampler = std::move(createSamplerResult.value);
+    m_sampler = createSamplerResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Sampler::Sampler(Sampler && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_sampler(std::exchange(other.m_sampler, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Sampler & Gris::Graphics::Vulkan::Sampler::operator=(Sampler && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_sampler = std::exchange(other.m_sampler, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Sampler::~Sampler()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -55,12 +85,31 @@ Gris::Graphics::Vulkan::Sampler::operator bool() const
 
 const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 {
-    return m_sampler.get();
+    return m_sampler;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
 {
-    return m_sampler.get();
+    return m_sampler;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Sampler::Reset()
+{
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Sampler::ReleaseResources()
+{
+    if (m_sampler)
+    {
+        DeviceHandle().destroySampler(m_sampler, nullptr, Dispatch());
+        m_sampler = nullptr;
+    }
 }

@@ -9,6 +9,11 @@
 namespace Gris
 {
 
+inline bool Implication(bool antecedent, bool consequent) noexcept
+{
+    return !antecedent || consequent;
+}
+
 template<class T, class Allocator = std::allocator<T>>
 std::vector<T, Allocator> MakeReservedVector(size_t reservedSize)
 {

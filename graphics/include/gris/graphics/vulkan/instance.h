@@ -11,13 +11,13 @@ class WindowMixin;
 class Instance
 {
 public:
-    ~Instance() = default;
-
     Instance(const Instance &) = delete;
     Instance & operator=(const Instance &) = delete;
 
-    Instance(Instance &&) noexcept = default;
-    Instance & operator=(Instance &&) noexcept = default;
+    Instance(Instance && other) noexcept;
+    Instance & operator=(Instance && other) noexcept;
+
+    ~Instance();
 
     [[nodiscard]] static vk::Instance & InstanceHandle();
     [[nodiscard]] static vk::DispatchLoaderDynamic & Dispatch();
@@ -39,10 +39,12 @@ private:
 
     [[nodiscard]] bool CheckValidationLayerSupport();
 
-    vk::UniqueInstance m_instance = {};
+    void ReleaseResources();
+
     vk::DynamicLoader m_loader = {};
     vk::DispatchLoaderDynamic m_dispatch = {};
-    vk::UniqueHandle<vk::DebugUtilsMessengerEXT, vk::DispatchLoaderDynamic> m_debugMessenger = {};
+    vk::Instance m_instance = {};
+    vk::DebugUtilsMessengerEXT m_debugMessenger = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

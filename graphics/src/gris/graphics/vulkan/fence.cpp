@@ -8,8 +8,8 @@ Gris::Graphics::Vulkan::Fence::Fence() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Fence::Fence(std::shared_ptr<DeviceSharedData> sharedData, bool signaled)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::Fence::Fence(const ParentObject<Device> & device, bool signaled)
+    : DeviceResource(device)
 {
     vk::FenceCreateFlags flags;
     if (signaled)
@@ -19,13 +19,43 @@ Gris::Graphics::Vulkan::Fence::Fence(std::shared_ptr<DeviceSharedData> sharedDat
 
     auto const fenceInfo = vk::FenceCreateInfo{}.setFlags(flags);
 
-    auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo, nullptr, Dispatch());
+    auto fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
     if (fenceCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating frame fence", fenceCreateResult);
     }
 
-    m_fence = std::move(fenceCreateResult.value);
+    m_fence = fenceCreateResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Fence::Fence(Fence && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_fence(std::exchange(other.m_fence, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Fence & Gris::Graphics::Vulkan::Fence::operator=(Fence && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_fence = std::exchange(other.m_fence, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Fence::~Fence()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -46,12 +76,31 @@ Gris::Graphics::Vulkan::Fence::operator bool() const
 
 [[nodiscard]] const vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle() const
 {
-    return m_fence.get();
+    return m_fence;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::Fence & Gris::Graphics::Vulkan::Fence::FenceHandle()
 {
-    return m_fence.get();
+    return m_fence;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Fence::Reset()
+{
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Fence::ReleaseResources()
+{
+    if (m_fence)
+    {
+        DeviceHandle().destroyFence(m_fence, nullptr, Dispatch());
+        m_fence = nullptr;
+    }
 }

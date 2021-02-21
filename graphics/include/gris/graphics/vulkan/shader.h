@@ -10,15 +10,15 @@ class Shader : public DeviceResource
 public:
     Shader();
 
-    Shader(std::shared_ptr<DeviceSharedData> sharedData, const std::vector<uint32_t> & code, std::string entryPoint);
+    Shader(const ParentObject<Device> & device, const std::vector<uint32_t> & code, std::string entryPoint);
 
     Shader(const Shader &) = delete;
     Shader & operator=(const Shader &) = delete;
 
-    Shader(Shader &&) noexcept = default;
-    Shader & operator=(Shader &&) noexcept = default;
+    Shader(Shader && other) noexcept;
+    Shader & operator=(Shader && other) noexcept;
 
-    ~Shader() = default;
+    virtual ~Shader();
 
     explicit operator bool() const;
 
@@ -29,8 +29,12 @@ public:
 
     [[nodiscard]] const std::string & EntryPoint() const;
 
+    void Reset();
+
 private:
-    vk::UniqueShaderModule m_shaderModule = {};
+    void ReleaseResources();
+
+    vk::ShaderModule m_shaderModule = {};
     std::string m_entryPoint = {};
 };
 

@@ -39,8 +39,8 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(std::shared_ptr<DeviceSharedData> sharedData, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(const ParentObject<Device> & device, const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindingsLayout)
+    : DeviceResource(device)
 {
     auto bindings = Gris::MakeReservedVector<vk::DescriptorSetLayoutBinding>(bindingsLayout.Layouts.size());
     for (const auto & resourceLayout : bindingsLayout.Layouts)
@@ -56,13 +56,45 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
     auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings(bindings);
 
-    auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayoutUnique(layoutInfo, nullptr, Dispatch());
+    auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayout(layoutInfo, nullptr, Dispatch());
     if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating descriptor set layout", createDescriptorSetLayoutResult);
     }
 
-    m_descriptorSetLayout = std::move(createDescriptorSetLayoutResult.value);
+    m_descriptorSetLayout = createDescriptorSetLayoutResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayout(ShaderResourceBindingsLayout && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_descriptorSetLayout(std::exchange(other.m_descriptorSetLayout, {}))
+    , m_nameToBinding(std::exchange(other.m_nameToBinding, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::operator=(ShaderResourceBindingsLayout && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_descriptorSetLayout = std::exchange(other.m_descriptorSetLayout, {});
+        m_nameToBinding = std::exchange(other.m_nameToBinding, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::~ShaderResourceBindingsLayout()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -83,14 +115,14 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::operator bool() const
 
 [[nodiscard]] const vk::DescriptorSetLayout & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::DescriptorSetLayoutHandle() const
 {
-    return m_descriptorSetLayout.get();
+    return m_descriptorSetLayout;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::DescriptorSetLayout & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::DescriptorSetLayoutHandle()
 {
-    return m_descriptorSetLayout.get();
+    return m_descriptorSetLayout;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -101,4 +133,24 @@ const vk::DescriptorSetLayoutBinding & Gris::Graphics::Vulkan::ShaderResourceBin
                            { return entry.Name == name; });
     GRIS_ALWAYS_ASSERT(it != std::end(m_nameToBinding), "Request binding was not found in the layout");
     return it->Binding;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::Reset()
+{
+    m_nameToBinding.clear();
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ReleaseResources()
+{
+    if (m_descriptorSetLayout)
+    {
+        DeviceHandle().destroyDescriptorSetLayout(m_descriptorSetLayout, nullptr, Dispatch());
+        m_descriptorSetLayout = nullptr;
+    }
 }

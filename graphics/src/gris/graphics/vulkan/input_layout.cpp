@@ -27,3 +27,11 @@ void Gris::Graphics::Vulkan::InputLayout::AddAttributeDescription(uint32_t locat
 {
     return m_attributes;
 }
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::InputLayout::Reset()
+{
+    m_attributes.clear();
+    m_bindings.clear();
+}

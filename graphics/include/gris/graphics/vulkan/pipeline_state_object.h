@@ -16,7 +16,7 @@ public:
     PipelineStateObject();
 
     PipelineStateObject(
-        std::shared_ptr<DeviceSharedData> sharedData,
+        const ParentObject<Device> & device,
         uint32_t swapChainWidth,
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
@@ -28,10 +28,10 @@ public:
     PipelineStateObject(const PipelineStateObject &) = delete;
     PipelineStateObject & operator=(const PipelineStateObject &) = delete;
 
-    PipelineStateObject(PipelineStateObject &&) noexcept = default;
-    PipelineStateObject & operator=(PipelineStateObject &&) noexcept = default;
+    PipelineStateObject(PipelineStateObject && other) noexcept;
+    PipelineStateObject & operator=(PipelineStateObject && other) noexcept;
 
-    ~PipelineStateObject() = default;
+    virtual ~PipelineStateObject();
 
     explicit operator bool() const;
 
@@ -43,9 +43,13 @@ public:
     [[nodiscard]] const vk::Pipeline & GraphicsPipelineHandle() const;
     [[nodiscard]] vk::Pipeline & GraphicsPipelineHandle();
 
+    void Reset();
+
 private:
-    vk::UniquePipelineLayout m_pipelineLayout = {};
-    vk::UniquePipeline m_graphicsPipeline = {};
+    void ReleaseResources();
+
+    vk::PipelineLayout m_pipelineLayout = {};
+    vk::Pipeline m_graphicsPipeline = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

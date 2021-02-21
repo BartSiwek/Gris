@@ -10,15 +10,15 @@ class Sampler : public DeviceResource
 public:
     Sampler();
 
-    Sampler(std::shared_ptr<DeviceSharedData> sharedData, float minLod, float maxLod);
+    Sampler(const ParentObject<Device> & device, float minLod, float maxLod);
 
     Sampler(const Sampler &) = delete;
     Sampler & operator=(const Sampler &) = delete;
 
-    Sampler(Sampler &&) noexcept = default;
-    Sampler & operator=(Sampler &&) noexcept = default;
+    Sampler(Sampler && other) noexcept;
+    Sampler & operator=(Sampler && other) noexcept;
 
-    ~Sampler() = default;
+    virtual ~Sampler();
 
     explicit operator bool() const;
 
@@ -27,8 +27,12 @@ public:
     const vk::Sampler & SamplerHandle() const;
     vk::Sampler & SamplerHandle();
 
+    void Reset();
+
 private:
-    vk::UniqueSampler m_sampler = {};
+    void ReleaseResources();
+
+    vk::Sampler m_sampler = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

@@ -8,18 +8,48 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::Semaphore::Semaphore(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::Semaphore::Semaphore(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 
-    auto imageSemaphoreCreateResult = DeviceHandle().createSemaphoreUnique(semaphoreInfo, nullptr, Dispatch());
+    auto imageSemaphoreCreateResult = DeviceHandle().createSemaphore(semaphoreInfo, nullptr, Dispatch());
     if (imageSemaphoreCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating frame image available semaphore", imageSemaphoreCreateResult);
     }
 
-    m_semaphore = std::move(imageSemaphoreCreateResult.value);
+    m_semaphore = imageSemaphoreCreateResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Semaphore::Semaphore(Semaphore && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_semaphore(std::exchange(other.m_semaphore, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Semaphore & Gris::Graphics::Vulkan::Semaphore::operator=(Semaphore && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_semaphore = std::exchange(other.m_semaphore, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Semaphore::~Semaphore()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -40,12 +70,31 @@ Gris::Graphics::Vulkan::Semaphore::operator bool() const
 
 const vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle() const
 {
-    return m_semaphore.get();
+    return m_semaphore;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle()
 {
-    return m_semaphore.get();
+    return m_semaphore;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Semaphore::Reset()
+{
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Semaphore::ReleaseResources()
+{
+    if (m_semaphore)
+    {
+        DeviceHandle().destroySemaphore(m_semaphore, nullptr, Dispatch());
+        m_semaphore = nullptr;
+    }
 }

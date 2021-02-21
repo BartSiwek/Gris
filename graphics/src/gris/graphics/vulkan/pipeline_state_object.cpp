@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
-    std::shared_ptr<DeviceSharedData> sharedData,
+    const ParentObject<Device> & device,
     uint32_t swapChainWidth,
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     const ShaderResourceBindingsLayout & resourceLayout,
     const Shader & vertexShader,
     const Shader & fragmentShader)
-    : DeviceResource(std::move(sharedData))
+    : DeviceResource(device)
 {
     auto const shaderStages = std::array{
         vk::PipelineShaderStageCreateInfo{}
@@ -106,13 +106,13 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     auto const descriptorSetLayouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}.setSetLayouts(descriptorSetLayouts);
 
-    auto createPipelineLayoutResult = DeviceHandle().createPipelineLayoutUnique(pipelineLayoutInfo, nullptr, Dispatch());
+    auto createPipelineLayoutResult = DeviceHandle().createPipelineLayout(pipelineLayoutInfo, nullptr, Dispatch());
     if (createPipelineLayoutResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating pipeline layout", createPipelineLayoutResult);
     }
 
-    m_pipelineLayout = std::move(createPipelineLayoutResult.value);
+    m_pipelineLayout = createPipelineLayoutResult.value;
 
     auto const pipelineInfo = vk::GraphicsPipelineCreateInfo{}
                                   .setStages(shaderStages)
@@ -125,17 +125,50 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                   .setPDepthStencilState(&depthStencil)
                                   .setPColorBlendState(&colorBlending)
                                   .setPDynamicState({})
-                                  .setLayout(m_pipelineLayout.get())
+                                  .setLayout(m_pipelineLayout)
                                   .setRenderPass(renderPass.RenderPassHandle())
                                   .setSubpass(0);
 
-    auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipelineUnique({}, pipelineInfo, nullptr, Dispatch());
+    auto createGraphicsPipelineResult = DeviceHandle().createGraphicsPipeline({}, pipelineInfo, nullptr, Dispatch());
     if (createGraphicsPipelineResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating graphics pipeline", createGraphicsPipelineResult);
     }
 
-    m_graphicsPipeline = std::move(createGraphicsPipelineResult.value);
+    m_graphicsPipeline = createGraphicsPipelineResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(PipelineStateObject && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_pipelineLayout(std::exchange(other.m_pipelineLayout, {}))
+    , m_graphicsPipeline(std::exchange(other.m_graphicsPipeline, {}))
+
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject & Gris::Graphics::Vulkan::PipelineStateObject::operator=(PipelineStateObject && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_pipelineLayout = std::exchange(other.m_pipelineLayout, {});
+        m_graphicsPipeline = std::exchange(other.m_graphicsPipeline, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::PipelineStateObject::~PipelineStateObject()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -149,33 +182,58 @@ Gris::Graphics::Vulkan::PipelineStateObject::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::PipelineStateObject::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_graphicsPipeline);
+    return DeviceResource::IsValid() && static_cast<bool>(m_pipelineLayout);
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] const vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle() const
 {
-    return m_pipelineLayout.get();
+    return m_pipelineLayout;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::PipelineLayout & Gris::Graphics::Vulkan::PipelineStateObject::PipelineLayoutHandle()
 {
-    return m_pipelineLayout.get();
+    return m_pipelineLayout;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] const vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle() const
 {
-    return m_graphicsPipeline.get();
+    return m_graphicsPipeline;
 }
 
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] vk::Pipeline & Gris::Graphics::Vulkan::PipelineStateObject::GraphicsPipelineHandle()
 {
-    return m_graphicsPipeline.get();
+    return m_graphicsPipeline;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::PipelineStateObject::Reset()
+{
+    ReleaseResources();
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::PipelineStateObject::ReleaseResources()
+{
+    if (m_graphicsPipeline)
+    {
+        DeviceHandle().destroyPipeline(m_graphicsPipeline, nullptr, Dispatch());
+        m_graphicsPipeline = nullptr;
+    }
+
+    if (m_pipelineLayout)
+    {
+        DeviceHandle().destroyPipelineLayout(m_pipelineLayout, nullptr, Dispatch());
+        m_pipelineLayout = nullptr;
+    }
 }

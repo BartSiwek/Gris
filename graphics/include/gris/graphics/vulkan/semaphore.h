@@ -12,15 +12,15 @@ class Semaphore : public DeviceResource
 public:
     Semaphore();
 
-    explicit Semaphore(std::shared_ptr<DeviceSharedData> sharedData);
+    explicit Semaphore(const ParentObject<Device> & device);
 
     Semaphore(const Semaphore &) = delete;
     Semaphore & operator=(const Semaphore &) = delete;
 
-    Semaphore(Semaphore &&) noexcept = default;
-    Semaphore & operator=(Semaphore &&) noexcept = default;
+    Semaphore(Semaphore && other) noexcept;
+    Semaphore & operator=(Semaphore && other) noexcept;
 
-    ~Semaphore() = default;
+    virtual ~Semaphore();
 
     explicit operator bool() const;
 
@@ -29,8 +29,12 @@ public:
     const vk::Semaphore & SemaphoreHandle() const;
     vk::Semaphore & SemaphoreHandle();
 
+    void Reset();
+
 private:
-    vk::UniqueSemaphore m_semaphore = {};
+    void ReleaseResources();
+
+    vk::Semaphore m_semaphore = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

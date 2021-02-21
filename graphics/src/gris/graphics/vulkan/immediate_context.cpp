@@ -16,8 +16,8 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData)
-    : DeviceResource(std::move(sharedData))
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(const ParentObject<Device> & device)
+    : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
@@ -28,22 +28,56 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(std::shared_ptr<Devic
                               .setFlags(vk::CommandPoolCreateFlagBits::eTransient)
                               .setQueueFamilyIndex(graphicsQueueFamily);
 
-    auto createCommandPoolResult = DeviceHandle().createCommandPoolUnique(poolInfo, nullptr, Dispatch());
+    auto createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
     if (createCommandPoolResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
     }
 
-    m_commandPool = std::move(createCommandPoolResult.value);
+    m_commandPool = createCommandPoolResult.value;
 
     auto const fenceInfo = vk::FenceCreateInfo{};
-    auto fenceCreateResult = DeviceHandle().createFenceUnique(fenceInfo, nullptr, Dispatch());
+    auto fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
     if (fenceCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating immediate context fence", fenceCreateResult);
     }
 
-    m_fence = std::move(fenceCreateResult.value);
+    m_fence = fenceCreateResult.value;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(ImmediateContext && other) noexcept
+    : DeviceResource(std::move(other))
+    , m_graphicsQueue(std::exchange(other.m_graphicsQueue, {}))
+    , m_commandPool(std::exchange(other.m_commandPool, {}))
+    , m_fence(std::exchange(other.m_fence, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ImmediateContext & Gris::Graphics::Vulkan::ImmediateContext::operator=(ImmediateContext && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        DeviceResource::operator=(std::move(static_cast<DeviceResource &&>(other)));
+        m_graphicsQueue = std::exchange(other.m_graphicsQueue, {});
+        m_commandPool = std::exchange(other.m_commandPool, {});
+        m_fence = std::exchange(other.m_fence, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::ImmediateContext::~ImmediateContext()
+{
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -57,7 +91,7 @@ Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ImmediateContext::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
+    return DeviceResource::IsValid() && static_cast<bool>(m_graphicsQueue) && static_cast<bool>(m_commandPool) && static_cast<bool>(m_fence);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -100,7 +134,7 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
         barriers[0].srcAccessMask = vk::AccessFlagBits::eTransferWrite;
         barriers[0].dstAccessMask = vk::AccessFlagBits::eTransferRead;
 
-        commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, barriers, Dispatch());
+        commandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, barriers, Dispatch());
 
         auto const blit = vk::ImageBlit(
             vk::ImageSubresourceLayers(vk::ImageAspectFlagBits::eColor,
@@ -115,14 +149,14 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
             std::array{ vk::Offset3D(0, 0, 0), vk::Offset3D(mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1) });
 
         std::array blits = { blit };
-        commandBuffer->blitImage(texture.ImageHandle(), vk::ImageLayout::eTransferSrcOptimal, texture.ImageHandle(), vk::ImageLayout::eTransferDstOptimal, blits, {}, Dispatch());
+        commandBuffer.blitImage(texture.ImageHandle(), vk::ImageLayout::eTransferSrcOptimal, texture.ImageHandle(), vk::ImageLayout::eTransferDstOptimal, blits, {}, Dispatch());
 
         barriers[0].oldLayout = vk::ImageLayout::eTransferSrcOptimal;
         barriers[0].newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
         barriers[0].srcAccessMask = vk::AccessFlagBits::eTransferRead;
         barriers[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
 
-        commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barriers, Dispatch());
+        commandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barriers, Dispatch());
 
         if (mipWidth > 1)
         {
@@ -140,9 +174,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
     barriers[0].srcAccessMask = vk::AccessFlagBits::eTransferRead;
     barriers[0].dstAccessMask = vk::AccessFlagBits::eShaderRead;
 
-    commandBuffer->pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barriers, Dispatch());
+    commandBuffer.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer, vk::PipelineStageFlagBits::eFragmentShader, {}, {}, {}, barriers, Dispatch());
 
-    EndSingleTimeCommands(commandBuffer.get());
+    EndSingleTimeCommands(commandBuffer);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -164,9 +198,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::CopyBufferToImage(const Buffer & 
 
     std::array regions = { region };
 
-    commandBuffer->copyBufferToImage(buffer.BufferHandle(), texture.ImageHandle(), vk::ImageLayout::eTransferDstOptimal, regions, Dispatch());
+    commandBuffer.copyBufferToImage(buffer.BufferHandle(), texture.ImageHandle(), vk::ImageLayout::eTransferDstOptimal, regions, Dispatch());
 
-    EndSingleTimeCommands(commandBuffer.get());
+    EndSingleTimeCommands(commandBuffer);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -213,9 +247,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::TransitionImageLayout(const Textu
     }
 
     std::array imageMemoryBarriers = { barrier };
-    commandBuffer->pipelineBarrier(sourceStage, destinationStage, {}, {}, {}, imageMemoryBarriers, Dispatch());
+    commandBuffer.pipelineBarrier(sourceStage, destinationStage, {}, {}, {}, imageMemoryBarriers, Dispatch());
 
-    EndSingleTimeCommands(commandBuffer.get());
+    EndSingleTimeCommands(commandBuffer);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -225,9 +259,9 @@ void Gris::Graphics::Vulkan::ImmediateContext::CopyBuffer(const Buffer & srcBuff
     auto commandBuffer = BeginSingleTimeCommands();
 
     vk::BufferCopy copyRegion(0, 0, size);
-    commandBuffer->copyBuffer(srcBuffer.BufferHandle(), dstBuffer.BufferHandle(), 1, &copyRegion, Dispatch());
+    commandBuffer.copyBuffer(srcBuffer.BufferHandle(), dstBuffer.BufferHandle(), 1, &copyRegion, Dispatch());
 
-    EndSingleTimeCommands(commandBuffer.get());
+    EndSingleTimeCommands(commandBuffer);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -263,14 +297,23 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] vk::UniqueCommandBuffer Gris::Graphics::Vulkan::ImmediateContext::BeginSingleTimeCommands()
+void Gris::Graphics::Vulkan::ImmediateContext::Reset()
+{
+    ReleaseResources();
+    m_graphicsQueue = nullptr;
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::CommandBuffer Gris::Graphics::Vulkan::ImmediateContext::BeginSingleTimeCommands()
 {
     auto const allocInfo = vk::CommandBufferAllocateInfo{}
-                               .setCommandPool(m_commandPool.get())
+                               .setCommandPool(m_commandPool)
                                .setLevel(vk::CommandBufferLevel::ePrimary)
                                .setCommandBufferCount(1);
 
-    auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffersUnique(allocInfo, Dispatch());
+    auto allocateCommandBuffersResult = DeviceHandle().allocateCommandBuffers(allocInfo, Dispatch());
     if (allocateCommandBuffersResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error allocating command buffers", allocateCommandBuffersResult);
@@ -280,13 +323,13 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
     auto const beginInfo = vk::CommandBufferBeginInfo{}.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
-    auto const beginResult = commandBuffer->begin(beginInfo, Dispatch());
+    auto const beginResult = commandBuffer.begin(beginInfo, Dispatch());
     if (beginResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error beginning the command buffer", beginResult);
     }
 
-    return std::move(commandBuffer);
+    return commandBuffer;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -304,7 +347,7 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
     std::array commandBuffers = { commandBuffer };
     std::array submits = { vk::SubmitInfo{}.setCommandBuffers(commandBuffers) };
 
-    auto const submitResult = m_graphicsQueue.submit(submits, m_fence.get(), Dispatch());
+    auto const submitResult = m_graphicsQueue.submit(submits, m_fence, Dispatch());
     if (submitResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error submitting the command buffer", submitResult);
@@ -312,7 +355,7 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
 
     ///
 
-    auto waitFences = std::array{ m_fence.get() };
+    auto waitFences = std::array{ m_fence };
     auto const waitResult = DeviceHandle().waitForFences(waitFences, static_cast<vk::Bool32>(true), std::numeric_limits<uint64_t>::max(), Dispatch());
     if (waitResult != vk::Result::eSuccess)
     {
@@ -325,5 +368,26 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
     if (resetResult != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error resetting immediate context fence", resetResult);
+    }
+
+    ///
+
+    DeviceHandle().freeCommandBuffers(m_commandPool, commandBuffers, Dispatch());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ImmediateContext::ReleaseResources()
+{
+    if (m_fence)
+    {
+        DeviceHandle().destroyFence(m_fence, nullptr, Dispatch());
+        m_fence = nullptr;
+    }
+
+    if (m_commandPool)
+    {
+        DeviceHandle().destroyCommandPool(m_commandPool, nullptr, Dispatch());
+        m_commandPool = nullptr;
     }
 }

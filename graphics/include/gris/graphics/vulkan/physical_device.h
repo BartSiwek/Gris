@@ -21,8 +21,8 @@ public:
 
     PhysicalDevice(vk::PhysicalDevice physicalDevice, vk::SampleCountFlagBits msaaSamples, DeviceQueueFamilyIndices queueFamilies);
 
-    PhysicalDevice(const PhysicalDevice &) = default;
-    PhysicalDevice & operator=(const PhysicalDevice &) = default;
+    PhysicalDevice(const PhysicalDevice &) = delete;
+    PhysicalDevice & operator=(const PhysicalDevice &) = delete;
 
     PhysicalDevice(PhysicalDevice &&) noexcept = default;
     PhysicalDevice & operator=(PhysicalDevice &&) noexcept = default;
@@ -40,8 +40,10 @@ public:
     [[nodiscard]] vk::FormatProperties GetFormatProperties(vk::Format format) const;
 
     [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const WindowMixin & window) const;
-    [[nodiscard]] vk::UniqueDevice CreateDevice() const;
+    [[nodiscard]] vk::Device CreateDevice() const;
     [[nodiscard]] Allocator CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic dispatch) const;
+
+    void Reset();
 
 private:
     vk::PhysicalDevice m_physicalDevice = {};

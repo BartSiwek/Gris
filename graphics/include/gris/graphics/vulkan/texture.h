@@ -11,7 +11,7 @@ class Texture : public DeviceResource
 public:
     Texture();
 
-    Texture(std::shared_ptr<DeviceSharedData> sharedData,
+    Texture(const ParentObject<Device> & device,
             uint32_t width,
             uint32_t height,
             uint32_t mipLevels,
@@ -24,10 +24,10 @@ public:
     Texture(const Texture &) = delete;
     Texture & operator=(const Texture &) = delete;
 
-    Texture(Texture &&) noexcept = default;
-    Texture & operator=(Texture &&) noexcept = default;
+    Texture(Texture && other) noexcept;
+    Texture & operator=(Texture && other) noexcept;
 
-    ~Texture() = default;
+    virtual ~Texture();
 
     explicit operator bool() const;
 
@@ -41,8 +41,12 @@ public:
     [[nodiscard]] const vk::Image & ImageHandle() const;
     [[nodiscard]] vk::Image & ImageHandle();
 
+    void Reset();
+
 private:
-    vk::UniqueImage m_image = {};
+    void ReleaseResources();
+
+    vk::Image m_image = {};
     Allocation m_imageMemory = {};
 
     uint32_t m_mipLevels = 1;

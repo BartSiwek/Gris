@@ -67,9 +67,43 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 
 // -------------------------------------------------------------------------------------------------
 
+Gris::Graphics::Vulkan::Instance::Instance(Instance && other) noexcept
+    : m_loader(std::exchange(other.m_loader, {}))
+    , m_dispatch(std::exchange(other.m_dispatch, {}))
+    , m_instance(std::exchange(other.m_instance, {}))
+    , m_debugMessenger(std::exchange(other.m_debugMessenger, {}))
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::operator=(Instance && other) noexcept
+{
+    if (this != &other)
+    {
+        ReleaseResources();
+
+        m_loader = std::exchange(other.m_loader, {});
+        m_dispatch = std::exchange(other.m_dispatch, {});
+        m_instance = std::exchange(other.m_instance, {});
+        m_debugMessenger = std::exchange(other.m_debugMessenger, {});
+    }
+
+    return *this;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Vulkan::Instance::~Instance()
+{
+    ReleaseResources();
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] vk::Instance & Gris::Graphics::Vulkan::Instance::InstanceHandle()
 {
-    return GetInstance().m_instance.get();
+    return GetInstance().m_instance;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -88,7 +122,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
     vk::DispatchLoaderDynamic result;
     auto getInstanceProcAddr = instance.m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
     auto getDeviceProcAddr = instance.m_loader.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
-    result.init(instance.m_instance.get(), getInstanceProcAddr, device, getDeviceProcAddr);
+    result.init(instance.m_instance, getInstanceProcAddr, device, getDeviceProcAddr);
     return result;
 }
 
@@ -133,7 +167,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
     allocatorInfo.pHeapSizeLimit = nullptr;
     allocatorInfo.pVulkanFunctions = &vulkanFunctions;
     allocatorInfo.pRecordSettings = nullptr;
-    allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance.get());
+    allocatorInfo.instance = static_cast<VkInstance>(GetInstance().m_instance);
     allocatorInfo.vulkanApiVersion = GRIS_VULKAN_API_VERSION;
 
     VmaAllocator allocator = {};
@@ -152,7 +186,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
 {
     auto & instance = GetInstance();
 
-    auto const enumeratePhysicalDevicesResult = instance.m_instance->enumeratePhysicalDevices(instance.m_dispatch);
+    auto const enumeratePhysicalDevicesResult = instance.m_instance.enumeratePhysicalDevices(instance.m_dispatch);
     if (enumeratePhysicalDevicesResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error enumerating physical devices", enumeratePhysicalDevicesResult);
@@ -231,14 +265,14 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
                                 .setPEnabledLayerNames(enabledLayers)
                                 .setPEnabledExtensionNames(extensions);
 
-    auto createInstanceResult = vk::createInstanceUnique(createInfo, nullptr, m_dispatch);
+    auto createInstanceResult = vk::createInstance(createInfo, nullptr, m_dispatch);
     if (createInstanceResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating Vulkan instance", createInstanceResult);
     }
 
-    m_instance = std::move(createInstanceResult.value);
-    m_dispatch.init(m_instance.get());
+    m_instance = createInstanceResult.value;
+    m_dispatch.init(m_instance);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -255,13 +289,13 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
                                 .setMessageType(vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance)
                                 .setPfnUserCallback(&DebugCallback);
 
-    auto createDebugUtilsMessengerResult = m_instance->createDebugUtilsMessengerEXTUnique(createInfo, nullptr, m_dispatch);
+    auto createDebugUtilsMessengerResult = m_instance.createDebugUtilsMessengerEXT(createInfo, nullptr, m_dispatch);
     if (createDebugUtilsMessengerResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating debug messenger", createDebugUtilsMessengerResult);
     }
 
-    m_debugMessenger = std::move(createDebugUtilsMessengerResult.value);
+    m_debugMessenger = createDebugUtilsMessengerResult.value;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -296,4 +330,21 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
     }
 
     return true;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::Instance::ReleaseResources()
+{
+    if (m_debugMessenger)
+    {
+        m_instance.destroyDebugUtilsMessengerEXT(m_debugMessenger, nullptr, m_dispatch);
+        m_debugMessenger = nullptr;
+    }
+
+    if (m_instance)
+    {
+        m_instance.destroy(nullptr, m_dispatch);
+        m_instance = nullptr;
+    }
 }

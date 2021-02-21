@@ -15,10 +15,10 @@ public:
     WindowMixin(const WindowMixin & other) = delete;
     WindowMixin & operator=(const WindowMixin & other) = delete;
 
-    WindowMixin(WindowMixin &&) noexcept = default;
-    WindowMixin & operator=(WindowMixin &&) noexcept = default;
+    WindowMixin(WindowMixin && other) noexcept;
+    WindowMixin & operator=(WindowMixin && other) noexcept;
 
-    virtual ~WindowMixin() = default;
+    virtual ~WindowMixin();
 
     explicit operator bool() const;
 
@@ -26,8 +26,7 @@ public:
 
     [[nodiscard]] vk::SurfaceKHR SurfaceHandle() const
     {
-        GRIS_ALWAYS_ASSERT(m_surface, "Invalid surface handle");
-        return m_surface.get();
+        return m_surface;
     }
 
 protected:
@@ -35,13 +34,15 @@ protected:
 
     static vk::DispatchLoaderDynamic & Dispatch();
 
-    void SetSurfaceHandle(vk::UniqueSurfaceKHR surface)
+    void SetSurfaceHandle(vk::SurfaceKHR surface)
     {
         m_surface = std::move(surface);
     }
 
 private:
-    vk::UniqueSurfaceKHR m_surface = {};
+    void Reset();
+
+    vk::SurfaceKHR m_surface = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

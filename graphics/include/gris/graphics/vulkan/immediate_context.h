@@ -16,15 +16,15 @@ class ImmediateContext : public DeviceResource
 public:
     ImmediateContext();
 
-    explicit ImmediateContext(std::shared_ptr<DeviceSharedData> sharedData);
+    explicit ImmediateContext(const ParentObject<Device> & device);
 
     ImmediateContext(const ImmediateContext &) = delete;
     ImmediateContext & operator=(const ImmediateContext &) = delete;
 
-    ImmediateContext(ImmediateContext &&) noexcept = default;
-    ImmediateContext & operator=(ImmediateContext &&) noexcept = default;
+    ImmediateContext(ImmediateContext && other) noexcept;
+    ImmediateContext & operator=(ImmediateContext && other) noexcept;
 
-    ~ImmediateContext() = default;
+    virtual ~ImmediateContext();
 
     explicit operator bool() const;
 
@@ -36,13 +36,17 @@ public:
     void CopyBuffer(const Buffer & srcBuffer, const Buffer & dstBuffer, vk::DeviceSize size);
     void Submit(DeferredContext * context, const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores, const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores, Fence & fence);
 
+    void Reset();
+
 private:
-    [[nodiscard]] vk::UniqueCommandBuffer BeginSingleTimeCommands();
+    [[nodiscard]] vk::CommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const;
 
+    void ReleaseResources();
+
     vk::Queue m_graphicsQueue = {};
-    vk::UniqueCommandPool m_commandPool = {};
-    vk::UniqueFence m_fence = {};
+    vk::CommandPool m_commandPool = {};
+    vk::Fence m_fence = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan

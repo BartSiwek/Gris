@@ -10,15 +10,15 @@ class RenderPass : public DeviceResource
 public:
     RenderPass();
 
-    RenderPass(std::shared_ptr<DeviceSharedData> sharedData, vk::Format swapChainFormat, vk::Format depthFormat);
+    RenderPass(const ParentObject<Device> & device, vk::Format swapChainFormat, vk::Format depthFormat);
 
     RenderPass(const RenderPass &) = delete;
     RenderPass & operator=(const RenderPass &) = delete;
 
-    RenderPass(RenderPass &&) noexcept = default;
-    RenderPass & operator=(RenderPass &&) noexcept = default;
+    RenderPass(RenderPass && other) noexcept;
+    RenderPass & operator=(RenderPass && other) noexcept;
 
-    ~RenderPass() = default;
+    virtual ~RenderPass();
 
     explicit operator bool() const;
 
@@ -27,10 +27,12 @@ public:
     [[nodiscard]] const vk::RenderPass & RenderPassHandle() const;
     [[nodiscard]] vk::RenderPass & RenderPassHandle();
 
-private:
-    void CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
+    void Reset();
 
-    vk::UniqueRenderPass m_renderPass = {};
+private:
+    void ReleaseResources();
+
+    vk::RenderPass m_renderPass = {};
 };
 
 }  // namespace Gris::Graphics::Vulkan
