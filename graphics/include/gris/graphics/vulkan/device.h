@@ -119,6 +119,8 @@ public:
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
     void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);
 
+    void Reset();
+
 private:
     struct CategoryAndPoolManager
     {
@@ -134,8 +136,6 @@ private:
 
     [[nodiscard]] const vk::DispatchLoaderDynamic & DispatchHandle() const;
     [[nodiscard]] vk::DispatchLoaderDynamic & DispatchHandle();
-
-    void Reset();
 
     PhysicalDevice m_physicalDevice = {};
     vk::Device m_device = {};

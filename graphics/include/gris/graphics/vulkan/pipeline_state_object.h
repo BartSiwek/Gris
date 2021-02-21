@@ -43,9 +43,9 @@ public:
     [[nodiscard]] const vk::Pipeline & GraphicsPipelineHandle() const;
     [[nodiscard]] vk::Pipeline & GraphicsPipelineHandle();
 
-private:
     void Reset();
 
+private:
     vk::PipelineLayout m_pipelineLayout = {};
     vk::Pipeline m_graphicsPipeline = {};
 };

@@ -3,10 +3,12 @@
 #include <gris/graphics/vulkan/allocation.h>
 #include <gris/graphics/vulkan/device_resource.h>
 
+#include <gris/object_hierarchy.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
-class Buffer : public DeviceResource
+class Buffer : public DeviceResource, public ParentObject<Buffer>
 {
 public:
     Buffer();
@@ -30,9 +32,9 @@ public:
 
     void SetData(const void * data, size_t size);
 
-private:
     void Reset();
 
+private:
     vk::Buffer m_buffer = {};
     Allocation m_bufferMemory = {};
 };

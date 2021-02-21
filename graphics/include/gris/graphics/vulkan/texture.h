@@ -41,9 +41,9 @@ public:
     [[nodiscard]] const vk::Image & ImageHandle() const;
     [[nodiscard]] vk::Image & ImageHandle();
 
-private:
     void Reset();
 
+private:
     vk::Image m_image = {};
     Allocation m_imageMemory = {};
 

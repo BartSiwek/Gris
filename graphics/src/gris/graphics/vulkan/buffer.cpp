@@ -11,6 +11,7 @@ Gris::Graphics::Vulkan::Buffer::Buffer() = default;
 
 Gris::Graphics::Vulkan::Buffer::Buffer(const ParentObject<Device> & device, vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties)
     : DeviceResource(device)
+    , ParentObject()
 {
     auto const bufferInfo = vk::BufferCreateInfo{}
                                 .setSize(size)
@@ -42,6 +43,7 @@ Gris::Graphics::Vulkan::Buffer::Buffer(const ParentObject<Device> & device, vk::
 
 Gris::Graphics::Vulkan::Buffer::Buffer(Buffer && other) noexcept
     : DeviceResource(std::move(other))
+    , ParentObject(std::move(other))
     , m_buffer(std::exchange(other.m_buffer, {}))
     , m_bufferMemory(std::exchange(other.m_bufferMemory, {}))
 {
@@ -56,6 +58,7 @@ Gris::Graphics::Vulkan::Buffer & Gris::Graphics::Vulkan::Buffer::operator=(Buffe
         Reset();
 
         DeviceResource::operator=(std::move(other));
+        ParentObject::operator=(std::move(other));
         m_buffer = std::exchange(other.m_buffer, {});
         m_bufferMemory = std::exchange(other.m_bufferMemory, {});
     }
@@ -81,7 +84,7 @@ Gris::Graphics::Vulkan::Buffer::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Buffer::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_buffer) && static_cast<bool>(m_bufferMemory);
+    return DeviceResource::IsValid() && static_cast<bool>(m_buffer);
 }
 
 // -------------------------------------------------------------------------------------------------

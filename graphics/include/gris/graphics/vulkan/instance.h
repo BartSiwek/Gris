@@ -39,7 +39,7 @@ private:
 
     [[nodiscard]] bool CheckValidationLayerSupport();
 
-    void Reset();
+    void ReleaseResources();
 
     vk::DynamicLoader m_loader = {};
     vk::DispatchLoaderDynamic m_dispatch = {};

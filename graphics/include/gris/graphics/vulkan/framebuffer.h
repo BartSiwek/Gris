@@ -30,9 +30,9 @@ public:
     const vk::Framebuffer & FramebufferHandle() const;
     vk::Framebuffer & FramebufferHandle();
 
-private:
     void Reset();
 
+private:
     vk::Framebuffer m_framebuffer = {};
 };
 

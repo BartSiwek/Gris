@@ -37,9 +37,9 @@ public:
     [[nodiscard]] ShaderResourceBindingsPool AllocatePool();
     void DeallocatePool(ShaderResourceBindingsPool pool);
 
-private:
     void Reset();
 
+private:
     Backend::ShaderResourceBindingsPoolCategory m_category = {};
     Backend::ShaderResourceBindingsPoolSizes m_sizes = {};
     std::vector<ShaderResourceBindingsPool> m_freePools = {};

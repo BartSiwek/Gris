@@ -181,3 +181,20 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
 
     m_needsRebuilding = false;
 }
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::ShaderResourceBindings::Reset()    
+{
+    m_descriptorSet = nullptr;
+    
+    m_combinedSamplers.clear();
+    m_bufferViews.clear();
+    m_textureViews.clear();
+    m_samplers.clear();
+
+    m_needsRebuilding = true;
+
+    ChildObject<ShaderResourceBindingsLayout>::ResetParent();
+    DeviceResource::ResetParent();
+}

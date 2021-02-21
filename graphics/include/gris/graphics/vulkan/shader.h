@@ -29,9 +29,9 @@ public:
 
     [[nodiscard]] const std::string & EntryPoint() const;
 
-private:
     void Reset();
 
+private:
     vk::ShaderModule m_shaderModule = {};
     std::string m_entryPoint = {};
 };

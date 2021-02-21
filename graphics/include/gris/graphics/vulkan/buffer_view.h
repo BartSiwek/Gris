@@ -2,6 +2,8 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
+#include <gris/object_hierarchy.h>
+
 #include <cstdint>
 
 namespace Gris::Graphics::Vulkan
@@ -9,12 +11,12 @@ namespace Gris::Graphics::Vulkan
 
 class Buffer;
 
-class BufferView
+class BufferView : private ChildObject<Buffer>
 {
 public:
     BufferView();
 
-    BufferView(const Buffer * buffer, uint32_t offset, uint32_t size);
+    BufferView(const ParentObject<Buffer> & buffer, uint32_t offset, uint32_t size);
 
     BufferView(const BufferView &) = default;
     BufferView & operator=(const BufferView &) = default;
@@ -34,8 +36,9 @@ public:
 
     uint32_t Size() const;
 
+    void Reset();
+
 private:
-    const Buffer * m_buffer = nullptr;
     uint32_t m_offset = 0;
     uint32_t m_size = 0;
 };

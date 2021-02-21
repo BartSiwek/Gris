@@ -39,9 +39,9 @@ public:
     [[nodiscard]] void * Map(const Allocation & allocation) const;
     void Unmap(const Allocation & allocation) const;
 
-private:
     void Reset();
 
+private:
     VmaAllocator m_allocator = VK_NULL_HANDLE;
 };
 

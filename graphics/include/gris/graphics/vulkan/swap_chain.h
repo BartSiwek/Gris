@@ -93,14 +93,14 @@ public:
         return m_renderFinishedSemaphores[frame.VirtualFrameIndex];
     }
 
+    void Reset();
+
 private:
     void CreateSwapChain(
         const WindowMixin & window,
         uint32_t width,
         uint32_t height,
         vk::SwapchainKHR oldSwapChain);
-
-    void Reset();
 
     vk::SwapchainKHR m_swapChain = {};
     std::vector<vk::Image> m_swapChainImages = {};

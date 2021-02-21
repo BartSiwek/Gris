@@ -43,6 +43,8 @@ public:
     [[nodiscard]] vk::Device CreateDevice() const;
     [[nodiscard]] Allocator CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic dispatch) const;
 
+    void Reset();
+
 private:
     vk::PhysicalDevice m_physicalDevice = {};
     vk::SampleCountFlagBits m_msaaSamples = vk::SampleCountFlagBits::e1;

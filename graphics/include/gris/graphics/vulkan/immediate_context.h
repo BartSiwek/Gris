@@ -36,11 +36,11 @@ public:
     void CopyBuffer(const Buffer & srcBuffer, const Buffer & dstBuffer, vk::DeviceSize size);
     void Submit(DeferredContext * context, const std::vector<std::reference_wrapper<Semaphore>> & waitSemaphores, const std::vector<std::reference_wrapper<Semaphore>> & signalSemaphores, Fence & fence);
 
+    void Reset();
+
 private:
     [[nodiscard]] vk::CommandBuffer BeginSingleTimeCommands();
     void EndSingleTimeCommands(vk::CommandBuffer & commandBuffer) const;
-
-    void Reset();
 
     vk::Queue m_graphicsQueue = {};
     vk::CommandPool m_commandPool = {};

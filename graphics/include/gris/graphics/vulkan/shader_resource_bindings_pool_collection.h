@@ -40,9 +40,9 @@ public:
 
     void DeallocateAll();
 
-private:
     void Reset();
 
+private:
     struct PoolAndCategory
     {
         Backend::ShaderResourceBindingsPoolCategory Category;

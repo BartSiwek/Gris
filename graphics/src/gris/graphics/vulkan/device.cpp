@@ -355,6 +355,36 @@ void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(Shader
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::Device::Reset()
+{
+    m_poolManagers.clear();
+
+    if (m_context)
+    {
+        m_context = {};
+    }
+
+    if (m_allocator)
+    {
+        m_allocator = {};
+    }
+
+    m_dispatch = {};
+
+    if (m_device)
+    {
+        m_device.destroy(nullptr, Instance::Dispatch());
+        m_device = nullptr;
+    }
+
+    if (m_physicalDevice)
+    {
+        m_physicalDevice = {};
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Device::AllocatorHandle()
 {
     return m_allocator;
@@ -379,34 +409,4 @@ void Gris::Graphics::Vulkan::Device::DeallocateShaderResourceBindingsPool(Shader
 [[nodiscard]] vk::DispatchLoaderDynamic & Gris::Graphics::Vulkan::Device::DispatchHandle()
 {
     return m_dispatch;
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::Device::Reset()
-{
-    m_poolManagers.clear();
-
-    if (m_context)
-    {
-        m_context = {};
-    }
-    
-    if (m_allocator)
-    {
-        m_allocator = {};
-    }
-
-    m_dispatch = {};
-
-    if (m_device)
-    {
-        m_device.destroy(nullptr, Instance::Dispatch());
-        m_device = nullptr;
-    }
-
-    if (m_physicalDevice)
-    {
-        m_physicalDevice = {};
-    }
 }

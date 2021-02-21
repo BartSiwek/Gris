@@ -297,6 +297,27 @@ void Gris::Graphics::Vulkan::ImmediateContext::Submit(
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::ImmediateContext::Reset()
+{
+    if (m_fence)
+    {
+        DeviceHandle().destroyFence(m_fence, nullptr, Dispatch());
+        m_fence = nullptr;
+    }
+
+    if (m_commandPool)
+    {
+        DeviceHandle().destroyCommandPool(m_commandPool, nullptr, Dispatch());
+        m_commandPool = nullptr;
+    }
+
+    m_graphicsQueue = nullptr;
+
+    ResetParent();
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] vk::CommandBuffer Gris::Graphics::Vulkan::ImmediateContext::BeginSingleTimeCommands()
 {
     auto const allocInfo = vk::CommandBufferAllocateInfo{}
@@ -364,25 +385,4 @@ void Gris::Graphics::Vulkan::ImmediateContext::EndSingleTimeCommands(vk::Command
     ///
 
     DeviceHandle().freeCommandBuffers(m_commandPool, commandBuffers, Dispatch());
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::ImmediateContext::Reset()
-{
-    if(m_fence)
-    {
-        DeviceHandle().destroyFence(m_fence, nullptr, Dispatch());
-        m_fence = nullptr;
-    }
-
-    if(m_commandPool)
-    {
-        DeviceHandle().destroyCommandPool(m_commandPool, nullptr, Dispatch());
-        m_commandPool = nullptr;
-    }
-
-    m_graphicsQueue = nullptr;
-    
-    ResetParent();
 }

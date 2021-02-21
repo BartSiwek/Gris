@@ -81,7 +81,7 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::operator=(I
 {
     if (this != &other)
     {
-        Reset();
+        ReleaseResources();
 
         m_loader = std::exchange(other.m_loader, {});
         m_dispatch = std::exchange(other.m_dispatch, {});
@@ -96,7 +96,7 @@ Gris::Graphics::Vulkan::Instance & Gris::Graphics::Vulkan::Instance::operator=(I
 
 Gris::Graphics::Vulkan::Instance::~Instance()
 {
-    Reset();
+    ReleaseResources();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::Instance::Reset()
+void Gris::Graphics::Vulkan::Instance::ReleaseResources()
 {
     if (m_debugMessenger)
     {
@@ -347,6 +347,4 @@ void Gris::Graphics::Vulkan::Instance::Reset()
         m_instance.destroy(nullptr, m_dispatch);
         m_instance = nullptr;
     }
-
-    m_dispatch = {};
 }

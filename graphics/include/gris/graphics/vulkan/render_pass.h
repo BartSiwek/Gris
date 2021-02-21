@@ -27,11 +27,9 @@ public:
     [[nodiscard]] const vk::RenderPass & RenderPassHandle() const;
     [[nodiscard]] vk::RenderPass & RenderPassHandle();
 
-private:
-    void CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
-
     void Reset();
 
+private:
     vk::RenderPass m_renderPass = {};
 };
 

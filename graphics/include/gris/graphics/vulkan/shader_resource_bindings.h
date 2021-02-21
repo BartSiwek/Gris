@@ -45,6 +45,8 @@ public:
 
     void PrepareBindings(Backend::ShaderResourceBindingsPoolCategory category, ShaderResourceBindingsPoolCollection * pools);
 
+    void Reset();
+
 private:
     struct CombinedSampler
     {

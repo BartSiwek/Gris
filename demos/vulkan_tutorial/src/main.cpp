@@ -271,7 +271,7 @@ private:
         for (size_t i = 0; i < m_swapChain.ImageCount(); i++)
         {
             auto & newBuffer = m_uniformBuffers.emplace_back(m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
-            m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+            m_uniformBufferViews.emplace_back(newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
             auto & newBindings = m_shaderResourceBindings.emplace_back(m_device.CreateShaderResourceBindings(m_resourceLayout));
             newBindings.SetCombinedSamplerAndImageView("texSampler", m_textureSampler, m_textureImageView);
@@ -320,7 +320,7 @@ private:
         for (size_t i = 0; i < m_swapChain.ImageCount(); i++)
         {
             auto & newBuffer = m_uniformBuffers.emplace_back(m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent));
-            auto const & newView = m_uniformBufferViews.emplace_back(&newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
+            auto const & newView = m_uniformBufferViews.emplace_back(newBuffer, 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
             m_shaderResourceBindings[i].SetUniformBuffer("ubo", newView);
             m_shaderResourceBindings[i].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
         }
@@ -461,7 +461,7 @@ private:
         m_vertexBuffer = m_device.CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
         m_device.Context().CopyBuffer(stagingBuffer, m_vertexBuffer, bufferSize);
 
-        m_vertexBufferView = Gris::Graphics::Vulkan::BufferView(&m_vertexBuffer, 0, static_cast<uint32_t>(bufferSize));
+        m_vertexBufferView = Gris::Graphics::Vulkan::BufferView(m_vertexBuffer, 0, static_cast<uint32_t>(bufferSize));
     }
 
     void createIndexBuffer(const std::vector<uint32_t> & indices)
@@ -474,7 +474,7 @@ private:
         m_indexBuffer = m_device.CreateBuffer(bufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
         m_device.Context().CopyBuffer(stagingBuffer, m_indexBuffer, bufferSize);
 
-        m_indexBufferView = Gris::Graphics::Vulkan::BufferView(&m_indexBuffer, 0, static_cast<uint32_t>(bufferSize));
+        m_indexBufferView = Gris::Graphics::Vulkan::BufferView(m_indexBuffer, 0, static_cast<uint32_t>(bufferSize));
     }
 
     void createCommandBuffers(uint32_t indexCount)

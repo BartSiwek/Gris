@@ -37,9 +37,9 @@ public:
 
     void ResetPool();
 
-private:
     void Reset();
 
+private:
     Backend::ShaderResourceBindingsPoolCategory m_category = {};
     vk::DescriptorPool m_pool = {};
 };

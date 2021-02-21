@@ -39,9 +39,9 @@ public:
     [[nodiscard]] const vk::ImageView & ImageViewHandle() const;
     [[nodiscard]] vk::ImageView & ImageViewHandle();
 
-private:
     void Reset();
 
+private:
     vk::ImageView m_imageView = {};
 };
 

@@ -62,7 +62,7 @@ Gris::Graphics::Vulkan::Allocation::operator bool() const
 
 void Gris::Graphics::Vulkan::Allocation::Reset()
 {
-    if (IsValid())
+    if (m_allocation != VK_NULL_HANDLE)
     {
         Parent().FreeMemory(m_allocation);
         m_allocation = VK_NULL_HANDLE;        

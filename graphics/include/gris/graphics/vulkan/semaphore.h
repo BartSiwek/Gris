@@ -29,9 +29,9 @@ public:
     const vk::Semaphore & SemaphoreHandle() const;
     vk::Semaphore & SemaphoreHandle();
 
-private:
     void Reset();
 
+private:
     vk::Semaphore m_semaphore = {};
 };
 

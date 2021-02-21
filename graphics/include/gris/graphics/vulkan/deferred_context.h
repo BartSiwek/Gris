@@ -43,9 +43,9 @@ public:
     void EndRenderPass();
     void End();
 
-private:
     void Reset();
 
+private:
     vk::CommandPool m_commandPool = {};
     vk::CommandBuffer m_commandBuffer = {};
 };

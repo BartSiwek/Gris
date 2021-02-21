@@ -27,9 +27,9 @@ public:
     [[nodiscard]] const vk::Fence & FenceHandle() const;
     [[nodiscard]] vk::Fence & FenceHandle();
 
-private:
     void Reset();
 
+private:
     vk::Fence m_fence = {};
 };
 

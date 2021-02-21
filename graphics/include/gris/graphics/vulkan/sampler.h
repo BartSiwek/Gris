@@ -27,9 +27,9 @@ public:
     const vk::Sampler & SamplerHandle() const;
     vk::Sampler & SamplerHandle();
 
-private:
     void Reset();
 
+private:
     vk::Sampler m_sampler = {};
 };
 

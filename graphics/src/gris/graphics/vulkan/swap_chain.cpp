@@ -276,6 +276,33 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::SwapChain::Reset()
+{
+    m_swapChainImageToVirtualFrame.clear();
+    m_virtualFrameCount = 1;
+    m_currentVirtualFrame = 0;
+
+    m_renderFinishedSemaphores.clear();
+    m_imageAvailableSemaphores.clear();
+    m_renderFinishedFences.clear();
+
+    m_swapChainImageViews.clear();
+
+    m_swapChainExtent = vk::Extent2D{};
+    m_swapChainImageFormat = {};
+
+    m_presentQueue = nullptr;
+    m_swapChainImages.clear();
+
+    if (m_swapChain)
+    {
+        DeviceHandle().destroySwapchainKHR(m_swapChain, nullptr, Dispatch());
+        m_swapChain = nullptr;
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     const WindowMixin & window,
     uint32_t width,
@@ -356,31 +383,4 @@ void Gris::Graphics::Vulkan::SwapChain::CreateSwapChain(
     }
 
     m_swapChainImageToVirtualFrame.resize(m_swapChainImages.size(), std::numeric_limits<uint32_t>::max());
-}
-
-// -------------------------------------------------------------------------------------------------
-
-void Gris::Graphics::Vulkan::SwapChain::Reset()
-{
-    m_swapChainImageToVirtualFrame.clear();
-    m_virtualFrameCount = 1;
-    m_currentVirtualFrame = 0;
-    
-    m_renderFinishedSemaphores.clear();
-    m_imageAvailableSemaphores.clear();
-    m_renderFinishedFences.clear();
-
-    m_swapChainImageViews.clear();
-
-    m_swapChainExtent = vk::Extent2D{};
-    m_swapChainImageFormat = {};
-    
-    m_presentQueue = nullptr;    
-    m_swapChainImages.clear();
-    
-    if(m_swapChain)
-    {
-        DeviceHandle().destroySwapchainKHR(m_swapChain, nullptr, Dispatch());
-        m_swapChain = nullptr;
-    }
 }

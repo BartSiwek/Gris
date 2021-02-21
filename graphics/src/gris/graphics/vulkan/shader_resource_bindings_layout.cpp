@@ -140,7 +140,7 @@ const vk::DescriptorSetLayoutBinding & Gris::Graphics::Vulkan::ShaderResourceBin
 
 void Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::Reset()
 {
-    m_nameToBinding = {};
+    m_nameToBinding.clear();
 
     if (m_descriptorSetLayout)
     {

@@ -33,14 +33,14 @@ public:
 
     const vk::DescriptorSetLayoutBinding & NameToBinding(const std::string_view & name) const;
 
+    void Reset();
+
 private:
     struct NameAndBinding
     {
         std::string Name;
         vk::DescriptorSetLayoutBinding Binding;
     };
-
-    void Reset();
 
     vk::DescriptorSetLayout m_descriptorSetLayout = {};
     std::vector<NameAndBinding> m_nameToBinding = {};

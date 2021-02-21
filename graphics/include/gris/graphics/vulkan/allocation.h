@@ -9,7 +9,7 @@ namespace Gris::Graphics::Vulkan
 
 class Allocator;
 
-class Allocation : public ChildObject<Allocator>
+class Allocation : private ChildObject<Allocator>
 {
 public:
     Allocation();
