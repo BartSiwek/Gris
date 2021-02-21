@@ -34,7 +34,6 @@ Gris::Graphics::Vulkan::Fence::Fence(Fence && other) noexcept
     : DeviceResource(std::move(other))
     , m_fence(std::exchange(other.m_fence, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -348,4 +348,3 @@ void Gris::Graphics::Vulkan::Instance::ReleaseResources()
         m_instance = nullptr;
     }
 }
-

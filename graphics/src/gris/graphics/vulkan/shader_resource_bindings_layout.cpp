@@ -72,7 +72,6 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
     , m_descriptorSetLayout(std::exchange(other.m_descriptorSetLayout, {}))
     , m_nameToBinding(std::exchange(other.m_nameToBinding, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------

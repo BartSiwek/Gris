@@ -55,7 +55,6 @@ Gris::Graphics::Vulkan::TextureView::TextureView(TextureView && other) noexcept
     : DeviceResource(std::move(other))
     , m_imageView(std::exchange(other.m_imageView, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------

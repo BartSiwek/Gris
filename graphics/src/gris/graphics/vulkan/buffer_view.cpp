@@ -60,5 +60,5 @@ void Gris::Graphics::Vulkan::BufferView::Reset()
     m_size = 0;
     m_offset = 0;
 
-    ResetParent();   
+    ResetParent();
 }

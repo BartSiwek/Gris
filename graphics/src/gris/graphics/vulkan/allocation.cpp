@@ -17,7 +17,7 @@ Gris::Graphics::Vulkan::Allocation::Allocation(VmaAllocation allocation, const P
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Allocation::Allocation(Allocation && other) noexcept
-    : ChildObject(std::move(other)) 
+    : ChildObject(std::move(other))
     , m_allocation(std::exchange(other.m_allocation, static_cast<decltype(m_allocation)>(VK_NULL_HANDLE)))
 {
 }

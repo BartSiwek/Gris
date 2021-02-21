@@ -37,7 +37,6 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(Framebuffer && other) noexcept
     : DeviceResource(std::move(other))
     , m_framebuffer(std::exchange(other.m_framebuffer, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------

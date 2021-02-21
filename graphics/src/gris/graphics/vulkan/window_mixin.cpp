@@ -7,7 +7,6 @@
 Gris::Graphics::Vulkan::WindowMixin::WindowMixin(WindowMixin && other) noexcept
     : m_surface(std::exchange(other.m_surface, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -66,6 +65,6 @@ void Gris::Graphics::Vulkan::WindowMixin::Reset()
     if (m_surface)
     {
         InstanceHandle().destroySurfaceKHR(m_surface, nullptr, Dispatch());
-        m_surface = nullptr;    
+        m_surface = nullptr;
     }
 }

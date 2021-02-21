@@ -63,10 +63,9 @@ Gris::Graphics::Vulkan::Texture::Texture(Texture && other) noexcept
     , m_imageMemory(std::exchange(other.m_imageMemory, {}))
     , m_mipLevels(std::exchange(other.m_mipLevels, 1))
 {
-
 }
 
-// -------------------------------------------------------------------------------------------------    
+// -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::Texture & Gris::Graphics::Vulkan::Texture::operator=(Texture && other) noexcept
 {

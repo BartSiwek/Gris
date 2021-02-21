@@ -30,8 +30,8 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(Semaphore && other) noexcept
 {
 }
 
-// -------------------------------------------------------------------------------------------------    
-    
+// -------------------------------------------------------------------------------------------------
+
 Gris::Graphics::Vulkan::Semaphore & Gris::Graphics::Vulkan::Semaphore::operator=(Semaphore && other) noexcept
 {
     if (this != &other)

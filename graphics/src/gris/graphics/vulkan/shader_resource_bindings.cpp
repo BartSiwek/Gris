@@ -184,10 +184,10 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBindings::Reset()    
+void Gris::Graphics::Vulkan::ShaderResourceBindings::Reset()
 {
     m_descriptorSet = nullptr;
-    
+
     m_combinedSamplers.clear();
     m_bufferViews.clear();
     m_textureViews.clear();

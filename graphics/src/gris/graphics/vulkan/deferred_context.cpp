@@ -52,7 +52,6 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(DeferredContext && othe
     , m_commandPool(std::exchange(other.m_commandPool, {}))
     , m_commandBuffer(std::exchange(other.m_commandBuffer, {}))
 {
-
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -68,7 +67,7 @@ Gris::Graphics::Vulkan::DeferredContext & Gris::Graphics::Vulkan::DeferredContex
         m_commandBuffer = std::exchange(other.m_commandBuffer, {});
     }
 
-    return * this;
+    return *this;
 }
 
 // -------------------------------------------------------------------------------------------------
