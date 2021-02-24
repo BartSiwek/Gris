@@ -6,6 +6,9 @@ add_library(Gris.Graphics)
 
 target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/window_observer.cpp"
+  "src/gris/graphics/loaders/stb_image_loader.cpp"
+  "src/gris/graphics/loaders/stb_implementation.cpp"
+  "src/gris/graphics/loaders/tinlyobjloader_mesh_loader.cpp"
   "src/gris/graphics/vulkan/validation_layers.h"
   "src/gris/graphics/vulkan/allocation.cpp"
   "src/gris/graphics/vulkan/allocator.cpp"
@@ -39,7 +42,11 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/window_mixin.cpp"
   "include/gris/graphics/backend/shader_resource_bindings_pool_sizes.h"
   "include/gris/graphics/backend/shader_resource_bindings_layout.h"
+  "include/gris/graphics/image.h"
+  "include/gris/graphics/mesh.h"
   "include/gris/graphics/window_observer.h"
+  "include/gris/graphics/loaders/stb_image_loader.h"
+  "include/gris/graphics/loaders/tinlyobjloader_mesh_loader.h"
   "include/gris/graphics/vulkan/allocation.h"
   "include/gris/graphics/vulkan/allocator.h"
   "include/gris/graphics/vulkan/buffer.h"
@@ -88,6 +95,9 @@ target_link_libraries(Gris.Graphics PRIVATE
   Gris.ProjectOptions
   Gris.ProjectWarnings
   Gris.Core
+  CONAN_PKG::glm
+  CONAN_PKG::stb
+  CONAN_PKG::tinyobjloader
 )
 
 if(ENABLE_GLFW)

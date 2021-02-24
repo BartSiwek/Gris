@@ -6,6 +6,8 @@ add_executable(Gris.Demos.VulkanTutorial)
 
 target_sources(Gris.Demos.VulkanTutorial PRIVATE
   "src/main.cpp"
+  "src/hello_triangle_application.cpp"
+  "src/hello_triangle_application.h"
 )
 
 target_link_libraries(Gris.Demos.VulkanTutorial PRIVATE
@@ -15,8 +17,6 @@ target_link_libraries(Gris.Demos.VulkanTutorial PRIVATE
   Gris.Graphics
   CONAN_PKG::glfw
   CONAN_PKG::glm
-  CONAN_PKG::stb
-  CONAN_PKG::tinyobjloader
 )
 
 ###############################################################################
