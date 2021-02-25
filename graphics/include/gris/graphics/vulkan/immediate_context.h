@@ -30,7 +30,7 @@ public:
 
     [[nodiscard]] bool IsValid() const;
 
-    void GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight);
+    void GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, uint32_t texWidth, uint32_t texHeight);
     void CopyBufferToImage(const Buffer & buffer, const Texture & texture, uint32_t width, uint32_t height);
     void TransitionImageLayout(const Texture & texture, const vk::ImageLayout & oldLayout, const vk::ImageLayout & newLayout);
     void CopyBuffer(const Buffer & srcBuffer, const Buffer & dstBuffer, vk::DeviceSize size);
