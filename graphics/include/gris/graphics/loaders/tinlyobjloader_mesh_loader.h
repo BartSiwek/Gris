@@ -15,7 +15,7 @@ class TinyObjLoaderMeshLoader
 public:
     TinyObjLoaderMeshLoader() = default;
 
-    Mesh Load(const std::filesystem::path & path);
+    static Mesh Load(const std::filesystem::path & path);
 };
 
 }  // namespace Gris::Graphics::Loaders

@@ -183,8 +183,7 @@ void HelloTriangleApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    auto meshLoader = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader{};
-    m_mesh = meshLoader.Load(*modelPath);
+    m_mesh = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(*modelPath);
 
     ///
 
@@ -221,8 +220,7 @@ void HelloTriangleApplication::CreateMeshTexture()
         throw Gris::EngineException("Failed to resolve texture image path", TEXTURE_PATH);
     }
 
-    auto imageLoader = Gris::Graphics::Loaders::StbImageLoader{};
-    auto image = imageLoader.Load(*texturePath);
+    auto image = Gris::Graphics::Loaders::StbImageLoader::Load(*texturePath);
 
     ///
 

@@ -15,7 +15,7 @@ class StbImageLoader
 public:
     StbImageLoader() = default;
 
-    Image Load(const std::filesystem::path & path);
+    static Image Load(const std::filesystem::path & path);
 };
 
 }  // namespace Gris::Graphics::Loaders

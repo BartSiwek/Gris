@@ -5,6 +5,8 @@
 
 #include <stb_image.h>
 
+#include <cstring>
+
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Image Gris::Graphics::Loaders::StbImageLoader::Load(const std::filesystem::path & path)
