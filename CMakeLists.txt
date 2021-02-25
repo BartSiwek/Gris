@@ -47,6 +47,7 @@ set(CONAN_REQUIRES
   glm/0.9.9.8
   stb/20200203
   tinyobjloader/1.0.6
+  assimp/5.0.1
   vulkan-headers/1.2.154.0
   vulkan-memory-allocator/2.3.0
 )

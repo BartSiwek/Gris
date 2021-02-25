@@ -98,6 +98,7 @@ target_link_libraries(Gris.Graphics PRIVATE
   CONAN_PKG::glm
   CONAN_PKG::stb
   CONAN_PKG::tinyobjloader
+  CONAN_PKG::assimp
 )
 
 if(ENABLE_GLFW)
