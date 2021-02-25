@@ -96,7 +96,7 @@ Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, int32_t texWidth, int32_t texHeight)
+void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & texture, const vk::Format & imageFormat, uint32_t texWidth, uint32_t texHeight)
 {
     auto const formatProperties = ParentDevice().GetFormatProperties(imageFormat);
 
