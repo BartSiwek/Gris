@@ -225,14 +225,14 @@ void HelloTriangleApplication::CreateMeshTexture()
     ///
 
     auto const mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(image.Width, image.Height)))) + 1;
-    m_meshTextureImage = m_device.CreateTexture(static_cast<uint32_t>(image.Width), static_cast<uint32_t>(image.Height), mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
+    m_meshTextureImage = m_device.CreateTexture(image.Width, image.Height, mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
     ///
 
     m_device.Context().TransitionImageLayout(m_meshTextureImage, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal);
     auto stagingBuffer = m_device.CreateBuffer(image.PixelData.size(), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
     stagingBuffer.SetData(image.PixelData.data(), image.PixelData.size());
-    m_device.Context().CopyBufferToImage(stagingBuffer, m_meshTextureImage, static_cast<uint32_t>(image.Width), static_cast<uint32_t>(image.Height));
+    m_device.Context().CopyBufferToImage(stagingBuffer, m_meshTextureImage, image.Width, image.Height);
 
     ///
 
