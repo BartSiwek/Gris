@@ -1,16 +1,16 @@
 #include "hello_triangle_application.h"
 
+#include <gris/graphics/image.h>
 #include <gris/graphics/loaders/stb_image_loader.h>
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
-#include <gris/graphics/image.h>
 #include <gris/graphics/mesh.h>
 
-#include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/deferred_context.h>
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/framebuffer.h>
+#include <gris/graphics/vulkan/glfw/window.h>
 #include <gris/graphics/vulkan/immediate_context.h>
 #include <gris/graphics/vulkan/input_layout.h>
 #include <gris/graphics/vulkan/physical_device_factory.h>
@@ -27,10 +27,10 @@
 
 #include <gris/graphics/glfw/instance.h>
 
-#include <gris/engine_exception.h>
 #include <gris/directory_registry.h>
-#include <gris/utils.h>
+#include <gris/engine_exception.h>
 #include <gris/log.h>
+#include <gris/utils.h>
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -258,7 +258,7 @@ void HelloTriangleApplication::CreatePipelineStateObject()
             throw Gris::EngineException("Error resolving vertex shader path", VERTEX_SHADER_PATH);
         }
 
-        m_vertexShader = m_device.CreateShader(Gris::ReadFile<uint32_t>(*vertexShaderPath), "main");        
+        m_vertexShader = m_device.CreateShader(Gris::ReadFile<uint32_t>(*vertexShaderPath), "main");
     }
 
     ///
@@ -271,7 +271,7 @@ void HelloTriangleApplication::CreatePipelineStateObject()
             throw Gris::EngineException("Error resolving fragment shader path", FRAGMENT_SHADER_PATH);
         }
 
-        m_fragmentShader = m_device.CreateShader(Gris::ReadFile<uint32_t>(*fragmentShaderPath), "main");        
+        m_fragmentShader = m_device.CreateShader(Gris::ReadFile<uint32_t>(*fragmentShaderPath), "main");
     }
 
     ///
@@ -295,7 +295,7 @@ void HelloTriangleApplication::CreatePipelineStateObject()
             },
         };
         Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
-        m_resourceLayout = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);        
+        m_resourceLayout = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
     ///
@@ -342,7 +342,7 @@ void HelloTriangleApplication::CreateShaderResourceBindingsPools()
     if (!m_shaderResourceBindingsPools)
     {
         m_device.RegisterShaderResourceBindingsPoolCategory(m_shaderResourceBindingsPoolCategory, sizes);
-        m_shaderResourceBindingsPools = m_device.CreateShaderResourceBindingsPoolCollection();    
+        m_shaderResourceBindingsPools = m_device.CreateShaderResourceBindingsPoolCollection();
     }
     else
     {
@@ -373,7 +373,7 @@ void HelloTriangleApplication::CreateUniformBuffersAndBindings()
 // -------------------------------------------------------------------------------------------------
 
 void HelloTriangleApplication::CreateCommandBuffers()
-{       
+{
     m_commandBuffers.resize(m_swapChainFramebuffers.size());
     for (uint32_t i = 0; i < m_swapChainFramebuffers.size(); i++)
     {

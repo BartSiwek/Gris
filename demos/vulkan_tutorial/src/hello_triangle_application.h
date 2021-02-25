@@ -1,3 +1,7 @@
+#include <gris/graphics/image.h>
+#include <gris/graphics/loaders/stb_image_loader.h>
+#include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
+#include <gris/graphics/mesh.h>
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/deferred_context.h>
@@ -18,10 +22,6 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
-#include <gris/graphics/loaders/stb_image_loader.h>
-#include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
-#include <gris/graphics/image.h>
-#include <gris/graphics/mesh.h>
 
 #include <cstdint>
 #include <vector>

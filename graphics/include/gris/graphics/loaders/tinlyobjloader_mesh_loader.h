@@ -18,4 +18,4 @@ public:
     Mesh Load(const std::filesystem::path & path);
 };
 
-}  // namespace Gris::Graphics
+}  // namespace Gris::Graphics::Loaders

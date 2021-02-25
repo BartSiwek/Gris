@@ -1,7 +1,7 @@
 #include <gris/graphics/loaders/stb_image_loader.h>
 
-#include <gris/graphics/image.h>
 #include <gris/engine_exception.h>
+#include <gris/graphics/image.h>
 
 #include <stb_image.h>
 

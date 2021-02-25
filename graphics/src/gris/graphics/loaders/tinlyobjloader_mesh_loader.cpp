@@ -1,7 +1,7 @@
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
 
-#include <gris/graphics/mesh.h>
 #include <gris/engine_exception.h>
+#include <gris/graphics/mesh.h>
 
 #include <tiny_obj_loader.h>
 
