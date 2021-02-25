@@ -123,8 +123,8 @@ void Gris::Graphics::Vulkan::ImmediateContext::GenerateMipmaps(const Texture & t
                                    1))
     };
 
-    auto mipWidth = texWidth;
-    auto mipHeight = texHeight;
+    auto mipWidth = static_cast<int32_t>(texWidth);
+    auto mipHeight = static_cast<int32_t>(texHeight);
 
     for (uint32_t i = 1; i < texture.MipLevels(); i++)
     {
