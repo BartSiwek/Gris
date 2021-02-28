@@ -10,12 +10,12 @@ struct Mesh;
 namespace Gris::Graphics::Loaders
 {
 
-class TinyObjLoaderMeshLoader
+class AssimpMeshLoader
 {
 public:
-    TinyObjLoaderMeshLoader() = default;
+    AssimpMeshLoader() = default;
 
-    static Mesh Load(const std::filesystem::path & path);
+    static std::vector<Gris::Graphics::Mesh> Load(const std::filesystem::path & path);
 };
 
 }  // namespace Gris::Graphics::Loaders

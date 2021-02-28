@@ -1,89 +1,86 @@
-#include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
+#include <gris/graphics/loaders/assimp_mesh_loader.h>
 
-#include <gris/engine_exception.h>
 #include <gris/graphics/mesh.h>
 
-#include <tiny_obj_loader.h>
+#include <gris/engine_exception.h>
+#include <gris/utils.h>
+#include <gris/log.h>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4201)
-#endif
-
-#include <glm/glm.hpp>
-#include <glm/gtx/hash.hpp>
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-
-#include <unordered_map>
+#include <assimp/cimport.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 // -------------------------------------------------------------------------------------------------
 
-struct VertexHash
-{
-    size_t operator()(Gris::Graphics::Vertex const & vertex) const noexcept
-    {
-        return ((std::hash<glm::vec3>()(vertex.Position) ^ (std::hash<glm::vec3>()(vertex.Color) << 1U)) >> 1U) ^ (std::hash<glm::vec2>()(vertex.TextureCoords) << 1U);
-    }
-};
+constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices;
 
 // -------------------------------------------------------------------------------------------------
 
-struct VertexComparator
+std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Load(const std::filesystem::path & path)
 {
-    bool operator()(const Gris::Graphics::Vertex & lhs, const Gris::Graphics::Vertex & rhs) const
+    static const aiVector3D ZERO_VECTOR(0.0F, 0.0F, 0.0F);
+
+    aiLogStream grisLoggerStream;
+    grisLoggerStream.callback = [](const char * message, char * /* user */)
     {
-        return lhs.Position == rhs.Position && lhs.Color == rhs.Color && lhs.TextureCoords == rhs.TextureCoords;
+        auto stringMessage = std::string{ message };
+        if (stringMessage.back() == '\n')
+        {
+            stringMessage = stringMessage.substr(0, stringMessage.size() - 1);
+        }
+        Gris::Log::Debug("[AssimpMeshLoader] {}", stringMessage);
+    };
+
+    aiAttachLogStream(&grisLoggerStream);
+
+    auto const * scene = aiImportFile(path.string().c_str(), DEFAULT_ASSIMP_FLAGS);
+
+    if (scene == nullptr)
+    {
+        throw Gris::EngineException("Error loading model", aiGetErrorString());
     }
-};
 
-// -------------------------------------------------------------------------------------------------
-
-Gris::Graphics::Mesh Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
-{
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-    std::string err;
-
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.string().c_str(), nullptr, false))
+    // TODO: auto numVertices = 0;
+    auto result = MakeReservedVector<Mesh>(scene->mNumMeshes);
+    for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
     {
-        throw Gris::EngineException("Error loading model", err);
-    }
+        // TODO: auto baseVertex = numVertices;
+        auto const * currentMesh = scene->mMeshes[meshIndex];
 
-    auto uniqueVertices = std::unordered_map<Vertex, uint32_t, VertexHash, VertexComparator>{};
-
-    auto result = Mesh{};
-    for (auto const & shape : shapes)
-    {
-        for (auto const & index : shape.mesh.indices)
+        auto mesh = Mesh{};
+        for (size_t vertexIndex = 0; vertexIndex < scene->mMeshes[meshIndex]->mNumVertices; ++vertexIndex)
         {
             auto vertex = Vertex{};
 
-            vertex.Position = {
-                attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 0],
-                attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 1],
-                attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 2]
-            };
+            auto const & position = currentMesh->mVertices[vertexIndex];
+            vertex.Position = { position.x, position.y, position.z };
 
-            vertex.TextureCoords = {
-                attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 0],
-                1.0F - attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 1]
-            };
+            auto const & texCoord = currentMesh->HasTextureCoords(0) ? currentMesh->mTextureCoords[0][vertexIndex] : ZERO_VECTOR;
+            vertex.TextureCoords = { texCoord.x, 1.0F - texCoord.y };
 
             vertex.Color = { 1.0F, 1.0F, 1.0F };
 
-            if (uniqueVertices.count(vertex) == 0)
-            {
-                uniqueVertices[vertex] = static_cast<uint32_t>(result.Vertices.size());
-                result.Vertices.push_back(vertex);
-            }
-
-            result.Indices.push_back(uniqueVertices[vertex]);
+            mesh.Vertices.emplace_back(std::move(vertex));
         }
+
+		for (size_t faceIndex = 0; faceIndex < currentMesh->mNumFaces; faceIndex++)
+        {
+            auto const & face = currentMesh->mFaces[faceIndex];
+            if (face.mNumIndices != 3)
+                continue;
+
+            mesh.Indices.emplace_back(face.mIndices[0]);
+            mesh.Indices.emplace_back(face.mIndices[1]);
+            mesh.Indices.emplace_back(face.mIndices[2]);
+        }
+
+        // TODO: numVertices += scene->mMeshes[meshIndex]->mNumVertices;
+
+        result.emplace_back(std::move(mesh));
     }
+
+    aiReleaseImport(scene);
+    aiDetachLogStream(&grisLoggerStream);
 
     return result;
 }

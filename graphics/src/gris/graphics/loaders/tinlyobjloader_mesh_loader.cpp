@@ -1,7 +1,9 @@
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
 
-#include <gris/engine_exception.h>
 #include <gris/graphics/mesh.h>
+
+#include <gris/engine_exception.h>
+#include <gris/utils.h>
 
 #include <tiny_obj_loader.h>
 
@@ -41,7 +43,7 @@ struct VertexComparator
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Mesh Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
+std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -85,5 +87,5 @@ Gris::Graphics::Mesh Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(cons
         }
     }
 
-    return result;
+    return { result };
 }

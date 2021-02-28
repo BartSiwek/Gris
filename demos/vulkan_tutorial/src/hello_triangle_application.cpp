@@ -183,7 +183,13 @@ void HelloTriangleApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    m_mesh = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(*modelPath);
+    auto meshes = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(*modelPath);
+    if (meshes.size() != 1)
+    {
+        throw Gris::EngineException("Error loading sample mesh - expected a single mesh");
+    }
+
+    m_mesh = meshes.front();
 
     ///
 

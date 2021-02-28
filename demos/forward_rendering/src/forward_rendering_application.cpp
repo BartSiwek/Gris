@@ -2,7 +2,7 @@
 
 #include <gris/graphics/image.h>
 #include <gris/graphics/loaders/stb_image_loader.h>
-#include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
+#include <gris/graphics/loaders/assimp_mesh_loader.h>
 #include <gris/graphics/mesh.h>
 
 #include <gris/graphics/vulkan/buffer.h>
@@ -188,7 +188,13 @@ void ForwardRenderingApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    m_mesh = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(*modelPath);
+    auto meshes = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
+    if (meshes.size() != 1)
+    {
+        throw Gris::EngineException("Error loading sample mesh - expected a single mesh");
+    }
+
+    m_mesh = meshes.front();
 
     ///
 
