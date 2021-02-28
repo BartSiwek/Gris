@@ -102,7 +102,8 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
 
     // Since the layout does not change during the lifetime of this object
     // the descriptor set is constant as well - only the contents may need updating
-    m_descriptorSet = pools->Allocate(category, ChildObject<ShaderResourceBindingsLayout>::Parent().DescriptorSetLayoutHandle());
+    // Consider adding a generation to ParentObject/ChildObject for change tracking (atomic)
+    m_descriptorSet = pools->Allocate(category, ChildObject<ShaderResourceBindingsLayout>::Parent().DescriptorSetLayoutHandle());    
 
     auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto bufferInfos = MakeReservedVector<vk::DescriptorBufferInfo>(descriptorCount);

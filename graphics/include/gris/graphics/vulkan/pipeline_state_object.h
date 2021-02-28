@@ -2,6 +2,8 @@
 
 #include <gris/graphics/vulkan/device_resource.h>
 
+#include <gris/span.h>
+
 namespace Gris::Graphics::Vulkan
 {
 
@@ -21,7 +23,7 @@ public:
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        const ShaderResourceBindingsLayout & resourceLayout,
+        Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
         const Shader & vertexShader,
         const Shader & fragmentShader);
 

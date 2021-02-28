@@ -32,6 +32,9 @@ public:
     void Run();
 
 private:
+    constexpr static uint32_t UNIQUE_DESCRIPTOR_SET_INDEX = 0;
+    constexpr static uint32_t DESCRIPTOR_SET_COUNT = 1;
+
     [[nodiscard]] vk::Format FindDepthFormat() const;
 
     void WindowResized(uint32_t /* width */, uint32_t /* height */) override;
@@ -66,12 +69,12 @@ private:
     Gris::Graphics::Vulkan::RenderPass m_renderPass = {};
     Gris::Graphics::Vulkan::Shader m_vertexShader = {};
     Gris::Graphics::Vulkan::Shader m_fragmentShader = {};
-    Gris::Graphics::Vulkan::ShaderResourceBindingsLayout m_resourceLayout = {};
+    std::array<Gris::Graphics::Vulkan::ShaderResourceBindingsLayout, DESCRIPTOR_SET_COUNT> m_resourceLayout = {};
     Gris::Graphics::Vulkan::PipelineStateObject m_pso = {};
 
     Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory m_shaderResourceBindingsPoolCategory = Gris::Graphics::Backend::ShaderResourceBindingsPoolCategory{ 0 };
     Gris::Graphics::Vulkan::ShaderResourceBindingsPoolCollection m_shaderResourceBindingsPools;
-    std::vector<Gris::Graphics::Vulkan::ShaderResourceBindings> m_shaderResourceBindings = {};
+    std::vector<std::array<Gris::Graphics::Vulkan::ShaderResourceBindings, DESCRIPTOR_SET_COUNT>> m_shaderResourceBindings = {};
 
     Gris::Graphics::Vulkan::Texture m_colorImage = {};
     Gris::Graphics::Vulkan::TextureView m_colorImageView = {};

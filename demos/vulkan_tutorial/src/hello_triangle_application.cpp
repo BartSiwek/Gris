@@ -274,7 +274,7 @@ void HelloTriangleApplication::CreatePipelineStateObject()
 
     ///
 
-    if (!m_resourceLayout)
+    if (!m_resourceLayout[UNIQUE_DESCRIPTOR_SET_INDEX])
     {
         auto const resourceLayouts = std::array{
             Gris::Graphics::Backend::ShaderResourceBindingLayout{
@@ -293,7 +293,7 @@ void HelloTriangleApplication::CreatePipelineStateObject()
             },
         };
         Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
-        m_resourceLayout = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
+        m_resourceLayout[UNIQUE_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
     ///
@@ -361,10 +361,10 @@ void HelloTriangleApplication::CreateUniformBuffersAndBindings()
         m_uniformBuffers[i] = m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         m_uniformBufferViews[i] = Gris::Graphics::Vulkan::BufferView(m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-        m_shaderResourceBindings[i] = m_device.CreateShaderResourceBindings(m_resourceLayout);
-        m_shaderResourceBindings[i].SetCombinedSamplerAndImageView("texSampler", m_meshTextureSampler, m_meshTextureImageView);
-        m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-        m_shaderResourceBindings[i].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
+        m_shaderResourceBindings[i][UNIQUE_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayout[UNIQUE_DESCRIPTOR_SET_INDEX]);
+        m_shaderResourceBindings[i][UNIQUE_DESCRIPTOR_SET_INDEX].SetCombinedSamplerAndImageView("texSampler", m_meshTextureSampler, m_meshTextureImageView);
+        m_shaderResourceBindings[i][UNIQUE_DESCRIPTOR_SET_INDEX].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
+        m_shaderResourceBindings[i][UNIQUE_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
     }
 }
 
@@ -381,7 +381,7 @@ void HelloTriangleApplication::CreateCommandBuffers()
         m_commandBuffers[i].BindPipeline(m_pso);
         m_commandBuffers[i].BindVertexBuffer(m_vertexBufferView);
         m_commandBuffers[i].BindIndexBuffer(m_indexBufferView);
-        m_commandBuffers[i].BindDescriptorSet(m_pso, m_shaderResourceBindings[i]);
+        m_commandBuffers[i].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[i]);
         m_commandBuffers[i].DrawIndexed(static_cast<uint32_t>(m_mesh.Indices.size()));
         m_commandBuffers[i].EndRenderPass();
         m_commandBuffers[i].End();

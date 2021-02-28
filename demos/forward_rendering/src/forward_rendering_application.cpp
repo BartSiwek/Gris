@@ -107,7 +107,6 @@ void ForwardRenderingApplication::CreateVulkanObjects()
     if (!m_device)
     {
         CreateDevice();
-        LoadScene();
     }
     else
     {
@@ -119,6 +118,12 @@ void ForwardRenderingApplication::CreateVulkanObjects()
     CreatePipelineStateObject();
     CreateFramebuffers();
     CreateShaderResourceBindingsPools();
+
+    if (m_mesh.Vertices.empty())
+    {
+        LoadScene();
+    }
+
     CreateUniformBuffersAndBindings();
     CreateCommandBuffers();
 }
@@ -274,7 +279,7 @@ void ForwardRenderingApplication::CreatePipelineStateObject()
 
     ///
 
-    if (!m_resourceLayout)
+    if (!m_resourceLayouts[GLOBAL_DESCRIPTOR_SET_INDEX])
     {
         auto const resourceLayouts = std::array{
             Gris::Graphics::Backend::ShaderResourceBindingLayout{
@@ -284,16 +289,31 @@ void ForwardRenderingApplication::CreatePipelineStateObject()
                 1,
                 Gris::Graphics::Backend::ShaderStageFlags::Vertex,
             },
+        };
+        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        m_resourceLayouts[GLOBAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
+    }
+
+    if (!m_resourceLayouts[PER_MATERIAL_DESCRIPTOR_SET_INDEX])
+    {
+        auto const resourceLayouts = std::array{
             Gris::Graphics::Backend::ShaderResourceBindingLayout{
                 "texSampler",
-                1,
+                0,
                 Gris::Graphics::Backend::ShaderResourceType::CombinedImageSampler,
                 1,
                 Gris::Graphics::Backend::ShaderStageFlags::Fragment,
             },
         };
         Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
-        m_resourceLayout = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
+        m_resourceLayouts[PER_MATERIAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
+    }
+
+    if (!m_resourceLayouts[PER_DRAW_DESCRIPTOR_SET_INDEX])
+    {
+        auto const resourceLayouts = std::array<Gris::Graphics::Backend::ShaderResourceBindingLayout, 0>{};
+        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        m_resourceLayouts[PER_DRAW_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
     ///
@@ -304,7 +324,7 @@ void ForwardRenderingApplication::CreatePipelineStateObject()
     layout.AddAttributeDescription(1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Gris::Graphics::Vertex, Color));
     layout.AddAttributeDescription(2, 0, vk::Format::eR32G32Sfloat, offsetof(Gris::Graphics::Vertex, TextureCoords));
 
-    m_pso = m_device.CreatePipelineStateObject(m_swapChain.Extent().width, m_swapChain.Extent().height, m_renderPass, layout, m_resourceLayout, m_vertexShader, m_fragmentShader);
+    m_pso = m_device.CreatePipelineStateObject(m_swapChain.Extent().width, m_swapChain.Extent().height, m_renderPass, layout, m_resourceLayouts, m_vertexShader, m_fragmentShader);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -361,10 +381,17 @@ void ForwardRenderingApplication::CreateUniformBuffersAndBindings()
         m_uniformBuffers[i] = m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         m_uniformBufferViews[i] = Gris::Graphics::Vulkan::BufferView(m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
 
-        m_shaderResourceBindings[i] = m_device.CreateShaderResourceBindings(m_resourceLayout);
-        m_shaderResourceBindings[i].SetCombinedSamplerAndImageView("texSampler", m_meshTextureSampler, m_meshTextureImageView);
-        m_shaderResourceBindings[i].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
-        m_shaderResourceBindings[i].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
+        m_shaderResourceBindings[i][GLOBAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayouts[GLOBAL_DESCRIPTOR_SET_INDEX]);
+        m_shaderResourceBindings[i][PER_MATERIAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayouts[PER_MATERIAL_DESCRIPTOR_SET_INDEX]);
+        m_shaderResourceBindings[i][PER_DRAW_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayouts[PER_DRAW_DESCRIPTOR_SET_INDEX]);
+       
+        m_shaderResourceBindings[i][GLOBAL_DESCRIPTOR_SET_INDEX].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
+
+        m_shaderResourceBindings[i][PER_MATERIAL_DESCRIPTOR_SET_INDEX].SetCombinedSamplerAndImageView("texSampler", m_meshTextureSampler, m_meshTextureImageView);
+        
+        m_shaderResourceBindings[i][GLOBAL_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
+        m_shaderResourceBindings[i][PER_MATERIAL_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
+        m_shaderResourceBindings[i][PER_DRAW_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
     }
 }
 
@@ -372,6 +399,7 @@ void ForwardRenderingApplication::CreateUniformBuffersAndBindings()
 
 void ForwardRenderingApplication::CreateCommandBuffers()
 {
+    // TODO: This can be recorded per frame
     m_commandBuffers.resize(m_swapChainFramebuffers.size());
     for (uint32_t i = 0; i < m_swapChainFramebuffers.size(); i++)
     {
@@ -381,7 +409,7 @@ void ForwardRenderingApplication::CreateCommandBuffers()
         m_commandBuffers[i].BindPipeline(m_pso);
         m_commandBuffers[i].BindVertexBuffer(m_vertexBufferView);
         m_commandBuffers[i].BindIndexBuffer(m_indexBufferView);
-        m_commandBuffers[i].BindDescriptorSet(m_pso, m_shaderResourceBindings[i]);
+        m_commandBuffers[i].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[i]);
         m_commandBuffers[i].DrawIndexed(static_cast<uint32_t>(m_mesh.Indices.size()));
         m_commandBuffers[i].EndRenderPass();
         m_commandBuffers[i].End();

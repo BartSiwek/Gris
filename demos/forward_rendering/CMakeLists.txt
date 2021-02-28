@@ -24,8 +24,8 @@ group_sources(Gris.Demos.ForwardRendering)
 
 ###############################################################################
 
-compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>/vert.spv")
-compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>/frag.spv")
+compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources/shaders/demos/forward_rendering/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>/vert.spv")
+compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources/shaders/demos/forward_rendering/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>/frag.spv")
 
 # TODO: Replace this with a resource target(s)... (if that is possible)
 add_custom_command(TARGET Gris.Demos.ForwardRendering

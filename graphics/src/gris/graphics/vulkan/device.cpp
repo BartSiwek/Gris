@@ -264,11 +264,11 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    const ShaderResourceBindingsLayout & resourceLayout,
+    Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
     const Shader & vertexShader,
     const Shader & fragmentShader)
 {
-    return PipelineStateObject(*this, swapChainWidth, swapChainHeight, renderPass, inputLayout, resourceLayout, vertexShader, fragmentShader);
+    return PipelineStateObject(*this, swapChainWidth, swapChainHeight, renderPass, inputLayout, resourceLayouts, vertexShader, fragmentShader);
 }
 
 // -------------------------------------------------------------------------------------------------

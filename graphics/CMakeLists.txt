@@ -6,6 +6,7 @@ add_library(Gris.Graphics)
 
 target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/window_observer.cpp"
+  "src/gris/graphics/loaders/assimp_mesh_loader.cpp"
   "src/gris/graphics/loaders/stb_image_loader.cpp"
   "src/gris/graphics/loaders/stb_implementation.cpp"
   "src/gris/graphics/loaders/tinlyobjloader_mesh_loader.cpp"
@@ -45,6 +46,7 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/image.h"
   "include/gris/graphics/mesh.h"
   "include/gris/graphics/window_observer.h"
+  "include/gris/graphics/loaders/assimp_mesh_loader.h"
   "include/gris/graphics/loaders/stb_image_loader.h"
   "include/gris/graphics/loaders/tinlyobjloader_mesh_loader.h"
   "include/gris/graphics/vulkan/allocation.h"
