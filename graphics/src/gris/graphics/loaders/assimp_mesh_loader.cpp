@@ -40,14 +40,13 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
         throw Gris::EngineException("Error loading model", aiGetErrorString());
     }
 
-    // TODO: auto numVertices = 0;
     auto result = MakeReservedVector<Mesh>(scene->mNumMeshes);
     for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
     {
-        // TODO: auto baseVertex = numVertices;
         auto const * currentMesh = scene->mMeshes[meshIndex];
 
         auto mesh = Mesh{};
+
         for (size_t vertexIndex = 0; vertexIndex < scene->mMeshes[meshIndex]->mNumVertices; ++vertexIndex)
         {
             auto vertex = Vertex{};
@@ -73,8 +72,6 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
             mesh.Indices.emplace_back(face.mIndices[1]);
             mesh.Indices.emplace_back(face.mIndices[2]);
         }
-
-        // TODO: numVertices += scene->mMeshes[meshIndex]->mNumVertices;
 
         result.emplace_back(std::move(mesh));
     }

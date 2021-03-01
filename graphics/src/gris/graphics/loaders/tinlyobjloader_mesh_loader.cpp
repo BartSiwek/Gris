@@ -58,6 +58,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoad
     auto uniqueVertices = std::unordered_map<Vertex, uint32_t, VertexHash, VertexComparator>{};
 
     auto result = Mesh{};
+
     for (auto const & shape : shapes)
     {
         for (auto const & index : shape.mesh.indices)

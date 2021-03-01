@@ -39,7 +39,7 @@ add_custom_command(TARGET Gris.Demos.ForwardRendering
 add_custom_command(TARGET Gris.Demos.ForwardRendering
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.obj"
+  "${PROJECT_SOURCE_DIR}/resources/models/sponza/sponza.dae"
   $<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>
 )
 

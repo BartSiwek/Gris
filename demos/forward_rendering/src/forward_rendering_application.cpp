@@ -48,7 +48,7 @@
 constexpr static uint32_t INITIAL_WINDOW_WIDTH = 800;
 constexpr static uint32_t INITIAL_WINDOW_HEIGHT = 600;
 
-const char * const MODEL_PATH = "viking_room.obj";
+const char * const MODEL_PATH = "sponza.dae";
 const char * const TEXTURE_PATH = "viking_room.png";
 const char * const VERTEX_SHADER_PATH = "vert.spv";
 const char * const FRAGMENT_SHADER_PATH = "frag.spv";
@@ -119,7 +119,7 @@ void ForwardRenderingApplication::CreateVulkanObjects()
     CreateFramebuffers();
     CreateShaderResourceBindingsPools();
 
-    if (m_mesh.Vertices.empty())
+    if (m_meshes.empty())
     {
         LoadScene();
     }
@@ -188,37 +188,37 @@ void ForwardRenderingApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    auto meshes = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
-    if (meshes.size() != 1)
+    m_meshes = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
+
+    ///
+
+    for (auto const & mesh : m_meshes)
     {
-        throw Gris::EngineException("Error loading sample mesh - expected a single mesh");
+        auto const vertexBufferSize = sizeof(mesh.Vertices[0]) * mesh.Vertices.size();
+
+        auto vertexStagingBuffer = m_device.CreateBuffer(vertexBufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        vertexStagingBuffer.SetData(mesh.Vertices.data(), static_cast<size_t>(vertexBufferSize));
+
+        auto & vertexBuffer = m_vertexBuffers.emplace_back(m_device.CreateBuffer(vertexBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_device.Context().CopyBuffer(vertexStagingBuffer, vertexBuffer, vertexBufferSize);
+
+        m_vertexBufferViews.emplace_back(Gris::Graphics::Vulkan::BufferView(vertexBuffer, 0, static_cast<uint32_t>(vertexBufferSize)));
     }
 
-    m_mesh = meshes.front();
-
     ///
 
-    auto const vertexBufferSize = sizeof(m_mesh.Vertices[0]) * m_mesh.Vertices.size();
+    for (auto const & mesh : m_meshes)
+    {
+        auto const indexBufferSize = sizeof(mesh.Indices[0]) * mesh.Indices.size();
 
-    auto vertexStagingBuffer = m_device.CreateBuffer(vertexBufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-    vertexStagingBuffer.SetData(m_mesh.Vertices.data(), static_cast<size_t>(vertexBufferSize));
+        auto indexStagingBuffer = m_device.CreateBuffer(indexBufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
+        indexStagingBuffer.SetData(mesh.Indices.data(), static_cast<size_t>(indexBufferSize));
 
-    m_vertexBuffer = m_device.CreateBuffer(vertexBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eVertexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
-    m_device.Context().CopyBuffer(vertexStagingBuffer, m_vertexBuffer, vertexBufferSize);
+        auto & indexBuffer = m_indexBuffers.emplace_back(m_device.CreateBuffer(indexBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal));
+        m_device.Context().CopyBuffer(indexStagingBuffer, indexBuffer, indexBufferSize);
 
-    m_vertexBufferView = Gris::Graphics::Vulkan::BufferView(m_vertexBuffer, 0, static_cast<uint32_t>(vertexBufferSize));
-
-    ///
-
-    auto const indexBufferSize = sizeof(m_mesh.Indices[0]) * m_mesh.Indices.size();
-
-    auto indexStagingBuffer = m_device.CreateBuffer(indexBufferSize, vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
-    indexStagingBuffer.SetData(m_mesh.Indices.data(), static_cast<size_t>(indexBufferSize));
-
-    m_indexBuffer = m_device.CreateBuffer(indexBufferSize, vk::BufferUsageFlagBits::eTransferDst | vk::BufferUsageFlagBits::eIndexBuffer, vk::MemoryPropertyFlagBits::eDeviceLocal);
-    m_device.Context().CopyBuffer(indexStagingBuffer, m_indexBuffer, indexBufferSize);
-
-    m_indexBufferView = Gris::Graphics::Vulkan::BufferView(m_indexBuffer, 0, static_cast<uint32_t>(indexBufferSize));
+        m_indexBufferViews.emplace_back(Gris::Graphics::Vulkan::BufferView(indexBuffer, 0, static_cast<uint32_t>(indexBufferSize)));
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -413,10 +413,14 @@ void ForwardRenderingApplication::CreateCommandBuffers()
         m_commandBuffers[i].Begin();
         m_commandBuffers[i].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[i], m_swapChain.Extent());
         m_commandBuffers[i].BindPipeline(m_pso);
-        m_commandBuffers[i].BindVertexBuffer(m_vertexBufferView);
-        m_commandBuffers[i].BindIndexBuffer(m_indexBufferView);
         m_commandBuffers[i].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[i]);
-        m_commandBuffers[i].DrawIndexed(static_cast<uint32_t>(m_mesh.Indices.size()));
+        // TODO: Put this in a better data structure
+        for (size_t meshIndex = 0; meshIndex < m_meshes.size(); ++meshIndex)
+        {
+            m_commandBuffers[i].BindVertexBuffer(m_vertexBufferViews[meshIndex]);
+            m_commandBuffers[i].BindIndexBuffer(m_indexBufferViews[meshIndex]);
+            m_commandBuffers[i].DrawIndexed(static_cast<uint32_t>(m_meshes[meshIndex].Indices.size()));
+        }
         m_commandBuffers[i].EndRenderPass();
         m_commandBuffers[i].End();
     }
@@ -435,12 +439,12 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
 
     UniformBufferObject ubo = {};
 
-    constexpr glm::vec3 EyeLocation = glm::vec3(2.0F, 2.0F, 2.0F);
+    constexpr glm::vec3 EyeLocation = glm::vec3(250.0F, 250.0F, 250.0F);
     constexpr glm::vec3 Origin = glm::vec3(0.0F, 0.0F, 0.0F);
-    constexpr glm::vec3 Up = glm::vec3(0.0F, 0.0F, 1.0F);
-    constexpr glm::vec3 RotationAxis = glm::vec3(0.0F, 0.0F, 1.0F);
+    constexpr glm::vec3 Up = glm::vec3(0.0F, 1.0F, 0.0F);
+    constexpr glm::vec3 RotationAxis = glm::vec3(0.0F, 1.0F, 0.0F);
     constexpr float NearPlane = 0.1F;
-    constexpr float FarPlane = 10.0F;
+    constexpr float FarPlane = 1000.0F;
 
     ubo.model = glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis);
     ubo.view = glm::lookAt(EyeLocation, Origin, Up);

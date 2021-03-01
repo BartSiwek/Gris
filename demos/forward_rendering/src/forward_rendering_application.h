@@ -86,11 +86,11 @@ private:
     Gris::Graphics::Vulkan::Texture m_depthImage = {};
     Gris::Graphics::Vulkan::TextureView m_depthImageView = {};
 
-    Gris::Graphics::Mesh m_mesh;
-    Gris::Graphics::Vulkan::Buffer m_vertexBuffer = {};
-    Gris::Graphics::Vulkan::BufferView m_vertexBufferView = {};
-    Gris::Graphics::Vulkan::Buffer m_indexBuffer = {};
-    Gris::Graphics::Vulkan::BufferView m_indexBufferView = {};
+    std::vector<Gris::Graphics::Mesh> m_meshes;
+    std::vector<Gris::Graphics::Vulkan::Buffer> m_vertexBuffers = {};
+    std::vector<Gris::Graphics::Vulkan::BufferView> m_vertexBufferViews = {};
+    std::vector<Gris::Graphics::Vulkan::Buffer> m_indexBuffers = {};
+    std::vector<Gris::Graphics::Vulkan::BufferView> m_indexBufferViews = {};
 
     Gris::Graphics::Vulkan::Texture m_meshTextureImage = {};
     Gris::Graphics::Vulkan::TextureView m_meshTextureImageView = {};

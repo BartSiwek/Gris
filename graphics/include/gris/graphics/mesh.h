@@ -16,8 +16,8 @@ struct Vertex
 
 struct Mesh
 {
-    std::vector<Vertex> Vertices;
-    std::vector<uint32_t> Indices;
+    std::vector<Vertex> Vertices = {};
+    std::vector<uint32_t> Indices = {};
 };
 
 }  // namespace Gris::Graphics
