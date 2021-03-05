@@ -430,25 +430,22 @@ void ForwardRenderingApplication::CreateCommandBuffers()
 
 void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
 {
-    static auto startTime = std::chrono::high_resolution_clock::now();
-
-    auto const currentTime = std::chrono::high_resolution_clock::now();
-    auto const time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
     auto const swapChainExtent = m_swapChain.Extent();
+    auto const aspectRatio = static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
+
+    m_camera.SetLocation(0.0F, 0.0F, 0.0F);
+    m_camera.SetRadius(250.0F);
+    m_lens.SetFrustum(0.1F, 1000.0F, 1.0F, glm::radians(90.0F));
+
+    float frustumWidth;
+    float frustumHeight;
+    m_lens.UpdateMatrices(aspectRatio, &frustumWidth, &frustumHeight);
+    m_camera.UpdateMatrices(frustumWidth, frustumHeight);
 
     UniformBufferObject ubo = {};
-
-    constexpr glm::vec3 EyeLocation = glm::vec3(250.0F, 250.0F, 250.0F);
-    constexpr glm::vec3 Origin = glm::vec3(0.0F, 0.0F, 0.0F);
-    constexpr glm::vec3 Up = glm::vec3(0.0F, 1.0F, 0.0F);
-    constexpr glm::vec3 RotationAxis = glm::vec3(0.0F, 1.0F, 0.0F);
-    constexpr float NearPlane = 0.1F;
-    constexpr float FarPlane = 1000.0F;
-
-    ubo.model = glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis);
-    ubo.view = glm::lookAt(EyeLocation, Origin, Up);
-    ubo.proj = glm::perspective(glm::quarter_pi<float>(), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), NearPlane, FarPlane);
+    ubo.model = glm::mat4(1.0F);
+    ubo.view = m_camera.GetViewMatrix();
+    ubo.proj = m_lens.GetProjectionMatrix();
     ubo.proj[1][1] *= -1;
 
     m_uniformBuffers[currentImage].SetData(&ubo, sizeof(ubo));
