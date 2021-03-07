@@ -66,7 +66,7 @@ float GetCurrentRadius(const glm::vec2 & startPoint, const glm::vec2 & endPoint,
 
 void UpdateViewMatrix(const glm::vec3 & center, const glm::quat & rotationQuaterion, float radius, glm::mat4 * viewMatrix, glm::mat4 * viewMatrixInverseTranspose)
 {
-    
+
     auto translation = glm::translate(glm::vec3(0.0f, 0.0f, radius));
     auto translationInvTrans = glm::translate(glm::vec3(0.0f, 0.0f, -radius));
 
@@ -187,7 +187,9 @@ constexpr TransitionHandlerTable g_transition_table_ = { {
     },
 } };
 
-}
+}  // namespace
+
+// -------------------------------------------------------------------------------------------------
 
 void Gris::Graphics::Cameras::TrackballCameraUpdate(TrackballCameraOperation desired_state, float frustum_width, float frustum_height, TrackballCameraOperation * current_state, glm::vec2 * start_point, glm::vec2 * end_point, glm::vec3 * center, glm::quat * rotation_quaterion, float * radius, glm::mat4 * view_matrix, glm::mat4 * view_matrix_inverse_transpose)
 {
@@ -201,4 +203,105 @@ void Gris::Graphics::Cameras::TrackballCameraUpdate(TrackballCameraOperation des
     (*handler)(frustum_size_v, current_state, start_point, end_point, center, rotation_quaterion, radius, center_v, rotation_quaterion_v, &radius_f);
 
     UpdateViewMatrix(*center_v, *rotation_quaterion_v, radius_f, view_matrix, view_matrix_inverse_transpose);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+Gris::Graphics::Cameras::TrackballCamera::TrackballCamera()
+    : m_current_state(TrackballCameraOperation::None)
+    , m_start_point(0.0f, 0.0f)
+    , m_end_point(0.0f, 0.0f)
+    , m_center(0.0f, 0.0f, 0.0f)
+    , m_rotation_quaterion()
+    , m_radius(1.0f)
+    , m_view_matrix(glm::mat4(1.0F))
+    , m_view_matrix_inverse_transpose(glm::mat4(1.0F))
+    , m_desired_state(TrackballCameraOperation::None)
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::GetLocation(float * x, float * y, float * z) const
+{
+    *x = m_center.x;
+    *y = m_center.y;
+    *z = m_center.z;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::SetLocation(float x, float y, float z)
+{
+    m_center.x = x;
+    m_center.y = y;
+    m_center.z = z;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+float Gris::Graphics::Cameras::TrackballCamera::GetRadius() const
+{
+    return m_radius;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::SetRadius(float r)
+{
+    m_radius = r;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::LookAt(float from_x, float from_y, float from_z, float at_x, float at_y, float at_z)
+{
+    constexpr static auto Z_AXIS = glm::vec3(0, 0, 1);
+
+    m_center.x = at_x;
+    m_center.y = at_y;
+    m_center.z = at_z;
+
+    auto from = glm::vec3(from_x, from_y, from_z);
+    auto view = glm::normalize(from - m_center);
+
+    auto axis = glm::cross(Z_AXIS, view);
+    auto angle = glm::acos(glm::dot(Z_AXIS, view));
+
+    m_rotation_quaterion = glm::angleAxis(angle, axis);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::SetDesiredState(TrackballCameraOperation desired_state)
+{
+    m_desired_state = desired_state;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::SetEndPoint(const glm::vec2 & p)
+{
+    m_end_point = p;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Cameras::TrackballCamera::UpdateMatrices(float frustum_width, float frustum_height)
+{
+    TrackballCameraUpdate(m_desired_state, frustum_width, frustum_height, &m_current_state, &m_start_point, &m_end_point, &m_center, &m_rotation_quaterion, &m_radius, &m_view_matrix, &m_view_matrix_inverse_transpose);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+const glm::mat4 & Gris::Graphics::Cameras::TrackballCamera::GetViewMatrix() const
+{
+    return m_view_matrix;
+}
+
+// -------------------------------------------------------------------------------------------------
+
+const glm::mat4 & Gris::Graphics::Cameras::TrackballCamera::GetViewMatrixInverseTranspose() const
+{
+    return m_view_matrix_inverse_transpose;
 }

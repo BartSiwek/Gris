@@ -94,6 +94,27 @@ void ForwardRenderingApplication::WindowResized(uint32_t /* width */, uint32_t /
 
 // -------------------------------------------------------------------------------------------------
 
+void ForwardRenderingApplication::MouseButtonEvent(Gris::Graphics::MouseButton button, Gris::Graphics::MouseButtonAction action, float x, float y)
+{
+    Gris::Log::Info("MouseButtonEvent(button = {}, action = {}, x = {}, y = {})", static_cast<int>(button), static_cast<int>(action), x, y);
+}
+
+// -------------------------------------------------------------------------------------------------
+    
+void ForwardRenderingApplication::MouseMoveEvent(float x, float y)
+{
+    Gris::Log::Info("MouseMoveEvent(x = {}, y = {})", x, y);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void ForwardRenderingApplication::MouseWheelEvent(float x, float y, float delta)
+{
+    Gris::Log::Info("MouseWheelEvent(x = {}, y = {}, delta = {})", x, y, delta);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void ForwardRenderingApplication::InitWindow()
 {
     m_window = Gris::Graphics::Vulkan::Glfw::Window(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Vulkan tutorial");
@@ -132,6 +153,7 @@ void ForwardRenderingApplication::CreateVulkanObjects()
 
 void ForwardRenderingApplication::LoadScene()
 {
+    CreateCamera();
     CreateMesh();
     CreateMeshTexture();
 }
@@ -176,6 +198,17 @@ void ForwardRenderingApplication::CreateSwapChain()
 void ForwardRenderingApplication::CreateRenderPass()
 {
     m_renderPass = m_device.CreateRenderPass(m_swapChain.Format(), FindDepthFormat());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void ForwardRenderingApplication::CreateCamera()
+{
+    auto const swapChainExtent = m_swapChain.Extent();
+
+    m_camera.SetLocation(0.0F, 0.0F, 0.0F);
+    m_camera.SetRadius(4.0F);
+    m_lens.SetFrustum(1.0F, 9.0F, static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), glm::radians(90.0F));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -432,10 +465,6 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
 {
     auto const swapChainExtent = m_swapChain.Extent();
     auto const aspectRatio = static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
-
-    m_camera.SetLocation(0.0F, 0.0F, 0.0F);
-    m_camera.SetRadius(250.0F);
-    m_lens.SetFrustum(0.1F, 1000.0F, 1.0F, glm::radians(90.0F));
 
     float frustumWidth;
     float frustumHeight;

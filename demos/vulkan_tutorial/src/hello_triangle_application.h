@@ -37,7 +37,10 @@ private:
 
     [[nodiscard]] vk::Format FindDepthFormat() const;
 
-    void WindowResized(uint32_t /* width */, uint32_t /* height */) override;
+    void WindowResized(uint32_t width, uint32_t height) override;
+    void MouseButtonEvent(Gris::Graphics::MouseButton button, Gris::Graphics::MouseButtonAction action, float x, float y) override;
+    void MouseMoveEvent(float x, float y) override;
+    void MouseWheelEvent(float x, float y, float delta) override;
 
     void InitWindow();
     void CreateVulkanObjects();

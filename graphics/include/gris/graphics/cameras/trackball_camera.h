@@ -1,16 +1,7 @@
 #pragma once
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4201)
-#endif
-
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 
 #include <cstdint>
 
@@ -42,18 +33,7 @@ void TrackballCameraUpdate(
 class TrackballCamera
 {
 public:
-    TrackballCamera()
-        : m_current_state(TrackballCameraOperation::None)
-        , m_start_point(0.0f, 0.0f)
-        , m_end_point(0.0f, 0.0f)
-        , m_center(0.0f, 0.0f, 0.0f)
-        , m_rotation_quaterion()
-        , m_radius(1.0f)
-        , m_view_matrix(glm::mat4(1.0F))
-        , m_view_matrix_inverse_transpose(glm::mat4(1.0F))
-        , m_desired_state(TrackballCameraOperation::None)
-    {
-    }
+    TrackballCamera();
 
     ~TrackballCamera() = default;
 
@@ -63,71 +43,22 @@ public:
     TrackballCamera(TrackballCamera &&) = default;
     TrackballCamera & operator=(TrackballCamera &&) = default;
 
-    void GetLocation(float * x, float * y, float * z) const
-    {
-        *x = m_center.x;
-        *y = m_center.y;
-        *z = m_center.z;
-    }
+    void GetLocation(float * x, float * y, float * z) const;
+    void SetLocation(float x, float y, float z);
 
-    void SetLocation(float x, float y, float z)
-    {
-        m_center.x = x;
-        m_center.y = y;
-        m_center.z = z;
-    }
+    float GetRadius() const;
+    void SetRadius(float r);
 
-    float GetRadius() const
-    {
-        return m_radius;
-    }
+    void LookAt(float from_x, float from_y, float from_z, float at_x, float at_y, float at_z);
 
-    void SetRadius(float r)
-    {
-        m_radius = r;
-    }
+    void SetDesiredState(TrackballCameraOperation desired_state);
 
-    void LookAt(float from_x, float from_y, float from_z, float at_x, float at_y, float at_z)
-    {
-        constexpr static auto Z_AXIS = glm::vec3(0, 0, 1);
+    void SetEndPoint(const glm::vec2 & p);
 
-        m_center.x = at_x;
-        m_center.y = at_y;
-        m_center.z = at_z;
+    void UpdateMatrices(float frustum_width, float frustum_height);
 
-        auto from = glm::vec3(from_x, from_y, from_z);
-        auto view = glm::normalize(from - m_center);
-
-        auto axis = glm::cross(Z_AXIS, view);
-        auto angle = glm::acos(glm::dot(Z_AXIS, view));
-
-        m_rotation_quaterion = glm::angleAxis(angle, axis);
-    }
-
-    void SetDesiredState(TrackballCameraOperation desired_state)
-    {
-        m_desired_state = desired_state;
-    }
-
-    void SetEndPoint(const glm::vec2 & p)
-    {
-        m_end_point = p;
-    }
-
-    void UpdateMatrices(float frustum_width, float frustum_height)
-    {
-        TrackballCameraUpdate(m_desired_state, frustum_width, frustum_height, &m_current_state, &m_start_point, &m_end_point, &m_center, &m_rotation_quaterion, &m_radius, &m_view_matrix, &m_view_matrix_inverse_transpose);
-    }
-
-    const glm::mat4 & GetViewMatrix() const
-    {
-        return m_view_matrix;
-    }
-
-    const glm::mat4 & GetViewMatrixInverseTranspose() const
-    {
-        return m_view_matrix_inverse_transpose;
-    }
+    const glm::mat4 & GetViewMatrix() const;
+    const glm::mat4 & GetViewMatrixInverseTranspose() const;
 
 private:
     // Finished product

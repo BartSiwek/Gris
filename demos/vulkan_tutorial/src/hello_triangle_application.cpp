@@ -94,6 +94,24 @@ void HelloTriangleApplication::WindowResized(uint32_t /* width */, uint32_t /* h
 
 // -------------------------------------------------------------------------------------------------
 
+void HelloTriangleApplication::MouseButtonEvent(Gris::Graphics::MouseButton /* button */, Gris::Graphics::MouseButtonAction /* action */, float /* x */, float /* y */)
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void HelloTriangleApplication::MouseMoveEvent(float /* x */, float /* y */)
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void HelloTriangleApplication::MouseWheelEvent(float /* x */, float /* y */, float /* delta */)
+{
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void HelloTriangleApplication::InitWindow()
 {
     m_window = Gris::Graphics::Vulkan::Glfw::Window(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Vulkan tutorial");

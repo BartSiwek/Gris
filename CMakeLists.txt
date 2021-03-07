@@ -66,6 +66,13 @@ endif()
 
 run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}" "${CONAN_IMPORTS}")
 
+####################################################################
+
+if(MSVC)
+  # Quaternion code in glm causes this warning to fire
+  target_compile_options(CONAN_PKG::glm INTERFACE "/wd4201")
+endif()
+
 ########################################################################
 
 add_subdirectory(extern/vulkan)

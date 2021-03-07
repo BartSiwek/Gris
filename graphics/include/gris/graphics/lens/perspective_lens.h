@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cmath>
-
 #include <glm/glm.hpp>
+
+#include <cmath>
 
 namespace Gris::Graphics::Lens
 {
