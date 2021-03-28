@@ -95,13 +95,13 @@ target_link_libraries(Gris.Graphics PUBLIC
   CONAN_PKG::vulkan-memory-allocator
   CONAN_PKG::vulkan-headers
   CONAN_PKG::glfw
+  CONAN_PKG::glm
 )
 
 target_link_libraries(Gris.Graphics PRIVATE
   Gris.ProjectOptions
   Gris.ProjectWarnings
   Gris.Core
-  CONAN_PKG::glm
   CONAN_PKG::stb
   CONAN_PKG::tinyobjloader
   CONAN_PKG::assimp

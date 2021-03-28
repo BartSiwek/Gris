@@ -12,7 +12,7 @@
 
 // -------------------------------------------------------------------------------------------------
 
-constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices;
+constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder;
 
 // -------------------------------------------------------------------------------------------------
 

@@ -78,7 +78,7 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
                               double y;
                               glfwGetCursorPos(window, &x, &y);
 
-                              windowPtr->OnMouseWheelEvent(static_cast<float>(yoffset), static_cast<float>(x), static_cast<float>(y));
+                              windowPtr->OnMouseWheelEvent(static_cast<float>(x), static_cast<float>(y), static_cast<float>(yoffset));
                           });
 }
 

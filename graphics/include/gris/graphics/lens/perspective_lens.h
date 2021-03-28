@@ -35,9 +35,9 @@ public:
         m_near_ = near_plane;
         m_far_ = far_plane;
 
-        auto horizontal_fol_half_tan = std::tan(horizontal_fov / 2.0f);
-        m_frustum_width_ = 2.0f * m_near_ * horizontal_fol_half_tan;
-        m_frustum_height_ = 2.0f * m_near_ * horizontal_fol_half_tan / aspect_ratio;
+        auto horizontal_fov_half_tan = std::tan(horizontal_fov / 2.0f);
+        m_frustum_width_ = 2.0f * m_near_ * horizontal_fov_half_tan;
+        m_frustum_height_ = 2.0f * m_near_ * horizontal_fov_half_tan / aspect_ratio;
     }
 
     void SetZoomFactor(float zoom_factor)

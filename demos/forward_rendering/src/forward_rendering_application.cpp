@@ -1,8 +1,8 @@
 #include "forward_rendering_application.h"
 
 #include <gris/graphics/image.h>
-#include <gris/graphics/loaders/stb_image_loader.h>
 #include <gris/graphics/loaders/assimp_mesh_loader.h>
+#include <gris/graphics/loaders/stb_image_loader.h>
 #include <gris/graphics/mesh.h>
 
 #include <gris/graphics/vulkan/buffer.h>
@@ -68,6 +68,19 @@ struct UniformBufferObject
 
 // -------------------------------------------------------------------------------------------------
 
+namespace
+{
+
+inline glm::vec2 GetNormalizedScreenCoordinates(float width, float height, float x, float y)
+{
+    auto normalizedPoint = glm::vec2((2 * x) / width - 1.0f, 1.0f - (2 * y) / height);
+    return glm::clamp(normalizedPoint, glm::vec2(-1.0F, -1.0F), glm::vec2(1.0F, 1.0F));
+}
+
+}  // namespace
+
+// -------------------------------------------------------------------------------------------------
+
 void ForwardRenderingApplication::Run()
 {
     InitWindow();
@@ -97,13 +110,45 @@ void ForwardRenderingApplication::WindowResized(uint32_t /* width */, uint32_t /
 void ForwardRenderingApplication::MouseButtonEvent(Gris::Graphics::MouseButton button, Gris::Graphics::MouseButtonAction action, float x, float y)
 {
     Gris::Log::Info("MouseButtonEvent(button = {}, action = {}, x = {}, y = {})", static_cast<int>(button), static_cast<int>(action), x, y);
+
+    if (button == Gris::Graphics::MouseButton::Right && action == Gris::Graphics::MouseButtonAction::Down)
+    {
+        auto const swapChainExtent = m_swapChain.Extent();
+        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Panning);
+        m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+    }
+    else if (button == Gris::Graphics::MouseButton::Right && action == Gris::Graphics::MouseButtonAction::Up)
+    {
+        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::None);
+    }
+    else if (button == Gris::Graphics::MouseButton::Left && action == Gris::Graphics::MouseButtonAction::Down)
+    {
+        auto const swapChainExtent = m_swapChain.Extent();
+        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Rotating);
+        m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+    }
+    else if (button == Gris::Graphics::MouseButton::Left && action == Gris::Graphics::MouseButtonAction::Up)
+    {
+        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::None);
+    }
+    else if (button == Gris::Graphics::MouseButton::Middle && action == Gris::Graphics::MouseButtonAction::Down)
+    {
+        auto const swapChainExtent = m_swapChain.Extent();
+        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Zooming);
+        m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+    }
+    else if (button == Gris::Graphics::MouseButton::Middle && action == Gris::Graphics::MouseButtonAction::Up)
+    {
+        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::None);
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
-    
+
 void ForwardRenderingApplication::MouseMoveEvent(float x, float y)
 {
-    Gris::Log::Info("MouseMoveEvent(x = {}, y = {})", x, y);
+    auto const swapChainExtent = m_swapChain.Extent();
+    m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -111,6 +156,15 @@ void ForwardRenderingApplication::MouseMoveEvent(float x, float y)
 void ForwardRenderingApplication::MouseWheelEvent(float x, float y, float delta)
 {
     Gris::Log::Info("MouseWheelEvent(x = {}, y = {}, delta = {})", x, y, delta);
+
+    if (delta > 0)
+    {
+        m_lens.SetZoomFactor(1.1f * m_lens.GetZoomFactor());
+    }
+    else
+    {
+        m_lens.SetZoomFactor(0.9f * m_lens.GetZoomFactor());
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -206,9 +260,11 @@ void ForwardRenderingApplication::CreateCamera()
 {
     auto const swapChainExtent = m_swapChain.Extent();
 
-    m_camera.SetLocation(0.0F, 0.0F, 0.0F);
-    m_camera.SetRadius(4.0F);
-    m_lens.SetFrustum(1.0F, 9.0F, static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), glm::radians(90.0F));
+    Gris::Log::Info("Swap chain extent = {} x {}", swapChainExtent.width, swapChainExtent.height);
+
+    m_camera.SetLocation(glm::vec3(0.0F, 5.0F, 0.0F));
+    m_camera.SetRadius(5.0F);
+    m_lens.SetFrustum(1.0F, 1000.0F, static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), glm::radians(90.0F));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -423,11 +479,11 @@ void ForwardRenderingApplication::CreateUniformBuffersAndBindings()
         m_shaderResourceBindings[i][GLOBAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayouts[GLOBAL_DESCRIPTOR_SET_INDEX]);
         m_shaderResourceBindings[i][PER_MATERIAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayouts[PER_MATERIAL_DESCRIPTOR_SET_INDEX]);
         m_shaderResourceBindings[i][PER_DRAW_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindings(m_resourceLayouts[PER_DRAW_DESCRIPTOR_SET_INDEX]);
-       
+
         m_shaderResourceBindings[i][GLOBAL_DESCRIPTOR_SET_INDEX].SetUniformBuffer("ubo", m_uniformBufferViews[i]);
 
         m_shaderResourceBindings[i][PER_MATERIAL_DESCRIPTOR_SET_INDEX].SetCombinedSamplerAndImageView("texSampler", m_meshTextureSampler, m_meshTextureImageView);
-        
+
         m_shaderResourceBindings[i][GLOBAL_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
         m_shaderResourceBindings[i][PER_MATERIAL_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
         m_shaderResourceBindings[i][PER_DRAW_DESCRIPTOR_SET_INDEX].PrepareBindings(m_shaderResourceBindingsPoolCategory, &m_shaderResourceBindingsPools);
@@ -469,7 +525,7 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
     float frustumWidth;
     float frustumHeight;
     m_lens.UpdateMatrices(aspectRatio, &frustumWidth, &frustumHeight);
-    m_camera.UpdateMatrices(frustumWidth, frustumHeight);
+    m_camera.UpdateMatrices(glm::vec2(frustumWidth, frustumHeight));  // TODO: Make lens return a vector
 
     UniformBufferObject ubo = {};
     ubo.model = glm::mat4(1.0F);

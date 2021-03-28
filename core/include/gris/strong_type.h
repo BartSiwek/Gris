@@ -82,7 +82,7 @@ struct Comparable : Detail::Crpt<T, Comparable>
 template<typename T>
 struct Hashable
 {
-    static constexpr bool IsHashable = true;
+    static constexpr bool IS_HASHABLE = true;
 };
 
 template<auto Value>
@@ -106,7 +106,7 @@ template<typename T, typename TagT, T DefaultValue, template<typename> class... 
 struct hash<Gris::StrongType<T, TagT, DefaultValue, MixinTs...>>
 {
     using CompleteStrongType = Gris::StrongType<T, TagT, DefaultValue, MixinTs...>;
-    using IsHashable = std::enable_if_t<CompleteStrongType::IsHashable, void>;
+    using IsHashable = std::enable_if_t<CompleteStrongType::IS_HASHABLE, void>;
 
     size_t operator()(Gris::StrongType<T, TagT, DefaultValue, MixinTs...> const & value) const
     {

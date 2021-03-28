@@ -1,5 +1,6 @@
 #include <gris/graphics/lens/perspective_lens.h>
 
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/gtx/transform.hpp>
 
 void Gris::Graphics::Lens::PerspectiveLensUpdate(float zoom_factor, float aspect_ratio, float w, float h, float n, float f, float * frustum_width, float * frustum_height, glm::mat4 * proj_matrix)

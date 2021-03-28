@@ -18,17 +18,16 @@ enum class TrackballCameraOperation : uint32_t
 };
 
 void TrackballCameraUpdate(
-    TrackballCameraOperation desired_state,
-    float frustum_width,
-    float frustum_height,
-    TrackballCameraOperation * current_state,
-    glm::vec2 * start_point,
-    glm::vec2 * end_point,
+    TrackballCameraOperation desiredState,
+    const glm::vec2 & frustumSize,
+    TrackballCameraOperation * currentState,
+    glm::vec2 * prevPoint,
+    glm::vec2 * currentPoint,
     glm::vec3 * center,
-    glm::quat * rotation_quaterion,
+    glm::quat * rotationQuaterion,
     float * radius,
-    glm::mat4 * view_matrix,
-    glm::mat4 * view_matrix_inverse_transpose);
+    glm::mat4 * viewMatrix,
+    glm::mat4 * viewMatrixInverseTranspose);
 
 class TrackballCamera
 {
@@ -43,40 +42,40 @@ public:
     TrackballCamera(TrackballCamera &&) = default;
     TrackballCamera & operator=(TrackballCamera &&) = default;
 
-    void GetLocation(float * x, float * y, float * z) const;
-    void SetLocation(float x, float y, float z);
+    void SetLocation(const glm::vec3 & location);
+    glm::vec3 GetLocation() const;
 
-    float GetRadius() const;
     void SetRadius(float r);
+    float GetRadius() const;
 
-    void LookAt(float from_x, float from_y, float from_z, float at_x, float at_y, float at_z);
+    void LookAt(const glm::vec3 & from, const glm::vec3 & at);
 
-    void SetDesiredState(TrackballCameraOperation desired_state);
+    void SetDesiredState(TrackballCameraOperation desiredState);
 
-    void SetEndPoint(const glm::vec2 & p);
+    void SetCurrentPoint(const glm::vec2 & currentPoint);
 
-    void UpdateMatrices(float frustum_width, float frustum_height);
+    void UpdateMatrices(const glm::vec2 & frustumSize);
 
     const glm::mat4 & GetViewMatrix() const;
     const glm::mat4 & GetViewMatrixInverseTranspose() const;
 
 private:
     // Finished product
-    glm::mat4 m_view_matrix;
-    glm::mat4 m_view_matrix_inverse_transpose;
+    glm::mat4 m_viewMatrix;
+    glm::mat4 m_viewMatrixInverseTranspose;
 
     // View
     glm::vec3 m_center;
-    glm::quat m_rotation_quaterion;
+    glm::quat m_rotationQuaterion;
     float m_radius;
 
     // State
-    TrackballCameraOperation m_current_state;
-    glm::vec2 m_start_point;
-    glm::vec2 m_end_point;
+    TrackballCameraOperation m_currentState;
+    glm::vec2 m_prevPoint;
+    glm::vec2 m_currentPoint;
 
     // Extra state
-    TrackballCameraOperation m_desired_state;
+    TrackballCameraOperation m_desiredState;
 };
 
 }  // namespace Gris::Graphics::Cameras
