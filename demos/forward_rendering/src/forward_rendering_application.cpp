@@ -517,9 +517,7 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
     auto const swapChainExtent = m_swapChain.Extent();
     auto const aspectRatio = static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
 
-    float frustumWidth;  // TODO: Remvoe those
-    float frustumHeight;
-    m_lens.UpdateMatrices(aspectRatio, &frustumWidth, &frustumHeight);
+    m_lens.UpdateMatrices(aspectRatio);
     m_camera.UpdateMatrices();
 
     UniformBufferObject ubo = {};

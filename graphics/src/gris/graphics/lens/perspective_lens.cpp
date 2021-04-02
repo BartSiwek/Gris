@@ -3,22 +3,22 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/gtx/transform.hpp>
 
-void Gris::Graphics::Lens::PerspectiveLensUpdate(float zoom_factor, float aspect_ratio, float w, float h, float n, float f, float * frustum_width, float * frustum_height, glm::mat4 * proj_matrix)
+glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float aspectRatio, float w, float h, float n, float f)
 {
-    auto inv_zoom_factor = 1.0f / zoom_factor;
-    if (aspect_ratio >= 1.0f)
+    auto invZoomFactor = 1.0f / zoomFactor;
+    if (aspectRatio >= 1.0f)
     {
-        *frustum_height = inv_zoom_factor * h;
-        *frustum_width = aspect_ratio * *frustum_height;
-        auto fovy = 2.0F * glm::atan(*frustum_height / (2.0F * n));
-        *proj_matrix = glm::perspectiveFovLH(fovy, *frustum_width, *frustum_height, n, f);
+        auto frustumHeight = invZoomFactor * h;
+        auto frustumWidth = aspectRatio * frustumHeight;
+        auto fovy = 2.0F * glm::atan(frustumHeight / (2.0F * n));
+        return glm::perspectiveFovLH(fovy, frustumWidth, frustumHeight, n, f);
     }
     else
     {
-        auto aspect_ratio_inv = 1.0f / aspect_ratio;
-        *frustum_width = inv_zoom_factor * w;
-        *frustum_height = aspect_ratio_inv * *frustum_width;
-        auto fovy = 2.0F * glm::atan(*frustum_height / (2.0F * n));
-        *proj_matrix = glm::perspectiveFovLH(fovy, *frustum_width, *frustum_height, n, f);
+        auto aspectRatioInv = 1.0f / aspectRatio;
+        auto frustumWidth = invZoomFactor * w;
+        auto frustumHeight = aspectRatioInv * frustumWidth;
+        auto fovy = 2.0F * glm::atan(frustumHeight / (2.0F * n));
+        return glm::perspectiveFovLH(fovy, frustumWidth, frustumHeight, n, f);
     }
 }
