@@ -14,7 +14,7 @@ glm::vec3 GetCurrentTranslationVector(const glm::vec2 & prevPoint, const glm::ve
 {
     auto t = glm::vec3(panningSpeed * (currentPoint - prevPoint), 0.0F);
 
-    t = glm::inverse(q)  * t;
+    t = glm::inverse(q) * t;
     t = center - t;
 
     return t;

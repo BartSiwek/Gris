@@ -3,8 +3,8 @@
 #include <gris/graphics/mesh.h>
 
 #include <gris/engine_exception.h>
-#include <gris/utils.h>
 #include <gris/log.h>
+#include <gris/utils.h>
 
 #include <assimp/cimport.h>
 #include <assimp/postprocess.h>
@@ -62,7 +62,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
             mesh.Vertices.emplace_back(std::move(vertex));
         }
 
-		for (size_t faceIndex = 0; faceIndex < currentMesh->mNumFaces; faceIndex++)
+        for (size_t faceIndex = 0; faceIndex < currentMesh->mNumFaces; faceIndex++)
         {
             auto const & face = currentMesh->mFaces[faceIndex];
             if (face.mNumIndices != 3)
