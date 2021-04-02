@@ -29,7 +29,7 @@ glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::v
     auto moveDirection = currentPoint - prevPoint;
     auto moveAmount = glm::length(moveDirection);
 
-    if (moveAmount < 1e-6)
+    if (moveAmount < 1e-6f)
     {
         return rotationQuaterion;
     }
@@ -191,14 +191,15 @@ void Gris::Graphics::Cameras::TrackballCameraUpdate(TrackballCameraOperation des
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Cameras::TrackballCamera::TrackballCamera()
-    : m_currentState(TrackballCameraOperation::None)
-    , m_prevPoint(0.0f, 0.0f)
-    , m_currentPoint(0.0f, 0.0f)
+    : m_viewMatrix(glm::mat4(1.0F))
+    , m_viewMatrixInverseTranspose(glm::mat4(1.0F))
     , m_center(0.0f, 0.0f, 0.0f)
     , m_rotationQuaterion(1.0F, 0.0F, 0.0F, 0.0F)
     , m_radius(1.0f)
-    , m_viewMatrix(glm::mat4(1.0F))
-    , m_viewMatrixInverseTranspose(glm::mat4(1.0F))
+
+    , m_currentState(TrackballCameraOperation::None)
+    , m_prevPoint(0.0f, 0.0f)
+    , m_currentPoint(0.0f, 0.0f)
     , m_desiredState(TrackballCameraOperation::None)
     , m_rotationSpeed(glm::half_pi<float>())
     , m_panningSpeed(1.0F)

@@ -10,15 +10,15 @@ glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float as
     {
         auto frustumHeight = invZoomFactor * h;
         auto frustumWidth = aspectRatio * frustumHeight;
-        auto fovy = 2.0F * glm::atan(frustumHeight / (2.0F * n));
-        return glm::perspectiveFovLH(fovy, frustumWidth, frustumHeight, n, f);
+        auto fovY = 2.0F * glm::atan(frustumHeight / (2.0F * n));
+        return glm::perspectiveFovLH(fovY, frustumWidth, frustumHeight, n, f);
     }
     else
     {
         auto aspectRatioInv = 1.0f / aspectRatio;
         auto frustumWidth = invZoomFactor * w;
         auto frustumHeight = aspectRatioInv * frustumWidth;
-        auto fovy = 2.0F * glm::atan(frustumHeight / (2.0F * n));
-        return glm::perspectiveFovLH(fovy, frustumWidth, frustumHeight, n, f);
+        auto fovY = 2.0F * glm::atan(frustumHeight / (2.0F * n));
+        return glm::perspectiveFovLH(fovY, frustumWidth, frustumHeight, n, f);
     }
 }

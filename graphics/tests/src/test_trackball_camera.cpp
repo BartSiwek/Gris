@@ -253,8 +253,6 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
-
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 

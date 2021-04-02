@@ -7,7 +7,7 @@
 namespace Gris::Graphics::Lens
 {
 
-glm::mat4 PerspectiveLensUpdate(float zoom_factor, float aspect_ratio, float w, float h, float n, float f);
+glm::mat4 PerspectiveLensUpdate(float zoomFactor, float aspectRatio, float w, float h, float n, float f);
 
 class PerspectiveLens
 {
@@ -30,14 +30,14 @@ public:
     PerspectiveLens(PerspectiveLens &&) = default;
     PerspectiveLens & operator=(PerspectiveLens &&) = default;
 
-    void SetFrustum(float near_plane, float far_plane, float aspect_ratio, float horizontal_fov)
+    void SetFrustum(float nearPlane, float farPlane, float aspectRatio, float horizontalFov)
     {
-        m_near = near_plane;
-        m_far = far_plane;
+        m_near = nearPlane;
+        m_far = farPlane;
 
-        auto horizontal_fov_half_tan = std::tan(horizontal_fov / 2.0f);
-        m_frustumWidth = 2.0f * m_near * horizontal_fov_half_tan;
-        m_frustumHeight = 2.0f * m_near * horizontal_fov_half_tan / aspect_ratio;
+        auto horizontalFovHalfTan = std::tan(horizontalFov / 2.0f);
+        m_frustumWidth = 2.0f * m_near * horizontalFovHalfTan;
+        m_frustumHeight = 2.0f * m_near * horizontalFovHalfTan / aspectRatio;
     }
 
     void SetZoomFactor(float zoomFactor)
@@ -50,9 +50,9 @@ public:
         return m_zoomFactor;
     }
 
-    void UpdateMatrices(float aspect_ratio)
+    void UpdateMatrices(float aspectRatio)
     {
-        m_projMatrix = PerspectiveLensUpdate(m_zoomFactor, aspect_ratio, m_frustumWidth, m_frustumHeight, m_near, m_far);
+        m_projMatrix = PerspectiveLensUpdate(m_zoomFactor, aspectRatio, m_frustumWidth, m_frustumHeight, m_near, m_far);
     }
 
     const glm::mat4 & GetProjectionMatrix() const
