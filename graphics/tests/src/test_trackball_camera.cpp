@@ -115,12 +115,13 @@ TEST_CASE("Stationary state", "[trackball camera]")
 {
     auto runStationaryCameraUpdateTest = [](Gris::Graphics::Cameras::TrackballCameraOperation currentState,
                                             Gris::Graphics::Cameras::TrackballCameraOperation desiredState,
-                                            const glm::vec2 frustumSize,
                                             const glm::vec2 prevPoint,
                                             const glm::vec2 currentPoint,
                                             const glm::vec3 center,
                                             const glm::quat & rotationQuaterion,
-                                            const float radius)
+                                            const float radius,
+                                            const float rotationSpeed,
+                                            const float panningSpeed)
     {
         auto inputCurrentState = currentState;
         auto inputPrevPoint = prevPoint;
@@ -134,7 +135,8 @@ TEST_CASE("Stationary state", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             desiredState,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &inputCurrentState,
             &inputPrevPoint,
             &inputCurrentPoint,
@@ -160,8 +162,6 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
-
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
@@ -169,15 +169,19 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
         auto radius = 0.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         CHECK(viewMatrix == glm::mat4(1.0));
         CHECK(viewMatrixInverseTranspose == glm::mat4(1.0));
@@ -188,8 +192,6 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
-
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
@@ -197,26 +199,28 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
         auto radius = 4.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, 4.0F)));
         CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(0.0F, 0.0F, -4.0F))));
     }
 
-    SECTION("X Rotation")
+    SECTION("X Axis Rotation")
     {
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
-
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
 
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
@@ -225,22 +229,26 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(0.9238795F, 0.3826834F, 0.0F, 0.0F);
         auto radius = 0.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         auto expectedViewMatrix = glm::eulerAngleXYZ(glm::radians(45.0F), glm::radians(0.0F), glm::radians(0.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
         CHECK(viewMatrixInverseTranspose == GlmMatrixApprox(expectedViewMatrix));
     }
 
-    SECTION("Y Rotation")
+    SECTION("Y Axis Rotation")
     {
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
@@ -254,27 +262,29 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(0.953717F, 0.0F, 0.3007058F, 0.0F);
         auto radius = 0.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         auto expectedViewMatrix = glm::eulerAngleXYZ(glm::radians(0.0F), glm::radians(35.0F), glm::radians(0.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
         CHECK(viewMatrixInverseTranspose == GlmMatrixApprox(expectedViewMatrix));
     }
 
-    SECTION("Z Rotation")
+    SECTION("Z Axis Rotation")
     {
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
-
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
 
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
@@ -283,15 +293,19 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(0.8870108F, 0.0F, 0.0F, 0.4617486F);
         auto radius = 0.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         auto expectedViewMatrix = glm::eulerAngleXYZ(glm::radians(0.0F), glm::radians(0.0F), glm::radians(55.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
@@ -303,8 +317,6 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
-
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
@@ -312,15 +324,19 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(0.7284268F, 0.4149509F, 0.1954527F, 0.5089286F);
         auto radius = 0.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         auto expectedViewMatrix = glm::eulerAngleXYZ(glm::radians(35.0F), glm::radians(45.0F), glm::radians(55.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
@@ -332,8 +348,6 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
         auto desiredState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-        auto frustumSize = glm::vec2(1.0F, 1.0F);
-
         auto prevPoint = glm::vec2(-1.0F, 0.0F);
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
@@ -341,15 +355,19 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto rotationQuaterion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
         auto radius = 0.0F;
 
+        auto rotationSpeed = glm::half_pi<float>();
+        auto panningSpeed = 1.0F;
+
         auto [viewMatrix, viewMatrixInverseTranspose] = runStationaryCameraUpdateTest(
             currentState,
             desiredState,
-            frustumSize,
             prevPoint,
             currentPoint,
             center,
             rotationQuaterion,
-            radius);
+            radius,
+            rotationSpeed,
+            panningSpeed);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(-4, -1, -3)));
         CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(4, 1, 3))));
@@ -364,13 +382,14 @@ TEST_CASE("Panning", "[trackball camera]")
 
     auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-    auto frustumSize = glm::vec2(1.0F, 1.0F);
-
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
     auto rotationQuaterion = IDENTITY_QUATERNION;
     auto radius = 0.0F;
+
+    auto rotationSpeed = glm::half_pi<float>();
+    auto panningSpeed = 1.0F;
 
     {
         auto currentPoint = glm::vec2(DELTA, 0.0F);
@@ -380,7 +399,8 @@ TEST_CASE("Panning", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Panning,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -410,7 +430,8 @@ TEST_CASE("Panning", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Panning,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -428,8 +449,8 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(rotationQuaterion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
-        CHECK(viewMatrix == glm::translate(glm::vec3(DELTA / 2.0F, 0.0F, 0.0F)));
-        CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(-DELTA / 2.0F, 0.0F, 0.0F))));
+        CHECK(viewMatrix == glm::translate(glm::vec3(DELTA, 0.0F, 0.0F)));
+        CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(-DELTA, 0.0F, 0.0F))));
     }
 
     {
@@ -440,7 +461,8 @@ TEST_CASE("Panning", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Panning,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -458,8 +480,8 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(rotationQuaterion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
-        CHECK(viewMatrix == glm::translate(glm::vec3(DELTA, 0.0F, 0.0F)));
-        CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(-DELTA, 0.0F, 0.0F))));
+        CHECK(viewMatrix == glm::translate(glm::vec3(2.0F * DELTA, 0.0F, 0.0F)));
+        CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(-2.0F * DELTA, 0.0F, 0.0F))));
     }
 
     {
@@ -470,7 +492,8 @@ TEST_CASE("Panning", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::None,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -484,12 +507,12 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(prevPoint == glm::vec2(0.0F, 0.0F));
         CHECK(currentPoint == glm::vec2(0.0F, 0.0F));
 
-        CHECK(center == glm::vec3(-3.0F * DELTA / 2.0F, 0, 0));
+        CHECK(center == glm::vec3(-3.0F * DELTA, 0, 0));
         CHECK(rotationQuaterion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
-        CHECK(viewMatrix == glm::translate(glm::vec3(3.0F * DELTA / 2.0F, 0.0F, 0.0F)));
-        CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(-3.0F * DELTA / 2.0F, 0.0F, 0.0F))));
+        CHECK(viewMatrix == glm::translate(glm::vec3(3.0F * DELTA, 0.0F, 0.0F)));
+        CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(-3.0F * DELTA, 0.0F, 0.0F))));
     }
 }
 
@@ -501,13 +524,14 @@ TEST_CASE("Rotating", "[trackball camera]")
 
     auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-    auto frustumSize = glm::vec2(1.0F, 1.0F);
-
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
     auto rotationQuaterion = IDENTITY_QUATERNION;
     auto radius = 0.0F;
+
+    auto rotationSpeed = glm::half_pi<float>();
+    auto panningSpeed = 1.0F;
 
     {
         auto currentPoint = glm::vec2(DELTA, 0.0F);
@@ -517,7 +541,8 @@ TEST_CASE("Rotating", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Rotating,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -547,7 +572,8 @@ TEST_CASE("Rotating", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Rotating,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -565,7 +591,7 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(rotationQuaterion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
-        auto expectedViewMatrix = glm::rotate(glm::acos(DELTA) - glm::acos(2.0F * DELTA), glm::vec3(0.0F, -1.0F, 0.0F));
+        auto expectedViewMatrix = glm::rotate(rotationSpeed / 4.0F, glm::vec3(0.0F, -1.0F, 0.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
         CHECK(viewMatrixInverseTranspose == GlmMatrixApprox(expectedViewMatrix));
     }
@@ -578,7 +604,8 @@ TEST_CASE("Rotating", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Rotating,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -596,7 +623,7 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(rotationQuaterion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
-        auto expectedViewMatrix = glm::rotate(glm::acos(DELTA) - glm::acos(3.0F * DELTA), glm::vec3(0.0F, -1.0F, 0.0F));
+        auto expectedViewMatrix = glm::rotate(rotationSpeed / 2.0F, glm::vec3(0.0F, -1.0F, 0.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
         CHECK(viewMatrixInverseTranspose == GlmMatrixApprox(expectedViewMatrix));
     }
@@ -609,7 +636,8 @@ TEST_CASE("Rotating", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::None,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -624,10 +652,10 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == glm::angleAxis(glm::acos(DELTA) - glm::acos(4.0F * DELTA), glm::vec3(0.0F, -1.0F, 0.0F)));
+        CHECK(rotationQuaterion == glm::angleAxis(3.0F * rotationSpeed / 4.0F, glm::vec3(0.0F, -1.0F, 0.0F)));
         CHECK(radius == 0.0F);
 
-        auto expectedViewMatrix = glm::rotate(glm::acos(DELTA) - glm::acos(4.0F * DELTA), glm::vec3(0.0F, -1.0F, 0.0F));
+        auto expectedViewMatrix = glm::rotate(3.0F * rotationSpeed / 4.0F, glm::vec3(0.0F, -1.0F, 0.0F));
         CHECK(viewMatrix == GlmMatrixApprox(expectedViewMatrix));
         CHECK(viewMatrixInverseTranspose == GlmMatrixApprox(expectedViewMatrix));
     }
@@ -641,13 +669,14 @@ TEST_CASE("Zooming out", "[trackball camera]")
 
     auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-    auto frustumSize = glm::vec2(1.0F, 1.0F);
-
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
     auto rotationQuaterion = IDENTITY_QUATERNION;
     auto radius = 1.0F;
+
+    auto rotationSpeed = glm::half_pi<float>();
+    auto panningSpeed = 1.0F;
 
     {
         auto currentPoint = glm::vec2(0.0F, -DELTA);
@@ -657,7 +686,8 @@ TEST_CASE("Zooming out", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Zooming,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -688,7 +718,8 @@ TEST_CASE("Zooming out", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Zooming,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -719,7 +750,8 @@ TEST_CASE("Zooming out", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Zooming,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -750,7 +782,8 @@ TEST_CASE("Zooming out", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::None,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -781,13 +814,14 @@ TEST_CASE("Zooming in", "[trackball camera]")
 
     auto currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
 
-    auto frustumSize = glm::vec2(1.0F, 1.0F);
-
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
     auto rotationQuaterion = IDENTITY_QUATERNION;
     auto radius = 1.0F;
+
+    auto rotationSpeed = glm::half_pi<float>();
+    auto panningSpeed = 1.0F;
 
     {
         auto currentPoint = glm::vec2(0.0F, DELTA);
@@ -797,7 +831,8 @@ TEST_CASE("Zooming in", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Zooming,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -828,7 +863,8 @@ TEST_CASE("Zooming in", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Zooming,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -859,7 +895,8 @@ TEST_CASE("Zooming in", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::Zooming,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,
@@ -890,7 +927,8 @@ TEST_CASE("Zooming in", "[trackball camera]")
 
         Gris::Graphics::Cameras::TrackballCameraUpdate(
             Gris::Graphics::Cameras::TrackballCameraOperation::None,
-            frustumSize,
+            rotationSpeed,
+            panningSpeed,
             &currentState,
             &prevPoint,
             &currentPoint,

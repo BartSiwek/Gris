@@ -109,8 +109,6 @@ void ForwardRenderingApplication::WindowResized(uint32_t /* width */, uint32_t /
 
 void ForwardRenderingApplication::MouseButtonEvent(Gris::Graphics::MouseButton button, Gris::Graphics::MouseButtonAction action, float x, float y)
 {
-    Gris::Log::Info("MouseButtonEvent(button = {}, action = {}, x = {}, y = {})", static_cast<int>(button), static_cast<int>(action), x, y);
-
     if (button == Gris::Graphics::MouseButton::Right && action == Gris::Graphics::MouseButtonAction::Down)
     {
         auto const swapChainExtent = m_swapChain.Extent();
@@ -153,10 +151,8 @@ void ForwardRenderingApplication::MouseMoveEvent(float x, float y)
 
 // -------------------------------------------------------------------------------------------------
 
-void ForwardRenderingApplication::MouseWheelEvent(float x, float y, float delta)
+void ForwardRenderingApplication::MouseWheelEvent(float /* x */, float /* y */, float delta)
 {
-    Gris::Log::Info("MouseWheelEvent(x = {}, y = {}, delta = {})", x, y, delta);
-
     if (delta > 0)
     {
         m_lens.SetZoomFactor(1.1f * m_lens.GetZoomFactor());
@@ -258,12 +254,11 @@ void ForwardRenderingApplication::CreateRenderPass()
 
 void ForwardRenderingApplication::CreateCamera()
 {
-    auto const swapChainExtent = m_swapChain.Extent();
-
-    Gris::Log::Info("Swap chain extent = {} x {}", swapChainExtent.width, swapChainExtent.height);
-
     m_camera.SetLocation(glm::vec3(0.0F, 5.0F, 0.0F));
     m_camera.SetRadius(5.0F);
+    m_camera.SetPanningSpeed(10.0F);
+
+    auto const swapChainExtent = m_swapChain.Extent();
     m_lens.SetFrustum(1.0F, 1000.0F, static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), glm::radians(90.0F));
 }
 
@@ -522,10 +517,10 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
     auto const swapChainExtent = m_swapChain.Extent();
     auto const aspectRatio = static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
 
-    float frustumWidth;
+    float frustumWidth;  // TODO: Remvoe those
     float frustumHeight;
     m_lens.UpdateMatrices(aspectRatio, &frustumWidth, &frustumHeight);
-    m_camera.UpdateMatrices(glm::vec2(frustumWidth, frustumHeight));  // TODO: Make lens return a vector
+    m_camera.UpdateMatrices();
 
     UniformBufferObject ubo = {};
     ubo.model = glm::mat4(1.0F);

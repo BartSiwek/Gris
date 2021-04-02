@@ -19,7 +19,8 @@ enum class TrackballCameraOperation : uint32_t
 
 void TrackballCameraUpdate(
     TrackballCameraOperation desiredState,
-    const glm::vec2 & frustumSize,
+    float rotationSpeed,
+    float panningSpeed,
     TrackballCameraOperation * currentState,
     glm::vec2 * prevPoint,
     glm::vec2 * currentPoint,
@@ -48,13 +49,19 @@ public:
     void SetRadius(float r);
     float GetRadius() const;
 
+    void SetRotationSpeed(float rotationSpeed);
+    float GetRotationSpeed() const;
+
+    void SetPanningSpeed(float panningSpeed);
+    float GetPanningSpeed() const;
+
     void LookAt(const glm::vec3 & from, const glm::vec3 & at);
 
     void SetDesiredState(TrackballCameraOperation desiredState);
 
     void SetCurrentPoint(const glm::vec2 & currentPoint);
 
-    void UpdateMatrices(const glm::vec2 & frustumSize);
+    void UpdateMatrices();
 
     const glm::mat4 & GetViewMatrix() const;
     const glm::mat4 & GetViewMatrixInverseTranspose() const;
@@ -76,6 +83,10 @@ private:
 
     // Extra state
     TrackballCameraOperation m_desiredState;
+
+    // Operation speed modifiers
+    float m_rotationSpeed;
+    float m_panningSpeed;
 };
 
 }  // namespace Gris::Graphics::Cameras
