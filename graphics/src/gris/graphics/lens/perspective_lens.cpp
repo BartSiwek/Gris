@@ -20,7 +20,7 @@ glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float as
         frustumHeight = frustumWidth / aspectRatio;
     }
 
-    auto fovY = 2.0F * glm::atan(frustumHeight / (2.0F * n));
+    auto fovY = 2 * glm::atan(frustumHeight / (2 * n));
     return glm::perspectiveFovLH(fovY, frustumWidth, frustumHeight, n, f);
 }
 

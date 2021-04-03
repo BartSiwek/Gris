@@ -14,7 +14,7 @@ class GlmMatrixApprox : public Catch::Detail::Approx
 {
 public:
     explicit GlmMatrixApprox(const MatrixT & matrix)
-        : Approx(0.0f)
+        : Approx(0.0F)
         , m_matrix(matrix)
     {
     }
@@ -32,7 +32,7 @@ public:
         return result;
     }
 
-    const MatrixT & GetMatrix() const
+    [[nodiscard]] const MatrixT & GetMatrix() const
     {
         return m_matrix;
     }

@@ -73,8 +73,8 @@ namespace
 
 inline glm::vec2 GetNormalizedScreenCoordinates(float width, float height, float x, float y)
 {
-    auto normalizedPoint = glm::vec2((2 * x) / width - 1.0f, 1.0f - (2 * y) / height);
-    return glm::clamp(normalizedPoint, glm::vec2(-1.0F, -1.0F), glm::vec2(1.0F, 1.0F));
+    auto normalizedPoint = glm::vec2((2 * x) / width - 1, 1 - (2 * y) / height);
+    return glm::clamp(normalizedPoint, glm::vec2(-1, -1), glm::vec2(1, 1));
 }
 
 }  // namespace
@@ -109,33 +109,28 @@ void ForwardRenderingApplication::WindowResized(uint32_t /* width */, uint32_t /
 
 void ForwardRenderingApplication::MouseButtonEvent(Gris::Graphics::MouseButton button, Gris::Graphics::MouseButtonAction action, float x, float y)
 {
-    if (button == Gris::Graphics::MouseButton::Right && action == Gris::Graphics::MouseButtonAction::Down)
+    if (action == Gris::Graphics::MouseButtonAction::Down)
     {
-        auto const swapChainExtent = m_swapChain.Extent();
-        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Panning);
-        m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+        if (button == Gris::Graphics::MouseButton::Right)
+        {
+            auto const swapChainExtent = m_swapChain.Extent();
+            m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Panning);
+            m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+        }
+        else if (button == Gris::Graphics::MouseButton::Left)
+        {
+            auto const swapChainExtent = m_swapChain.Extent();
+            m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Rotating);
+            m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+        }
+        else if (button == Gris::Graphics::MouseButton::Middle)
+        {
+            auto const swapChainExtent = m_swapChain.Extent();
+            m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Zooming);
+            m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
+        }    
     }
-    else if (button == Gris::Graphics::MouseButton::Right && action == Gris::Graphics::MouseButtonAction::Up)
-    {
-        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::None);
-    }
-    else if (button == Gris::Graphics::MouseButton::Left && action == Gris::Graphics::MouseButtonAction::Down)
-    {
-        auto const swapChainExtent = m_swapChain.Extent();
-        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Rotating);
-        m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
-    }
-    else if (button == Gris::Graphics::MouseButton::Left && action == Gris::Graphics::MouseButtonAction::Up)
-    {
-        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::None);
-    }
-    else if (button == Gris::Graphics::MouseButton::Middle && action == Gris::Graphics::MouseButtonAction::Down)
-    {
-        auto const swapChainExtent = m_swapChain.Extent();
-        m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Zooming);
-        m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
-    }
-    else if (button == Gris::Graphics::MouseButton::Middle && action == Gris::Graphics::MouseButtonAction::Up)
+    else
     {
         m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::None);
     }
@@ -155,11 +150,11 @@ void ForwardRenderingApplication::MouseWheelEvent(float /* x */, float /* y */, 
 {
     if (delta > 0)
     {
-        m_lens.SetZoomFactor(1.1f * m_lens.GetZoomFactor());
+        m_lens.SetZoomFactor(1.1F * m_lens.GetZoomFactor());
     }
     else
     {
-        m_lens.SetZoomFactor(0.9f * m_lens.GetZoomFactor());
+        m_lens.SetZoomFactor(0.9F * m_lens.GetZoomFactor());
     }
 }
 
@@ -254,12 +249,20 @@ void ForwardRenderingApplication::CreateRenderPass()
 
 void ForwardRenderingApplication::CreateCamera()
 {
-    m_camera.SetLocation(glm::vec3(0.0F, 5.0F, 0.0F));
-    m_camera.SetRadius(5.0F);
-    m_camera.SetPanningSpeed(10.0F);
+    constexpr static glm::vec3 CAMERA_DEFAULT_LOCATION = glm::vec3(0.0F, 5.0F, 0.0F);
+    constexpr static float CAMERA_DEFAULT_RADIUS = 5.0F;
+    constexpr static float CAMERA_DEFAULT_PANNING_SPEED = 10.0F;
+
+    constexpr static float LENS_DEFAULT_NEAR_PLANE = 1.0F;
+    constexpr static float LENS_DEFAULT_FAR_PLANE = 1.0F;
+    constexpr static float LENS_DEFAULT_FOV = glm::radians(90.0F);
+
+    m_camera.SetLocation(CAMERA_DEFAULT_LOCATION);
+    m_camera.SetRadius(CAMERA_DEFAULT_RADIUS);
+    m_camera.SetPanningSpeed(CAMERA_DEFAULT_PANNING_SPEED);
 
     auto const swapChainExtent = m_swapChain.Extent();
-    m_lens.SetFrustum(1.0F, 1000.0F, static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), glm::radians(90.0F));
+    m_lens.SetFrustum(LENS_DEFAULT_NEAR_PLANE, LENS_DEFAULT_FAR_PLANE, static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), LENS_DEFAULT_FOV);
 }
 
 // -------------------------------------------------------------------------------------------------

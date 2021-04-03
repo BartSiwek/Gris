@@ -17,11 +17,17 @@ namespace
 Gris::Graphics::MouseButton ToButton(int glfwButton)
 {
     if (glfwButton == GLFW_MOUSE_BUTTON_LEFT)
+    {
         return Gris::Graphics::MouseButton::Left;
+    }
     if (glfwButton == GLFW_MOUSE_BUTTON_RIGHT)
+    {
         return Gris::Graphics::MouseButton::Right;
+    }
     if (glfwButton == GLFW_MOUSE_BUTTON_MIDDLE)
+    {
         return Gris::Graphics::MouseButton::Middle;
+    }
 
     throw Gris::EngineException("Unrecognized GLFW mouse button.", std::to_string(glfwButton));
 }
@@ -29,9 +35,13 @@ Gris::Graphics::MouseButton ToButton(int glfwButton)
 Gris::Graphics::MouseButtonAction ToAction(int glfwAction)
 {
     if (glfwAction == GLFW_PRESS)
+    {
         return Gris::Graphics::MouseButtonAction::Down;
+    }
     if (glfwAction == GLFW_RELEASE)
+    {
         return Gris::Graphics::MouseButtonAction::Up;
+    }
 
     throw Gris::EngineException("Unrecognized GLFW mouse button action.", std::to_string(glfwAction));
 }
@@ -74,8 +84,8 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
                           {
                               auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
 
-                              double x;
-                              double y;
+                              double x = 0.0;
+                              double y = 0.0;
                               glfwGetCursorPos(window, &x, &y);
 
                               windowPtr->OnMouseWheelEvent(static_cast<float>(x), static_cast<float>(y), static_cast<float>(yoffset));
