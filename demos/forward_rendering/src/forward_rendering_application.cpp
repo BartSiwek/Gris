@@ -128,7 +128,7 @@ void ForwardRenderingApplication::MouseButtonEvent(Gris::Graphics::MouseButton b
             auto const swapChainExtent = m_swapChain.Extent();
             m_camera.SetDesiredState(Gris::Graphics::Cameras::TrackballCameraOperation::Zooming);
             m_camera.SetCurrentPoint(GetNormalizedScreenCoordinates(static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), x, y));
-        }    
+        }
     }
     else
     {
