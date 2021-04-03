@@ -2,8 +2,6 @@
 
 #include <glm/glm.hpp>
 
-#include <cmath>
-
 namespace Gris::Graphics::Lens
 {
 
@@ -12,15 +10,7 @@ glm::mat4 PerspectiveLensUpdate(float zoomFactor, float aspectRatio, float w, fl
 class PerspectiveLens
 {
 public:
-    PerspectiveLens()
-        : m_projMatrix(1.0F)
-        , m_zoomFactor(1.0f)
-        , m_near(1.0f)
-        , m_far(2.0f)
-        , m_frustumWidth(1.0f)
-        , m_frustumHeight(1.0f)
-    {
-    }
+    PerspectiveLens();
 
     ~PerspectiveLens() = default;
 
@@ -30,35 +20,14 @@ public:
     PerspectiveLens(PerspectiveLens &&) = default;
     PerspectiveLens & operator=(PerspectiveLens &&) = default;
 
-    void SetFrustum(float nearPlane, float farPlane, float aspectRatio, float horizontalFov)
-    {
-        m_near = nearPlane;
-        m_far = farPlane;
+    void SetFrustum(float nearPlane, float farPlane, float aspectRatio, float horizontalFov);
 
-        auto horizontalFovHalfTan = std::tan(horizontalFov / 2.0f);
-        m_frustumWidth = 2.0f * m_near * horizontalFovHalfTan;
-        m_frustumHeight = 2.0f * m_near * horizontalFovHalfTan / aspectRatio;
-    }
+    void SetZoomFactor(float zoomFactor);
+    float GetZoomFactor() const;
 
-    void SetZoomFactor(float zoomFactor)
-    {
-        m_zoomFactor = zoomFactor;
-    }
+    void UpdateMatrices(float aspectRatio);
 
-    float GetZoomFactor() const
-    {
-        return m_zoomFactor;
-    }
-
-    void UpdateMatrices(float aspectRatio)
-    {
-        m_projMatrix = PerspectiveLensUpdate(m_zoomFactor, aspectRatio, m_frustumWidth, m_frustumHeight, m_near, m_far);
-    }
-
-    const glm::mat4 & GetProjectionMatrix() const
-    {
-        return m_projMatrix;
-    }
+    const glm::mat4 & GetProjectionMatrix() const;
 
 private:
     // Finished product

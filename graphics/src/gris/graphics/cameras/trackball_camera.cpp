@@ -22,6 +22,8 @@ glm::vec3 GetCurrentTranslationVector(const glm::vec2 & prevPoint, const glm::ve
 
 glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::vec2 & currentPoint, const glm::quat & rotationQuaterion, float rotationSpeed)
 {
+    constexpr static float MOVE_AMOUNT_EPSILON = 1e-6F;
+
     constexpr static glm::vec3 RIGHT = glm::vec3(1.0F, 0.0F, 0.0F);
     constexpr static glm::vec3 UP = glm::vec3(0.0F, 1.0F, 0.0F);
     constexpr static glm::vec3 EYE = glm::vec3(0.0F, 0.0F, -1.0F);
@@ -29,7 +31,7 @@ glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::v
     auto moveDirection = currentPoint - prevPoint;
     auto moveAmount = glm::length(moveDirection);
 
-    if (moveAmount < 1e-6f)
+    if (moveAmount < MOVE_AMOUNT_EPSILON)
     {
         return rotationQuaterion;
     }
@@ -45,15 +47,19 @@ glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::v
 
 float GetCurrentRadius(const glm::vec2 & prevPoint, const glm::vec2 & currentPoint, float radius)
 {
+    constexpr static float RADIUS_CURVE_A_COEFFICIENT = 1.0F / 16.0F;
+    constexpr static float RADIUS_CURVE_B_COEFFICIENT = 6.0F / 16.0F;
+    constexpr static float RADIUS_CURVE_C_COEFFICIENT = 1.0F;
+
     auto delta = currentPoint.y - prevPoint.y;
-    delta = (delta * delta + 6.0f * delta + 16.0f) / 16.0f;
+    delta = RADIUS_CURVE_A_COEFFICIENT * delta * delta + RADIUS_CURVE_B_COEFFICIENT * delta + RADIUS_CURVE_C_COEFFICIENT;
     return delta * radius;
 }
 
 void UpdateViewMatrix(const glm::vec3 & center, const glm::quat & rotationQuaterion, float radius, glm::mat4 * viewMatrix, glm::mat4 * viewMatrixInverseTranspose)
 {
-    auto translation = glm::translate(glm::vec3(0.0f, 0.0f, radius));
-    auto translationInvTrans = glm::transpose(glm::translate(glm::vec3(0.0f, 0.0f, -radius)));
+    auto translation = glm::translate(glm::vec3(0.0F, 0.0F, radius));
+    auto translationInvTrans = glm::transpose(glm::translate(glm::vec3(0.0F, 0.0F, -radius)));
 
     auto rotation = glm::mat4_cast(rotationQuaterion);
 
@@ -68,8 +74,8 @@ void UpdateViewMatrix(const glm::vec3 & center, const glm::quat & rotationQuater
 void EndOperation(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint)
 {
     *currentState = Gris::Graphics::Cameras::TrackballCameraOperation::None;
-    prevPoint->x = prevPoint->y = 0.0f;
-    currentPoint->x = currentPoint->y = 0.0f;
+    prevPoint->x = prevPoint->y = 0.0F;
+    currentPoint->x = currentPoint->y = 0.0F;
 }
 
 /* STATE TRANSITION HANDLERS */
@@ -193,13 +199,12 @@ void Gris::Graphics::Cameras::TrackballCameraUpdate(TrackballCameraOperation des
 Gris::Graphics::Cameras::TrackballCamera::TrackballCamera()
     : m_viewMatrix(glm::mat4(1.0F))
     , m_viewMatrixInverseTranspose(glm::mat4(1.0F))
-    , m_center(0.0f, 0.0f, 0.0f)
+    , m_center(0.0F, 0.0F, 0.0F)
     , m_rotationQuaterion(1.0F, 0.0F, 0.0F, 0.0F)
-    , m_radius(1.0f)
-
+    , m_radius(1.0F)
     , m_currentState(TrackballCameraOperation::None)
-    , m_prevPoint(0.0f, 0.0f)
-    , m_currentPoint(0.0f, 0.0f)
+    , m_prevPoint(0.0F, 0.0F)
+    , m_currentPoint(0.0F, 0.0F)
     , m_desiredState(TrackballCameraOperation::None)
     , m_rotationSpeed(glm::half_pi<float>())
     , m_panningSpeed(1.0F)
@@ -266,7 +271,7 @@ float Gris::Graphics::Cameras::TrackballCamera::GetPanningSpeed() const
 
 void Gris::Graphics::Cameras::TrackballCamera::LookAt(const glm::vec3 & from, const glm::vec3 & at)
 {
-    constexpr static auto Z_AXIS = glm::vec3(0, 0, 1);
+    constexpr static auto Z_AXIS = glm::vec3(0.0F, 0.0F, 1.0F);
 
     auto view = glm::normalize(from - at);
     auto axis = glm::cross(Z_AXIS, view);
@@ -278,9 +283,9 @@ void Gris::Graphics::Cameras::TrackballCamera::LookAt(const glm::vec3 & from, co
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Cameras::TrackballCamera::SetDesiredState(TrackballCameraOperation desired_state)
+void Gris::Graphics::Cameras::TrackballCamera::SetDesiredState(TrackballCameraOperation desiredState)
 {
-    m_desiredState = desired_state;
+    m_desiredState = desiredState;
 }
 
 // -------------------------------------------------------------------------------------------------
