@@ -6,7 +6,7 @@
 glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float aspectRatio, float w, float h, float n, float f)
 {
     auto invZoomFactor = 1.0F / zoomFactor;
-    
+
     auto frustumHeight = 1.0F;
     auto frustumWidth = 1.0F;
     if (aspectRatio >= 1.0F)
@@ -17,7 +17,7 @@ glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float as
     else
     {
         frustumWidth = invZoomFactor * w;
-        frustumHeight = frustumWidth / aspectRatio;    
+        frustumHeight = frustumWidth / aspectRatio;
     }
 
     auto fovY = 2.0F * glm::atan(frustumHeight / (2.0F * n));
