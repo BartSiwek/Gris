@@ -43,7 +43,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
 
     auto result = MakeReservedVector<Mesh>(scene->mNumMeshes);
 
-    auto meshes = Gris::Span<aiMesh*>(scene->mMeshes, scene->mNumMeshes);
+    auto meshes = Gris::Span<aiMesh *>(scene->mMeshes, scene->mNumMeshes);
     for (const auto & currentMesh : meshes)
     {
         auto mesh = Mesh{};

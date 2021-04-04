@@ -148,13 +148,16 @@ void ForwardRenderingApplication::MouseMoveEvent(float x, float y)
 
 void ForwardRenderingApplication::MouseWheelEvent(float /* x */, float /* y */, float delta)
 {
+    constexpr static float ZOOM_IN_FACTOR = 1.1F;
+    constexpr static float ZOOM_OUT_FACTOR = 1.1F;
+
     if (delta > 0)
     {
-        m_lens.SetZoomFactor(1.1F * m_lens.GetZoomFactor());
+        m_lens.SetZoomFactor(ZOOM_IN_FACTOR * m_lens.GetZoomFactor());
     }
     else
     {
-        m_lens.SetZoomFactor(0.9F * m_lens.GetZoomFactor());
+        m_lens.SetZoomFactor(ZOOM_OUT_FACTOR * m_lens.GetZoomFactor());
     }
 }
 
