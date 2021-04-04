@@ -6,4 +6,5 @@ add_subdirectory(basic)
 
 if(ENABLE_GLFW)
   add_subdirectory(vulkan_tutorial)
+  add_subdirectory(forward_rendering)
 endif()

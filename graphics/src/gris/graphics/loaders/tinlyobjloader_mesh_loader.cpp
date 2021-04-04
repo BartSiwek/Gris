@@ -1,21 +1,13 @@
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
 
-#include <gris/engine_exception.h>
 #include <gris/graphics/mesh.h>
+
+#include <gris/engine_exception.h>
+#include <gris/utils.h>
 
 #include <tiny_obj_loader.h>
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4201)
-#endif
-
-#include <glm/glm.hpp>
 #include <glm/gtx/hash.hpp>
-
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
 
 #include <unordered_map>
 
@@ -41,7 +33,7 @@ struct VertexComparator
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Mesh Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
+std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
 {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -56,6 +48,7 @@ Gris::Graphics::Mesh Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(cons
     auto uniqueVertices = std::unordered_map<Vertex, uint32_t, VertexHash, VertexComparator>{};
 
     auto result = Mesh{};
+
     for (auto const & shape : shapes)
     {
         for (auto const & index : shape.mesh.indices)
@@ -85,5 +78,5 @@ Gris::Graphics::Mesh Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(cons
         }
     }
 
-    return result;
+    return { result };
 }

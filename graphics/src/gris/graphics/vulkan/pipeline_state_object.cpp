@@ -7,6 +7,8 @@
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
+#include <gris/utils.h>
+
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
@@ -19,7 +21,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     uint32_t swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    const ShaderResourceBindingsLayout & resourceLayout,
+    Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
     const Shader & vertexShader,
     const Shader & fragmentShader)
     : DeviceResource(device)
@@ -103,7 +105,9 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                    .setAttachments(colorBlendAttachments)
                                    .setBlendConstants({ 0.0F, 0.0F, 0.0F, 0.0F });
 
-    auto const descriptorSetLayouts = std::array{ resourceLayout.DescriptorSetLayoutHandle() };
+    auto descriptorSetLayouts = MakeReservedVector<vk::DescriptorSetLayout>(resourceLayouts.size());
+    std::transform(std::begin(resourceLayouts), std::end(resourceLayouts), std::back_inserter(descriptorSetLayouts), [](auto const & resourceLayout)
+                   { return resourceLayout.DescriptorSetLayoutHandle(); });
     auto const pipelineLayoutInfo = vk::PipelineLayoutCreateInfo{}.setSetLayouts(descriptorSetLayouts);
 
     auto createPipelineLayoutResult = DeviceHandle().createPipelineLayout(pipelineLayoutInfo, nullptr, Dispatch());

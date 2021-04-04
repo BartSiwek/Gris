@@ -25,14 +25,14 @@ group_sources(Gris.Demos.VulkanTutorial)
 
 ###############################################################################
 
-compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/vert.spv")
-compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/frag.spv")
+compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/vert.spv")
+compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/frag.spv")
 
 # TODO: Replace this with a resource target(s)... (if that is possible)
 add_custom_command(TARGET Gris.Demos.VulkanTutorial
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/resources/images/viking_room.png"
+  "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.png"
   $<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>
 )
 
@@ -40,7 +40,7 @@ add_custom_command(TARGET Gris.Demos.VulkanTutorial
 add_custom_command(TARGET Gris.Demos.VulkanTutorial
   POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/resources/models/viking_room.obj"
+  "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.obj"
   $<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>
 )
 

@@ -6,6 +6,9 @@ add_library(Gris.Graphics)
 
 target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/window_observer.cpp"
+  "src/gris/graphics/cameras/trackball_camera.cpp"
+  "src/gris/graphics/lens/perspective_lens.cpp"
+  "src/gris/graphics/loaders/assimp_mesh_loader.cpp"
   "src/gris/graphics/loaders/stb_image_loader.cpp"
   "src/gris/graphics/loaders/stb_implementation.cpp"
   "src/gris/graphics/loaders/tinlyobjloader_mesh_loader.cpp"
@@ -40,11 +43,14 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/utils.cpp"
   "src/gris/graphics/vulkan/vma_implementation.cpp"
   "src/gris/graphics/vulkan/window_mixin.cpp"
-  "include/gris/graphics/backend/shader_resource_bindings_pool_sizes.h"
-  "include/gris/graphics/backend/shader_resource_bindings_layout.h"
   "include/gris/graphics/image.h"
   "include/gris/graphics/mesh.h"
   "include/gris/graphics/window_observer.h"
+  "include/gris/graphics/backend/shader_resource_bindings_pool_sizes.h"
+  "include/gris/graphics/backend/shader_resource_bindings_layout.h"
+  "include/gris/graphics/cameras/trackball_camera.h"
+  "include/gris/graphics/lens/perspective_lens.h"
+  "include/gris/graphics/loaders/assimp_mesh_loader.h"
   "include/gris/graphics/loaders/stb_image_loader.h"
   "include/gris/graphics/loaders/tinlyobjloader_mesh_loader.h"
   "include/gris/graphics/vulkan/allocation.h"
@@ -89,15 +95,16 @@ target_link_libraries(Gris.Graphics PUBLIC
   CONAN_PKG::vulkan-memory-allocator
   CONAN_PKG::vulkan-headers
   CONAN_PKG::glfw
+  CONAN_PKG::glm
 )
 
 target_link_libraries(Gris.Graphics PRIVATE
   Gris.ProjectOptions
   Gris.ProjectWarnings
   Gris.Core
-  CONAN_PKG::glm
   CONAN_PKG::stb
   CONAN_PKG::tinyobjloader
+  CONAN_PKG::assimp
 )
 
 if(ENABLE_GLFW)

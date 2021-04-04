@@ -33,6 +33,7 @@ function(set_project_warnings project_name)
       /w14928 # illegal copy-initialization; more than one user-defined
               # conversion has been implicitly applied
       /permissive- # standards conformance mode for MSVC compiler.
+      /wd4103 # Workaround to a compiler bug - https://developercommunity.visualstudio.com/t/warning-c4103-in-visual-studio-166-update/1057589
   )
 
   set(CLANG_WARNINGS

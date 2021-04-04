@@ -6,6 +6,7 @@
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_manager.h>
 
 #include <gris/object_hierarchy.h>
+#include <gris/span.h>
 
 namespace Gris::Graphics::Backend
 {
@@ -98,7 +99,7 @@ public:
         uint32_t swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        const ShaderResourceBindingsLayout & resourceLayout,
+        Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
         const Shader & vertexShader,
         const Shader & fragmentShader);
     [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout);

@@ -43,7 +43,14 @@ protected:
 
 private:
     void OnSizeChanged(uint32_t width, uint32_t height);
+    void OnMouseButtonEvent(MouseButton button, MouseButtonAction action, float x, float y);
+    void OnMouseMoveEvent(float x, float y);
+    void OnMouseWheelEvent(float x, float y, float delta);
+
     void NotifySizeChanged();
+    void NotifyMouseButtonEvent(MouseButton button, MouseButtonAction action, float x, float y);
+    void NotifyMouseMoveEvent(float x, float y);
+    void NotifyMouseWheelEvent(float x, float y, float delta);
 
     uint32_t m_width = 0;
     uint32_t m_height = 0;

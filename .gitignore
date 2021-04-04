@@ -38,4 +38,4 @@ cmake-build-*
 .idea
 
 # Dont ignore obj files in the resoures folder
-!resources/*/*.obj
+!resources/**/*.obj

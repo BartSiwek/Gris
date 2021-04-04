@@ -2,10 +2,51 @@
 
 #include <gris/graphics/glfw/instance.h>
 
+#include <gris/engine_exception.h>
+
 #include <GLFW/glfw3.h>
 
 #include <algorithm>
 #include <utility>
+
+// -------------------------------------------------------------------------------------------------
+
+namespace
+{
+
+Gris::Graphics::MouseButton ToButton(int glfwButton)
+{
+    if (glfwButton == GLFW_MOUSE_BUTTON_LEFT)
+    {
+        return Gris::Graphics::MouseButton::Left;
+    }
+    if (glfwButton == GLFW_MOUSE_BUTTON_RIGHT)
+    {
+        return Gris::Graphics::MouseButton::Right;
+    }
+    if (glfwButton == GLFW_MOUSE_BUTTON_MIDDLE)
+    {
+        return Gris::Graphics::MouseButton::Middle;
+    }
+
+    throw Gris::EngineException("Unrecognized GLFW mouse button.", std::to_string(glfwButton));
+}
+
+Gris::Graphics::MouseButtonAction ToAction(int glfwAction)
+{
+    if (glfwAction == GLFW_PRESS)
+    {
+        return Gris::Graphics::MouseButtonAction::Down;
+    }
+    if (glfwAction == GLFW_RELEASE)
+    {
+        return Gris::Graphics::MouseButtonAction::Up;
+    }
+
+    throw Gris::EngineException("Unrecognized GLFW mouse button action.", std::to_string(glfwAction));
+}
+
+}  // namespace
 
 // -------------------------------------------------------------------------------------------------
 
@@ -24,6 +65,31 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
                                        auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
                                        windowPtr->OnSizeChanged(static_cast<uint32_t>(newWidth), static_cast<uint32_t>(newHeight));
                                    });
+    glfwSetMouseButtonCallback(m_window, [](GLFWwindow * window, int button, int action, int /* mods */)
+                               {
+                                   auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
+
+                                   double x = 0.0;
+                                   double y = 0.0;
+                                   glfwGetCursorPos(window, &x, &y);
+
+                                   windowPtr->OnMouseButtonEvent(ToButton(button), ToAction(action), static_cast<float>(x), static_cast<float>(y));
+                               });
+    glfwSetCursorPosCallback(m_window, [](GLFWwindow * window, double x, double y)
+                             {
+                                 auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
+                                 windowPtr->OnMouseMoveEvent(static_cast<float>(x), static_cast<float>(y));
+                             });
+    glfwSetScrollCallback(m_window, [](GLFWwindow * window, double /* xoffset */, double yoffset)
+                          {
+                              auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
+
+                              double x = 0.0;
+                              double y = 0.0;
+                              glfwGetCursorPos(window, &x, &y);
+
+                              windowPtr->OnMouseWheelEvent(static_cast<float>(x), static_cast<float>(y), static_cast<float>(yoffset));
+                          });
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -140,10 +206,61 @@ void Gris::Graphics::Glfw::WindowMixin::OnSizeChanged(uint32_t width, uint32_t h
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Glfw::WindowMixin::OnMouseButtonEvent(MouseButton button, MouseButtonAction action, float x, float y)
+{
+    NotifyMouseButtonEvent(button, action, x, y);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Glfw::WindowMixin::OnMouseMoveEvent(float x, float y)
+{
+    NotifyMouseMoveEvent(x, y);
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Glfw::WindowMixin::OnMouseWheelEvent(float x, float y, float delta)
+{
+    NotifyMouseWheelEvent(x, y, delta);
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void Gris::Graphics::Glfw::WindowMixin::NotifySizeChanged()
 {
     for (auto * observer : m_observers)
     {
         observer->WindowResized(m_width, m_height);
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Glfw::WindowMixin::NotifyMouseButtonEvent(MouseButton button, MouseButtonAction action, float x, float y)
+{
+    for (auto * observer : m_observers)
+    {
+        observer->MouseButtonEvent(button, action, x, y);
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Glfw::WindowMixin::NotifyMouseMoveEvent(float x, float y)
+{
+    for (auto * observer : m_observers)
+    {
+        observer->MouseMoveEvent(x, y);
+    }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Glfw::WindowMixin::NotifyMouseWheelEvent(float x, float y, float delta)
+{
+    for (auto * observer : m_observers)
+    {
+        observer->MouseWheelEvent(x, y, delta);
     }
 }

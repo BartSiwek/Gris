@@ -8,6 +8,8 @@
 #include <gris/graphics/vulkan/shader_resource_bindings.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
+#include <gris/utils.h>
+
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
@@ -154,10 +156,12 @@ void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView &
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, const ShaderResourceBindings & srb)
+void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> srbs)
 {
-    std::array descriptorSets = { srb.DescriptorSetHandle() };
-    m_commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), 0, descriptorSets, {}, Dispatch());
+    auto descriptorSets = MakeReservedVector<vk::DescriptorSet>(srbs.size());
+    std::transform(std::begin(srbs), std::end(srbs), std::back_inserter(descriptorSets), [](auto const & srb)
+                   { return srb.DescriptorSetHandle(); });
+    m_commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), startSetIndex, descriptorSets, {}, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------

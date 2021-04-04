@@ -47,6 +47,7 @@ set(CONAN_REQUIRES
   glm/0.9.9.8
   stb/20200203
   tinyobjloader/1.0.6
+  assimp/5.0.1
   vulkan-headers/1.2.154.0
   vulkan-memory-allocator/2.3.0
 )
@@ -64,6 +65,13 @@ if(ENABLE_GLFW)
 endif()
 
 run_conan("${CONAN_REQUIRES}" "${CONAN_OPTIONS}" "${CONAN_IMPORTS}")
+
+####################################################################
+
+if(MSVC)
+  # Quaternion code in glm causes this warning to fire
+  target_compile_options(CONAN_PKG::glm INTERFACE "/wd4201")
+endif()
 
 ########################################################################
 
