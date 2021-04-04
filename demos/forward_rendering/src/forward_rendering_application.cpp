@@ -149,7 +149,7 @@ void ForwardRenderingApplication::MouseMoveEvent(float x, float y)
 void ForwardRenderingApplication::MouseWheelEvent(float /* x */, float /* y */, float delta)
 {
     constexpr static float ZOOM_IN_FACTOR = 1.1F;
-    constexpr static float ZOOM_OUT_FACTOR = 1.1F;
+    constexpr static float ZOOM_OUT_FACTOR = 0.9F;
 
     if (delta > 0)
     {

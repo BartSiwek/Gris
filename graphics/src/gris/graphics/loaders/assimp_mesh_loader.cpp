@@ -49,6 +49,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
         auto mesh = Mesh{};
 
         auto vertices = Gris::Span<aiVector3D>(currentMesh->mVertices, currentMesh->mNumVertices);
+        auto textureCoords0 = Gris::Span<aiVector3D>(currentMesh->mTextureCoords[0], currentMesh->mNumVertices);
         for (size_t vertexIndex = 0; vertexIndex < currentMesh->mNumVertices; ++vertexIndex)
         {
             auto vertex = Vertex{};
@@ -56,7 +57,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
             auto const & position = vertices[vertexIndex];
             vertex.Position = { position.x, position.y, position.z };
 
-            auto const & texCoord = currentMesh->HasTextureCoords(0) ? currentMesh->mTextureCoords[0][vertexIndex] : ZERO_VECTOR;
+            auto const & texCoord = currentMesh->HasTextureCoords(0) ? textureCoords0[vertexIndex] : ZERO_VECTOR;
             vertex.TextureCoords = { texCoord.x, 1.0F - texCoord.y };
 
             vertex.Color = { 1.0F, 1.0F, 1.0F };
@@ -67,14 +68,16 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
         auto faces = Gris::Span<aiFace>(currentMesh->mFaces, currentMesh->mNumFaces);
         for (const auto & face : faces)
         {
-            if (face.mNumIndices != 3)
+            auto indices = Gris::Span<unsigned int>(face.mIndices, face.mNumIndices);
+
+            if (indices.size() != 3)
             {
                 continue;
             }
 
-            mesh.Indices.emplace_back(face.mIndices[0]);
-            mesh.Indices.emplace_back(face.mIndices[1]);
-            mesh.Indices.emplace_back(face.mIndices[2]);
+            mesh.Indices.emplace_back(indices[0]);
+            mesh.Indices.emplace_back(indices[1]);
+            mesh.Indices.emplace_back(indices[2]);
         }
 
         result.emplace_back(std::move(mesh));
