@@ -254,7 +254,7 @@ void ForwardRenderingApplication::CreateCamera()
     constexpr static float CAMERA_DEFAULT_PANNING_SPEED = 10.0F;
 
     constexpr static float LENS_DEFAULT_NEAR_PLANE = 1.0F;
-    constexpr static float LENS_DEFAULT_FAR_PLANE = 1.0F;
+    constexpr static float LENS_DEFAULT_FAR_PLANE = 1000.0F;
     constexpr static float LENS_DEFAULT_FOV = glm::radians(90.0F);
 
     m_camera.SetLocation(CAMERA_DEFAULT_LOCATION);

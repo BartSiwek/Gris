@@ -69,8 +69,8 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
                                {
                                    auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
 
-                                   double x;
-                                   double y;
+                                   double x = 0.0;
+                                   double y = 0.0;
                                    glfwGetCursorPos(window, &x, &y);
 
                                    windowPtr->OnMouseButtonEvent(ToButton(button), ToAction(action), static_cast<float>(x), static_cast<float>(y));

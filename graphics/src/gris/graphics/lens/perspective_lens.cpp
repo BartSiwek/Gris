@@ -28,11 +28,11 @@ glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float as
 
 Gris::Graphics::Lens::PerspectiveLens::PerspectiveLens()
     : m_projMatrix(1.0F)
-    , m_zoomFactor(1.0F)
-    , m_near(1.0F)
-    , m_far(2.0F)
-    , m_frustumWidth(1.0F)
-    , m_frustumHeight(1.0F)
+    , m_zoomFactor(DEFAULT_ZOOM_FACTOR)
+    , m_near(DEFAULT_NEAR_PLANE)
+    , m_far(DEFAULT_FAR_PLANE)
+    , m_frustumWidth(DEFAULT_FRUSTUM_WIDTH)
+    , m_frustumHeight(DEFAULT_FRUSTUM_HEIGHT)
 {
 }
 
@@ -43,9 +43,9 @@ void Gris::Graphics::Lens::PerspectiveLens::SetFrustum(float nearPlane, float fa
     m_near = nearPlane;
     m_far = farPlane;
 
-    auto horizontalFovHalfTan = std::tan(horizontalFov / 2.0F);
-    m_frustumWidth = 2.0F * m_near * horizontalFovHalfTan;
-    m_frustumHeight = 2.0F * m_near * horizontalFovHalfTan / aspectRatio;
+    auto horizontalFovHalfTan = std::tan(horizontalFov / 2);
+    m_frustumWidth = 2 * m_near * horizontalFovHalfTan;
+    m_frustumHeight = 2 * m_near * horizontalFovHalfTan / aspectRatio;
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -30,6 +30,12 @@ public:
     const glm::mat4 & GetProjectionMatrix() const;
 
 private:
+    constexpr static float DEFAULT_ZOOM_FACTOR = 1.0F;
+    constexpr static float DEFAULT_NEAR_PLANE = 1.0F;
+    constexpr static float DEFAULT_FAR_PLANE = 2.0F;
+    constexpr static float DEFAULT_FRUSTUM_WIDTH = 1.0F;
+    constexpr static float DEFAULT_FRUSTUM_HEIGHT = 1.0F;
+
     // Finished product
     glm::mat4 m_projMatrix;
 

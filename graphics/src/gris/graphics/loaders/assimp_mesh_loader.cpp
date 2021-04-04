@@ -4,6 +4,7 @@
 
 #include <gris/engine_exception.h>
 #include <gris/log.h>
+#include <gris/span.h>
 #include <gris/utils.h>
 
 #include <assimp/cimport.h>
@@ -20,7 +21,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
 {
     static const aiVector3D ZERO_VECTOR(0.0F, 0.0F, 0.0F);
 
-    aiLogStream grisLoggerStream;
+    aiLogStream grisLoggerStream = {};
     grisLoggerStream.callback = [](const char * message, char * /* user */)
     {
         auto stringMessage = std::string{ message };
@@ -41,17 +42,18 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
     }
 
     auto result = MakeReservedVector<Mesh>(scene->mNumMeshes);
-    for (size_t meshIndex = 0; meshIndex < scene->mNumMeshes; ++meshIndex)
-    {
-        auto const * currentMesh = scene->mMeshes[meshIndex];
 
+    auto meshes = Gris::Span<aiMesh*>(scene->mMeshes, scene->mNumMeshes);
+    for (const auto & currentMesh : meshes)
+    {
         auto mesh = Mesh{};
 
-        for (size_t vertexIndex = 0; vertexIndex < scene->mMeshes[meshIndex]->mNumVertices; ++vertexIndex)
+        auto vertices = Gris::Span<aiVector3D>(currentMesh->mVertices, currentMesh->mNumVertices);
+        for (size_t vertexIndex = 0; vertexIndex < currentMesh->mNumVertices; ++vertexIndex)
         {
             auto vertex = Vertex{};
 
-            auto const & position = currentMesh->mVertices[vertexIndex];
+            auto const & position = vertices[vertexIndex];
             vertex.Position = { position.x, position.y, position.z };
 
             auto const & texCoord = currentMesh->HasTextureCoords(0) ? currentMesh->mTextureCoords[0][vertexIndex] : ZERO_VECTOR;
@@ -59,14 +61,16 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
 
             vertex.Color = { 1.0F, 1.0F, 1.0F };
 
-            mesh.Vertices.emplace_back(std::move(vertex));
+            mesh.Vertices.emplace_back(vertex);
         }
 
-        for (size_t faceIndex = 0; faceIndex < currentMesh->mNumFaces; faceIndex++)
+        auto faces = Gris::Span<aiFace>(currentMesh->mFaces, currentMesh->mNumFaces);
+        for (const auto & face : faces)
         {
-            auto const & face = currentMesh->mFaces[faceIndex];
             if (face.mNumIndices != 3)
+            {
                 continue;
+            }
 
             mesh.Indices.emplace_back(face.mIndices[0]);
             mesh.Indices.emplace_back(face.mIndices[1]);
