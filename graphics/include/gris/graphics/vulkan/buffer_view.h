@@ -24,7 +24,7 @@ public:
     BufferView(BufferView &&) noexcept = default;
     BufferView & operator=(BufferView &&) noexcept = default;
 
-    ~BufferView() = default;
+    ~BufferView() override = default;
 
     explicit operator bool() const;
 
@@ -32,9 +32,9 @@ public:
 
     [[nodiscard]] const vk::Buffer & BufferHandle() const;
 
-    uint32_t Offset() const;
+    [[nodiscard]] uint32_t Offset() const;
 
-    uint32_t Size() const;
+    [[nodiscard]] uint32_t Size() const;
 
     void Reset();
 

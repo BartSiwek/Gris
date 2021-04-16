@@ -21,7 +21,7 @@ public:
     Buffer(Buffer && other) noexcept;
     Buffer & operator=(Buffer && other) noexcept;
 
-    virtual ~Buffer();
+    ~Buffer() override;
 
     explicit operator bool() const;
 

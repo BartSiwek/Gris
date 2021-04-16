@@ -41,7 +41,7 @@ public:
 
     [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const WindowMixin & window) const;
     [[nodiscard]] vk::Device CreateDevice() const;
-    [[nodiscard]] Allocator CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic dispatch) const;
+    [[nodiscard]] Allocator CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch) const;
 
     void Reset();
 

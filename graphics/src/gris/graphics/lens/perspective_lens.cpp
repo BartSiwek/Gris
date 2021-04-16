@@ -1,11 +1,10 @@
 #include <gris/graphics/lens/perspective_lens.h>
 
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/gtx/transform.hpp>
 
 glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float aspectRatio, float w, float h, float n, float f)
 {
-    auto invZoomFactor = 1.0F / zoomFactor;
+    auto const invZoomFactor = 1.0F / zoomFactor;
 
     auto frustumHeight = 1.0F;
     auto frustumWidth = 1.0F;
@@ -20,8 +19,8 @@ glm::mat4 Gris::Graphics::Lens::PerspectiveLensUpdate(float zoomFactor, float as
         frustumHeight = frustumWidth / aspectRatio;
     }
 
-    auto fovY = 2 * glm::atan(frustumHeight / (2 * n));
-    return glm::perspectiveFovLH(fovY, frustumWidth, frustumHeight, n, f);
+    auto const fovY = 2 * glm::atan(frustumHeight / (2 * n));
+    return glm::perspectiveFovLH_ZO(fovY, frustumWidth, frustumHeight, n, f);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -43,7 +42,7 @@ void Gris::Graphics::Lens::PerspectiveLens::SetFrustum(float nearPlane, float fa
     m_near = nearPlane;
     m_far = farPlane;
 
-    auto horizontalFovHalfTan = std::tan(horizontalFov / 2);
+    auto const horizontalFovHalfTan = std::tan(horizontalFov / 2);
     m_frustumWidth = 2 * m_near * horizontalFovHalfTan;
     m_frustumHeight = 2 * m_near * horizontalFovHalfTan / aspectRatio;
 }

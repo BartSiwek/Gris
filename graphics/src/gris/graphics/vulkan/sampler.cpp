@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::Sampler::Sampler(const ParentObject<Device> & device, fl
                                  .setBorderColor(vk::BorderColor::eIntOpaqueBlack)
                                  .setUnnormalizedCoordinates(static_cast<vk::Bool32>(false));
 
-    auto createSamplerResult = DeviceHandle().createSampler(samplerInfo, nullptr, Dispatch());
+    auto const createSamplerResult = DeviceHandle().createSampler(samplerInfo, nullptr, Dispatch());
     if (createSamplerResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating sampler", createSamplerResult);
@@ -78,19 +78,19 @@ Gris::Graphics::Vulkan::Sampler::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Sampler::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_sampler);
+    return IsDeviceValid() && static_cast<bool>(m_sampler);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
+[[nodiscard]] const vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle() const
 {
     return m_sampler;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
+[[nodiscard]] vk::Sampler & Gris::Graphics::Vulkan::Sampler::SamplerHandle()
 {
     return m_sampler;
 }

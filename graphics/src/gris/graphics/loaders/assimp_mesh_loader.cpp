@@ -13,7 +13,12 @@
 
 // -------------------------------------------------------------------------------------------------
 
-constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_CalcTangentSpace | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices | aiProcess_FlipWindingOrder;
+constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = static_cast<unsigned int>(aiProcess_Triangulate)
+                                                   | static_cast<unsigned int>(aiProcess_PreTransformVertices)
+                                                   | static_cast<unsigned int>(aiProcess_CalcTangentSpace)
+                                                   | static_cast<unsigned int>(aiProcess_GenSmoothNormals)
+                                                   | static_cast<unsigned int>(aiProcess_JoinIdenticalVertices)
+                                                   | static_cast<unsigned int>(aiProcess_FlipWindingOrder);
 
 // -------------------------------------------------------------------------------------------------
 
@@ -57,8 +62,8 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
             auto const & position = vertices[vertexIndex];
             vertex.Position = { position.x, position.y, position.z };
 
-            auto const & texCoord = currentMesh->HasTextureCoords(0) ? textureCoords0[vertexIndex] : ZERO_VECTOR;
-            vertex.TextureCoords = { texCoord.x, 1.0F - texCoord.y };
+            auto const & texCoordinates = currentMesh->HasTextureCoords(0) ? textureCoords0[vertexIndex] : ZERO_VECTOR;
+            vertex.TextureCoords = { texCoordinates.x, 1.0F - texCoordinates.y };
 
             vertex.Color = { 1.0F, 1.0F, 1.0F };
 

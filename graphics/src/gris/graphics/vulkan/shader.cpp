@@ -16,7 +16,7 @@ Gris::Graphics::Vulkan::Shader::Shader(const ParentObject<Device> & device, cons
 
     auto const createInfo = vk::ShaderModuleCreateInfo{}.setCode(code);
 
-    auto createShaderModuleResult = DeviceHandle().createShaderModule(createInfo, nullptr, Dispatch());
+    auto const createShaderModuleResult = DeviceHandle().createShaderModule(createInfo, nullptr, Dispatch());
     if (createShaderModuleResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating shader module", createShaderModuleResult);
@@ -68,7 +68,7 @@ Gris::Graphics::Vulkan::Shader::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Shader::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_shaderModule);
+    return IsDeviceValid() && static_cast<bool>(m_shaderModule);
 }
 
 // -------------------------------------------------------------------------------------------------

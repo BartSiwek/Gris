@@ -29,7 +29,7 @@ Gris::Graphics::Vulkan::BufferView::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::BufferView::IsValid() const
 {
-    return ChildObject::IsValid();
+    return IsParentValid();
 }
 
 // -------------------------------------------------------------------------------------------------

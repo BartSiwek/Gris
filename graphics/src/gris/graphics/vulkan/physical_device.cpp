@@ -131,7 +131,7 @@ Gris::Graphics::Vulkan::PhysicalDevice::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::PhysicalDevice::CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic dispatch) const
+[[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::PhysicalDevice::CreateAllocator(const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch) const
 {
     return Instance::CreateAllocator(m_physicalDevice, device, dispatch);
 }

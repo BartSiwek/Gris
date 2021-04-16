@@ -25,7 +25,7 @@ void TrackballCameraUpdate(
     glm::vec2 * prevPoint,
     glm::vec2 * currentPoint,
     glm::vec3 * center,
-    glm::quat * rotationQuaterion,
+    glm::quat * rotationQuaternion,
     float * radius,
     glm::mat4 * viewMatrix,
     glm::mat4 * viewMatrixInverseTranspose);
@@ -44,16 +44,16 @@ public:
     TrackballCamera & operator=(TrackballCamera &&) = default;
 
     void SetLocation(const glm::vec3 & location);
-    glm::vec3 GetLocation() const;
+    [[nodiscard]] glm::vec3 GetLocation() const;
 
     void SetRadius(float r);
-    float GetRadius() const;
+    [[nodiscard]] float GetRadius() const;
 
     void SetRotationSpeed(float rotationSpeed);
-    float GetRotationSpeed() const;
+    [[nodiscard]] float GetRotationSpeed() const;
 
     void SetPanningSpeed(float panningSpeed);
-    float GetPanningSpeed() const;
+    [[nodiscard]] float GetPanningSpeed() const;
 
     void LookAt(const glm::vec3 & from, const glm::vec3 & at);
 
@@ -63,30 +63,30 @@ public:
 
     void UpdateMatrices();
 
-    const glm::mat4 & GetViewMatrix() const;
-    const glm::mat4 & GetViewMatrixInverseTranspose() const;
+    [[nodiscard]] const glm::mat4 & GetViewMatrix() const;
+    [[nodiscard]] const glm::mat4 & GetViewMatrixInverseTranspose() const;
 
 private:
     // Finished product
-    glm::mat4 m_viewMatrix;
-    glm::mat4 m_viewMatrixInverseTranspose;
+    glm::mat4 m_viewMatrix = glm::mat4(1.0F);
+    glm::mat4 m_viewMatrixInverseTranspose = glm::mat4(1.0F);
 
     // View
-    glm::vec3 m_center;
-    glm::quat m_rotationQuaterion;
-    float m_radius;
+    glm::vec3 m_center = glm::vec3(0.0F, 0.0F, 0.0F);
+    glm::quat m_rotationQuaternion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
+    float m_radius = 1.0F;
 
     // State
-    TrackballCameraOperation m_currentState;
-    glm::vec2 m_prevPoint;
-    glm::vec2 m_currentPoint;
+    TrackballCameraOperation m_currentState = TrackballCameraOperation::None;
+    glm::vec2 m_prevPoint = glm::vec2(0.0F, 0.0F);
+    glm::vec2 m_currentPoint = glm::vec2(0.0F, 0.0F);
 
     // Extra state
-    TrackballCameraOperation m_desiredState;
+    TrackballCameraOperation m_desiredState = TrackballCameraOperation::None;
 
     // Operation speed modifiers
-    float m_rotationSpeed;
-    float m_panningSpeed;
+    float m_rotationSpeed = glm::half_pi<float>();
+    float m_panningSpeed = 1.0F;
 };
 
 }  // namespace Gris::Graphics::Cameras

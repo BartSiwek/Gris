@@ -30,7 +30,7 @@ public:
     TextureView(TextureView && other) noexcept;
     TextureView & operator=(TextureView && other) noexcept;
 
-    virtual ~TextureView();
+    ~TextureView() override;
 
     explicit operator bool() const;
 

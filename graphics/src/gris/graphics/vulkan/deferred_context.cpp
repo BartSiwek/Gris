@@ -24,7 +24,7 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Devi
 
     auto const poolInfo = vk::CommandPoolCreateInfo{}.setQueueFamilyIndex(graphicsQueueFamily);
 
-    auto createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
+    auto const createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
     if (createCommandPoolResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
@@ -90,7 +90,7 @@ Gris::Graphics::Vulkan::DeferredContext::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
+    return IsDeviceValid() && static_cast<bool>(m_commandPool);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -156,10 +156,10 @@ void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView &
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> srbs)
+void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> shaderResourceBindings)
 {
-    auto descriptorSets = MakeReservedVector<vk::DescriptorSet>(srbs.size());
-    std::transform(std::begin(srbs), std::end(srbs), std::back_inserter(descriptorSets), [](auto const & srb)
+    auto descriptorSets = MakeReservedVector<vk::DescriptorSet>(shaderResourceBindings.size());
+    std::transform(std::begin(shaderResourceBindings), std::end(shaderResourceBindings), std::back_inserter(descriptorSets), [](auto const & srb)
                    { return srb.DescriptorSetHandle(); });
     m_commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), startSetIndex, descriptorSets, {}, Dispatch());
 }

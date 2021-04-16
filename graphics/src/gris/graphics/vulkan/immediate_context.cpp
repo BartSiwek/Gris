@@ -28,7 +28,7 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(const ParentObject<De
                               .setFlags(vk::CommandPoolCreateFlagBits::eTransient)
                               .setQueueFamilyIndex(graphicsQueueFamily);
 
-    auto createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
+    auto const createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
     if (createCommandPoolResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
@@ -37,7 +37,7 @@ Gris::Graphics::Vulkan::ImmediateContext::ImmediateContext(const ParentObject<De
     m_commandPool = createCommandPoolResult.value;
 
     auto const fenceInfo = vk::FenceCreateInfo{};
-    auto fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
+    auto const fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
     if (fenceCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating immediate context fence", fenceCreateResult);
@@ -91,7 +91,7 @@ Gris::Graphics::Vulkan::ImmediateContext::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ImmediateContext::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_graphicsQueue) && static_cast<bool>(m_commandPool) && static_cast<bool>(m_fence);
+    return IsDeviceValid() && static_cast<bool>(m_graphicsQueue) && static_cast<bool>(m_commandPool) && static_cast<bool>(m_fence);
 }
 
 // -------------------------------------------------------------------------------------------------

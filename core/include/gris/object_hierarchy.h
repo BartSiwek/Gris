@@ -55,7 +55,7 @@ public:
     }
 
 private:
-    PatentPointerType ParentPointer() const
+    [[nodiscard]] PatentPointerType ParentPointer() const
     {
         GRIS_ALWAYS_ASSERT(static_cast<bool>(m_parent), "The parent pointer pointer cannot be null");
         return m_parent.get();
@@ -78,7 +78,7 @@ public:
 
     ChildObject() = default;
 
-    ChildObject(const ParentObject<ParentT> & parent)
+    explicit ChildObject(const ParentObject<ParentT> & parent)
         : m_parent(parent.ParentPointer())
     {
     }
@@ -94,12 +94,7 @@ public:
         ResetParent();
     }
 
-    explicit operator bool() const
-    {
-        return IsValid();
-    }
-
-    bool IsValid() const
+    [[nodiscard]] bool IsParentValid() const
     {
         return m_parent != nullptr;
     }
@@ -110,13 +105,13 @@ protected:
         m_parent = nullptr;
     }
 
-    ParentT & Parent()
+    [[nodiscard]] ParentT & Parent()
     {
         GRIS_ALWAYS_ASSERT(m_parent != nullptr, "The parent pointer pointer should not be null");
         return **m_parent;
     }
 
-    const ParentT & Parent() const
+    [[nodiscard]] const ParentT & Parent() const
     {
         GRIS_ALWAYS_ASSERT(m_parent != nullptr, "The parent pointer pointer should not be null");
         return **m_parent;

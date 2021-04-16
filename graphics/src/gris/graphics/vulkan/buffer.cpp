@@ -17,7 +17,7 @@ Gris::Graphics::Vulkan::Buffer::Buffer(const ParentObject<Device> & device, vk::
                                 .setUsage(usage)
                                 .setSharingMode(vk::SharingMode::eExclusive);
 
-    auto createBufferResult = DeviceHandle().createBuffer(bufferInfo, nullptr, Dispatch());
+    auto const createBufferResult = DeviceHandle().createBuffer(bufferInfo, nullptr, Dispatch());
     if (createBufferResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating buffer", createBufferResult);
@@ -83,7 +83,7 @@ Gris::Graphics::Vulkan::Buffer::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Buffer::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_buffer);
+    return IsDeviceValid() && static_cast<bool>(m_buffer);
 }
 
 // -------------------------------------------------------------------------------------------------

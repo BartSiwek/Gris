@@ -4,7 +4,6 @@
 #include <gris/span.h>
 
 #include <cstdint>
-#include <string_view>
 
 namespace Gris::Graphics::Backend
 {

@@ -26,7 +26,7 @@ public:
     DeferredContext(DeferredContext && other) noexcept;
     DeferredContext & operator=(DeferredContext && other) noexcept;
 
-    virtual ~DeferredContext();
+    ~DeferredContext() override;
 
     explicit operator bool() const;
 
@@ -39,7 +39,7 @@ public:
     void BindPipeline(const PipelineStateObject & pso);
     void BindVertexBuffer(const BufferView & bufferView);
     void BindIndexBuffer(const BufferView & bufferView);
-    void BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> srbs);
+    void BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> shaderResourceBindings);
     void DrawIndexed(uint32_t indexCount);
     void EndRenderPass();
     void End();

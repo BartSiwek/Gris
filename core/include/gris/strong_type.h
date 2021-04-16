@@ -13,14 +13,14 @@ namespace Detail
 {
 
 template<typename T, template<typename> class CrtpT>
-struct Crpt
+struct Crtp
 {
-    T & Underlying()
+    [[nodiscard]] T & Underlying()
     {
         return static_cast<T &>(*this);
     }
 
-    T const & Underlying() const
+    [[nodiscard]] T const & Underlying() const
     {
         return static_cast<T const &>(*this);
     }
@@ -47,12 +47,12 @@ public:
     {
     }
 
-    T & Get() noexcept
+    [[nodiscard]] T & Get() noexcept
     {
         return m_value;
     }
 
-    const T & Get() const noexcept
+    [[nodiscard]] const T & Get() const noexcept
     {
         return m_value;
     }
@@ -71,7 +71,7 @@ namespace StrongTypeMixins
 {
 
 template<typename T>
-struct Comparable : Detail::Crpt<T, Comparable>
+struct Comparable : Detail::Crtp<T, Comparable>
 {
     friend bool operator==(const T & lhs, const T & rhs)
     {

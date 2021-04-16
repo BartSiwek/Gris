@@ -19,7 +19,7 @@ Gris::Graphics::Vulkan::Fence::Fence(const ParentObject<Device> & device, bool s
 
     auto const fenceInfo = vk::FenceCreateInfo{}.setFlags(flags);
 
-    auto fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
+    auto const fenceCreateResult = DeviceHandle().createFence(fenceInfo, nullptr, Dispatch());
     if (fenceCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating frame fence", fenceCreateResult);
@@ -69,7 +69,7 @@ Gris::Graphics::Vulkan::Fence::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Fence::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_fence);
+    return IsDeviceValid() && static_cast<bool>(m_fence);
 }
 
 // -------------------------------------------------------------------------------------------------

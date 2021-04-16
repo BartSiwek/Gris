@@ -52,7 +52,6 @@ VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(const VkDebugUtilsMessageSeverityFl
         Gris::Log::Warning("{} {}", messageTypeLabel, pCallbackData->pMessage);
         break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT:
-    default:
         Gris::Log::Error("{} {}", messageTypeLabel, pCallbackData->pMessage);
         break;
     case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT:
@@ -120,9 +119,9 @@ Gris::Graphics::Vulkan::Instance::~Instance()
     auto & instance = GetInstance();
 
     vk::DispatchLoaderDynamic result;
-    auto getInstanceProcAddr = instance.m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-    auto getDeviceProcAddr = instance.m_loader.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
-    result.init(instance.m_instance, getInstanceProcAddr, device, getDeviceProcAddr);
+    auto const getInstanceProcAddress = instance.m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    auto const getDeviceProcAddress = instance.m_loader.getProcAddress<PFN_vkGetDeviceProcAddr>("vkGetDeviceProcAddr");
+    result.init(instance.m_instance, getInstanceProcAddress, device, getDeviceProcAddress);
     return result;
 }
 
@@ -130,7 +129,7 @@ Gris::Graphics::Vulkan::Instance::~Instance()
 
 [[nodiscard]] Gris::Graphics::Vulkan::Allocator Gris::Graphics::Vulkan::Instance::CreateAllocator(const vk::PhysicalDevice & physicalDevice, const vk::Device & device, const vk::DispatchLoaderDynamic & dispatch)
 {
-    // Copy the function pointers from device dispatch to the VMA's internal structure
+    // Copy the function pointers from device dispatch to the Vulkan Memory Allocators internal structure
     auto vulkanFunctions = VmaVulkanFunctions{};
     vulkanFunctions.vkGetPhysicalDeviceProperties = dispatch.vkGetPhysicalDeviceProperties;
     vulkanFunctions.vkGetPhysicalDeviceMemoryProperties = dispatch.vkGetPhysicalDeviceMemoryProperties;
@@ -149,11 +148,22 @@ Gris::Graphics::Vulkan::Instance::~Instance()
     vulkanFunctions.vkCreateImage = dispatch.vkCreateImage;
     vulkanFunctions.vkDestroyImage = dispatch.vkDestroyImage;
     vulkanFunctions.vkCmdCopyBuffer = dispatch.vkCmdCopyBuffer;
-    vulkanFunctions.vkGetBufferMemoryRequirements2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkGetBufferMemoryRequirements2 : dispatch.vkGetBufferMemoryRequirements2KHR;
-    vulkanFunctions.vkGetImageMemoryRequirements2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkGetImageMemoryRequirements2 : dispatch.vkGetImageMemoryRequirements2KHR;
-    vulkanFunctions.vkBindBufferMemory2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkBindBufferMemory2 : dispatch.vkBindBufferMemory2KHR;
-    vulkanFunctions.vkBindImageMemory2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkBindImageMemory2 : dispatch.vkBindImageMemory2KHR;
-    vulkanFunctions.vkGetPhysicalDeviceMemoryProperties2KHR = (GRIS_VULKAN_API_VERSION >= VK_MAKE_VERSION(1, 1, 0)) ? dispatch.vkGetPhysicalDeviceMemoryProperties2 : dispatch.vkGetPhysicalDeviceMemoryProperties2KHR;
+    if constexpr (GRIS_VULKAN_API_VERSION >= VK_API_VERSION_1_1)
+    {
+        vulkanFunctions.vkGetBufferMemoryRequirements2KHR = dispatch.vkGetBufferMemoryRequirements2;
+        vulkanFunctions.vkGetImageMemoryRequirements2KHR = dispatch.vkGetImageMemoryRequirements2;
+        vulkanFunctions.vkBindBufferMemory2KHR = dispatch.vkBindBufferMemory2;
+        vulkanFunctions.vkBindImageMemory2KHR = dispatch.vkBindImageMemory2;
+        vulkanFunctions.vkGetPhysicalDeviceMemoryProperties2KHR = dispatch.vkGetPhysicalDeviceMemoryProperties2;
+    }
+    else
+    {
+        vulkanFunctions.vkGetBufferMemoryRequirements2KHR = dispatch.vkGetBufferMemoryRequirements2KHR;
+        vulkanFunctions.vkGetImageMemoryRequirements2KHR = dispatch.vkGetImageMemoryRequirements2KHR;
+        vulkanFunctions.vkBindBufferMemory2KHR = dispatch.vkBindBufferMemory2KHR;
+        vulkanFunctions.vkBindImageMemory2KHR = dispatch.vkBindImageMemory2KHR;
+        vulkanFunctions.vkGetPhysicalDeviceMemoryProperties2KHR = dispatch.vkGetPhysicalDeviceMemoryProperties2KHR;
+    }
 
     // Create the VMA
     auto allocatorInfo = VmaAllocatorCreateInfo{};
@@ -234,8 +244,8 @@ Gris::Graphics::Vulkan::Instance::Instance()
 
 void Gris::Graphics::Vulkan::Instance::CreateInstance()
 {
-    auto vkGetInstanceProcAddr = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
-    m_dispatch.init(vkGetInstanceProcAddr);
+    auto const vkGetInstanceProcAddress = m_loader.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+    m_dispatch.init(vkGetInstanceProcAddress);
 
     if constexpr (ENABLE_VALIDATION_LAYERS)
     {
@@ -265,7 +275,7 @@ void Gris::Graphics::Vulkan::Instance::CreateInstance()
                                 .setPEnabledLayerNames(enabledLayers)
                                 .setPEnabledExtensionNames(extensions);
 
-    auto createInstanceResult = vk::createInstance(createInfo, nullptr, m_dispatch);
+    auto const createInstanceResult = vk::createInstance(createInfo, nullptr, m_dispatch);
     if (createInstanceResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating Vulkan instance", createInstanceResult);
@@ -289,7 +299,7 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
                                 .setMessageType(vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance)
                                 .setPfnUserCallback(&DebugCallback);
 
-    auto createDebugUtilsMessengerResult = m_instance.createDebugUtilsMessengerEXT(createInfo, nullptr, m_dispatch);
+    auto const createDebugUtilsMessengerResult = m_instance.createDebugUtilsMessengerEXT(createInfo, nullptr, m_dispatch);
     if (createDebugUtilsMessengerResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating debug messenger", createDebugUtilsMessengerResult);
@@ -300,7 +310,7 @@ void Gris::Graphics::Vulkan::Instance::SetupDebugMessenger()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport()
+[[nodiscard]] bool Gris::Graphics::Vulkan::Instance::CheckValidationLayerSupport() const
 {
     auto const enumerateInstanceLayerPropertiesResult = vk::enumerateInstanceLayerProperties(m_dispatch);
     if (enumerateInstanceLayerPropertiesResult.result != vk::Result::eSuccess)

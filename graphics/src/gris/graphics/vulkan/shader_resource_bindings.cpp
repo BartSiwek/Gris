@@ -6,7 +6,6 @@
 #include <gris/graphics/vulkan/shader_resource_bindings_layout.h>
 #include <gris/graphics/vulkan/shader_resource_bindings_pool_collection.h>
 #include <gris/graphics/vulkan/texture_view.h>
-#include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
 #include <gris/utils.h>
 
@@ -35,7 +34,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindings::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindings::IsValid() const
 {
-    return DeviceResource::IsValid() && ChildObject<ShaderResourceBindingsLayout>::IsValid();
+    return IsDeviceValid() && ChildObject<ShaderResourceBindingsLayout>::IsParentValid();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -54,7 +53,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindings::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::ShaderResourceBindings::ForeceRebuild()
+void Gris::Graphics::Vulkan::ShaderResourceBindings::ForceRebuild()
 {
     m_needsRebuilding = true;
 }
@@ -105,7 +104,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
     // Consider adding a generation to ParentObject/ChildObject for change tracking (atomic)
     m_descriptorSet = pools->Allocate(category, ChildObject<ShaderResourceBindingsLayout>::Parent().DescriptorSetLayoutHandle());
 
-    auto descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
+    auto const descriptorCount = m_samplers.size() + m_textureViews.size() + m_bufferViews.size() + m_combinedSamplers.size();
     auto bufferInfos = MakeReservedVector<vk::DescriptorBufferInfo>(descriptorCount);
     auto imageInfos = MakeReservedVector<vk::DescriptorImageInfo>(descriptorCount);
     auto descriptorWrites = MakeReservedVector<vk::WriteDescriptorSet>(descriptorCount);
@@ -160,11 +159,11 @@ void Gris::Graphics::Vulkan::ShaderResourceBindings::PrepareBindings(Backend::Sh
                                           .setImageInfo(imageInfos.back()));
     }
 
-    for (auto const & [name, samperAndTextureView] : m_combinedSamplers)
+    for (auto const & [name, samplerAndTextureView] : m_combinedSamplers)
     {
         imageInfos.emplace_back(vk::DescriptorImageInfo{}
-                                    .setSampler(samperAndTextureView.SamplerPart->SamplerHandle())
-                                    .setImageView(samperAndTextureView.TextureViewPart->ImageViewHandle())
+                                    .setSampler(samplerAndTextureView.SamplerPart->SamplerHandle())
+                                    .setImageView(samplerAndTextureView.TextureViewPart->ImageViewHandle())
                                     .setImageLayout(vk::ImageLayout::eShaderReadOnlyOptimal));
 
         auto const & binding = ChildObject<ShaderResourceBindingsLayout>::Parent().NameToBinding(name);

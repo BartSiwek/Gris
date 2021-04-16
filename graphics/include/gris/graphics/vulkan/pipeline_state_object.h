@@ -33,7 +33,7 @@ public:
     PipelineStateObject(PipelineStateObject && other) noexcept;
     PipelineStateObject & operator=(PipelineStateObject && other) noexcept;
 
-    virtual ~PipelineStateObject();
+    ~PipelineStateObject() override;
 
     explicit operator bool() const;
 

@@ -3,7 +3,8 @@
 #include <gris/engine_exception.h>
 
 #ifdef _MSC_VER
-#include <windows.h>
+#include <Windows.h>
+#include <comdef.h>
 #else
 #include <cerrno>
 #include <cstring>
@@ -17,26 +18,10 @@ namespace
 
 std::string ErrorToString(DWORD error)
 {
-    LPTSTR lpMsgBuf = nullptr;
-    auto const bufLen = FormatMessage(
-        FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-        nullptr,
-        error,
-        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-        reinterpret_cast<LPTSTR>(&lpMsgBuf),
-        0,
-        nullptr);
-    if (bufLen > 0)
-    {
-        auto const lpMsgStr = static_cast<LPCSTR>(lpMsgBuf);
-        std::string result(lpMsgStr, lpMsgStr + bufLen);
-
-        LocalFree(lpMsgBuf);
-
-        return result;
-    }
-
-    return "Unknown error";
+    auto const hResult = HRESULT_FROM_WIN32(error);
+    auto const comError = _com_error(hResult);
+    auto const * const comErrorMessage = comError.ErrorMessage();
+    return std::string(comErrorMessage);
 }
 
 #endif
@@ -127,11 +112,17 @@ Gris::DirectoryRegistry::DirectoryRegistry()
         GetModuleFileName(nullptr, buffer.data(), static_cast<DWORD>(buffer.size()));
         auto const lastError = GetLastError();
         if (lastError == ERROR_INSUFFICIENT_BUFFER)
+        {
             buffer.resize(2 * buffer.size(), '\0');
+        }
         else if (lastError != ERROR_SUCCESS)
+        {
             throw EngineException("Error resolving executable location", ErrorToString(lastError));
+        }
         else
+        {
             resolved = true;
+        }
     }
 
     m_executableLocation = std::filesystem::path(std::string(buffer.data()));

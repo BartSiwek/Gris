@@ -32,14 +32,10 @@
 #include <gris/log.h>
 #include <gris/utils.h>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <algorithm>
-#include <chrono>
 #include <cstdint>
 #include <vector>
 
@@ -50,8 +46,8 @@ constexpr static uint32_t INITIAL_WINDOW_HEIGHT = 600;
 
 const char * const MODEL_PATH = "sponza.dae";
 const char * const TEXTURE_PATH = "viking_room.png";
-const char * const VERTEX_SHADER_PATH = "vert.spv";
-const char * const FRAGMENT_SHADER_PATH = "frag.spv";
+const char * const VERTEX_SHADER_PATH = "vertex.spv";
+const char * const FRAGMENT_SHADER_PATH = "fragment.spv";
 
 constexpr static int MAX_FRAMES_IN_FLIGHT = 3;
 
@@ -73,7 +69,7 @@ namespace
 
 inline glm::vec2 GetNormalizedScreenCoordinates(float width, float height, float x, float y)
 {
-    auto normalizedPoint = glm::vec2((2 * x) / width - 1, 1 - (2 * y) / height);
+    auto const normalizedPoint = glm::vec2((2 * x) / width - 1, 1 - (2 * y) / height);
     return glm::clamp(normalizedPoint, glm::vec2(-1, -1), glm::vec2(1, 1));
 }
 
@@ -228,7 +224,7 @@ void ForwardRenderingApplication::CreateDevice()
 
 // -------------------------------------------------------------------------------------------------
 
-void ForwardRenderingApplication::WaitForDeviceToBeIdle()
+void ForwardRenderingApplication::WaitForDeviceToBeIdle() const
 {
     m_device.WaitIdle();
 }
@@ -386,7 +382,7 @@ void ForwardRenderingApplication::CreatePipelineStateObject()
                 Gris::Graphics::Backend::ShaderStageFlags::Vertex,
             },
         };
-        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        auto const bindingsLayout = Gris::Graphics::Backend::ShaderResourceBindingsLayout{ resourceLayouts };
         m_resourceLayouts[GLOBAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
@@ -401,14 +397,14 @@ void ForwardRenderingApplication::CreatePipelineStateObject()
                 Gris::Graphics::Backend::ShaderStageFlags::Fragment,
             },
         };
-        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        auto const bindingsLayout = Gris::Graphics::Backend::ShaderResourceBindingsLayout{ resourceLayouts };
         m_resourceLayouts[PER_MATERIAL_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
     if (!m_resourceLayouts[PER_DRAW_DESCRIPTOR_SET_INDEX])
     {
         auto const resourceLayouts = std::array<Gris::Graphics::Backend::ShaderResourceBindingLayout, 0>{};
-        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        auto const bindingsLayout = Gris::Graphics::Backend::ShaderResourceBindingsLayout{ resourceLayouts };
         m_resourceLayouts[PER_DRAW_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
@@ -526,10 +522,11 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
     m_lens.UpdateMatrices(aspectRatio);
     m_camera.UpdateMatrices();
 
-    UniformBufferObject ubo = {};
-    ubo.model = glm::mat4(1.0F);
-    ubo.view = m_camera.GetViewMatrix();
-    ubo.proj = m_lens.GetProjectionMatrix();
+    UniformBufferObject ubo = {
+        glm::mat4(1.0F),
+        m_camera.GetViewMatrix(),
+        m_lens.GetProjectionMatrix(),
+    };
     ubo.proj[1][1] *= -1;
 
     m_uniformBuffers[currentImage].SetData(&ubo, sizeof(ubo));

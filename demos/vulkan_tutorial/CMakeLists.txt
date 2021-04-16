@@ -25,8 +25,8 @@ group_sources(Gris.Demos.VulkanTutorial)
 
 ###############################################################################
 
-compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/vert.spv")
-compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/frag.spv")
+compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/vertex.spv")
+compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/fragment.spv")
 
 # TODO: Replace this with a resource target(s)... (if that is possible)
 add_custom_command(TARGET Gris.Demos.VulkanTutorial

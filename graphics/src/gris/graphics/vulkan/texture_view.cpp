@@ -40,7 +40,7 @@ Gris::Graphics::Vulkan::TextureView::TextureView(const ParentObject<Device> & de
                                                        .setBaseArrayLayer(0)
                                                        .setLayerCount(1));
 
-    auto createImageViewResult = DeviceHandle().createImageView(viewInfo, nullptr, Dispatch());
+    auto const createImageViewResult = DeviceHandle().createImageView(viewInfo, nullptr, Dispatch());
     if (createImageViewResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating image view", createImageViewResult);
@@ -90,7 +90,7 @@ Gris::Graphics::Vulkan::TextureView::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::TextureView::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_imageView);
+    return IsDeviceValid() && static_cast<bool>(m_imageView);
 }
 
 // -------------------------------------------------------------------------------------------------

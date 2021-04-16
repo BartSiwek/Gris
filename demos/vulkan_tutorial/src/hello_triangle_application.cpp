@@ -32,9 +32,6 @@
 #include <gris/log.h>
 #include <gris/utils.h>
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -50,8 +47,8 @@ constexpr static uint32_t INITIAL_WINDOW_HEIGHT = 600;
 
 const char * const MODEL_PATH = "viking_room.obj";
 const char * const TEXTURE_PATH = "viking_room.png";
-const char * const VERTEX_SHADER_PATH = "vert.spv";
-const char * const FRAGMENT_SHADER_PATH = "frag.spv";
+const char * const VERTEX_SHADER_PATH = "vertex.spv";
+const char * const FRAGMENT_SHADER_PATH = "fragment.spv";
 
 constexpr static int MAX_FRAMES_IN_FLIGHT = 3;
 
@@ -171,7 +168,7 @@ void HelloTriangleApplication::CreateDevice()
 
 // -------------------------------------------------------------------------------------------------
 
-void HelloTriangleApplication::WaitForDeviceToBeIdle()
+void HelloTriangleApplication::WaitForDeviceToBeIdle() const
 {
     m_device.WaitIdle();
 }
@@ -316,7 +313,7 @@ void HelloTriangleApplication::CreatePipelineStateObject()
                 Gris::Graphics::Backend::ShaderStageFlags::Fragment,
             },
         };
-        Gris::Graphics::Backend::ShaderResourceBindingsLayout bindingsLayout{ resourceLayouts };
+        auto const bindingsLayout = Gris::Graphics::Backend::ShaderResourceBindingsLayout{ resourceLayouts };
         m_resourceLayout[UNIQUE_DESCRIPTOR_SET_INDEX] = m_device.CreateShaderResourceBindingsLayout(bindingsLayout);
     }
 
@@ -423,8 +420,6 @@ void HelloTriangleApplication::UpdateUniformBuffer(uint32_t currentImage)
 
     auto const swapChainExtent = m_swapChain.Extent();
 
-    UniformBufferObject ubo = {};
-
     constexpr glm::vec3 EyeLocation = glm::vec3(2.0F, 2.0F, 2.0F);
     constexpr glm::vec3 Origin = glm::vec3(0.0F, 0.0F, 0.0F);
     constexpr glm::vec3 Up = glm::vec3(0.0F, 0.0F, 1.0F);
@@ -432,9 +427,12 @@ void HelloTriangleApplication::UpdateUniformBuffer(uint32_t currentImage)
     constexpr float NearPlane = 0.1F;
     constexpr float FarPlane = 10.0F;
 
-    ubo.model = glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis);
-    ubo.view = glm::lookAt(EyeLocation, Origin, Up);
-    ubo.proj = glm::perspective(glm::quarter_pi<float>(), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), NearPlane, FarPlane);
+    UniformBufferObject ubo = {
+        glm::rotate(glm::mat4(1.0F), time * glm::half_pi<float>(), RotationAxis),
+        glm::lookAt(EyeLocation, Origin, Up),
+        glm::perspectiveFovRH_NO(glm::quarter_pi<float>(), static_cast<float>(swapChainExtent.width), static_cast<float>(swapChainExtent.height), NearPlane, FarPlane),
+    };
+
     ubo.proj[1][1] *= -1;
 
     m_uniformBuffers[currentImage].SetData(&ubo, sizeof(ubo));

@@ -74,8 +74,8 @@ void StderrLoggingCallback(const std::string & message);
 void LogCriticalCallback(const std::string & message);
 void NullLoggingCallback(const std::string & message);
 
-void AbortHandler();
-void ThrowHandler();
+[[noreturn]] void AbortHandler();
+[[noreturn]] void ThrowHandler();
 void NullHandler();
 
 namespace Detail
@@ -85,7 +85,7 @@ void InvokeLoggingCallback(const std::string & message);
 void InvokeFailureHandler();
 
 template<typename... T>
-void Ignore(T const &...) noexcept
+void Ignore(T const &... /* ignored */) noexcept
 {
 }
 

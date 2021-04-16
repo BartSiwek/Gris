@@ -44,7 +44,7 @@ public:
     SwapChain(SwapChain && other) noexcept;
     SwapChain & operator=(SwapChain && other) noexcept;
 
-    virtual ~SwapChain();
+    ~SwapChain() override;
 
     explicit operator bool() const;
 

@@ -14,7 +14,7 @@ Gris::Graphics::Vulkan::Glfw::Window::Window() = default;
 Gris::Graphics::Vulkan::Glfw::Window::Window(uint32_t width, uint32_t height, const std::string & title)
     : Gris::Graphics::Glfw::WindowMixin(width, height, title)
 {
-    VkSurfaceKHR surface = VK_NULL_HANDLE;
+    VkSurfaceKHR surface = nullptr;
     auto const createSurfaceResult = static_cast<vk::Result>(glfwCreateWindowSurface(InstanceHandle(), WindowHandle(), nullptr, &surface));
     if (createSurfaceResult != vk::Result::eSuccess)
     {
@@ -35,5 +35,5 @@ Gris::Graphics::Vulkan::Glfw::Window::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Glfw::Window::IsValid() const
 {
-    return Graphics::Glfw::WindowMixin::IsValid() && Graphics::Vulkan::WindowMixin::IsValid();
+    return Graphics::Glfw::WindowMixin::IsWindowValid() && Graphics::Vulkan::WindowMixin::IsWindowValid();
 }

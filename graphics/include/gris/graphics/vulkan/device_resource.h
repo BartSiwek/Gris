@@ -2,8 +2,6 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
-#include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
-
 #include <gris/object_hierarchy.h>
 
 namespace Gris::Graphics::Vulkan
@@ -12,10 +10,10 @@ namespace Gris::Graphics::Vulkan
 class Device;
 class Allocator;
 
-class DeviceResource : private ChildObject<Device>
+class DeviceResource : ChildObject<Device>
 {
 public:
-    virtual ~DeviceResource() = default;
+    ~DeviceResource() override = default;
 
 protected:
     DeviceResource();
@@ -28,9 +26,7 @@ protected:
     DeviceResource(DeviceResource &&) noexcept = default;
     DeviceResource & operator=(DeviceResource &&) noexcept = default;
 
-    explicit operator bool() const;
-
-    [[nodiscard]] bool IsValid() const;
+    [[nodiscard]] bool IsDeviceValid() const;
 
     [[nodiscard]] const Device & ParentDevice() const;
     [[nodiscard]] Device & ParentDevice();
@@ -45,6 +41,9 @@ protected:
     [[nodiscard]] Allocator & AllocatorHandle();
 
     using ChildObject::ResetParent;
+
+private:
+    using ChildObject::IsParentValid;
 };
 
 }  // namespace Gris::Graphics::Vulkan

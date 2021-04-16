@@ -63,13 +63,13 @@ vk::DescriptorPool CreateNewPool(
         poolSizes.emplace_back(vk::DescriptorType::eInputAttachment, sizes.InputAttachmentCount);
     }
 
-    auto createInfo = vk::DescriptorPoolCreateInfo{}
-                          .setFlags(flags)
-                          .setMaxSets(sizes.ShaderResourceBindingsCount)
-                          .setPoolSizeCount(static_cast<uint32_t>(Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes::FactorCount))
-                          .setPoolSizes(poolSizes);
+    auto const createInfo = vk::DescriptorPoolCreateInfo{}
+                                .setFlags(flags)
+                                .setMaxSets(sizes.ShaderResourceBindingsCount)
+                                .setPoolSizeCount(static_cast<uint32_t>(Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes::FactorCount))
+                                .setPoolSizes(poolSizes);
 
-    auto createDescriptorPoolResult = device.createDescriptorPool(createInfo, nullptr, dispatch);
+    auto const createDescriptorPoolResult = device.createDescriptorPool(createInfo, nullptr, dispatch);
     if (createDescriptorPoolResult.result != vk::Result::eSuccess)
     {
         throw Gris::Graphics::Vulkan::VulkanEngineException("Error creating descriptor set", createDescriptorPoolResult);
@@ -136,7 +136,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::IsValid() const
 {
-    return DeviceResource::IsValid();
+    return IsDeviceValid();
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -165,7 +165,7 @@ void Gris::Graphics::Vulkan::ShaderResourceBindingsPoolManager::Update(const Bac
         return pool;
     }
 
-    auto descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
+    auto const descriptorPool = CreateNewPool(DeviceHandle(), Dispatch(), m_sizes, {});
     return ParentDevice().CreateShaderResourceBindingsPool(m_category, descriptorPool);
 }
 

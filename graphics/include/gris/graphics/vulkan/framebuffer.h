@@ -21,14 +21,14 @@ public:
     Framebuffer(Framebuffer && other) noexcept;
     Framebuffer & operator=(Framebuffer && other) noexcept;
 
-    virtual ~Framebuffer();
+    ~Framebuffer() override;
 
     explicit operator bool() const;
 
     [[nodiscard]] bool IsValid() const;
 
-    const vk::Framebuffer & FramebufferHandle() const;
-    vk::Framebuffer & FramebufferHandle();
+    [[nodiscard]] const vk::Framebuffer & FramebufferHandle() const;
+    [[nodiscard]] vk::Framebuffer & FramebufferHandle();
 
     void Reset();
 

@@ -12,7 +12,7 @@ namespace Gris::Enum
 {
 
 template<typename EnumT>
-constexpr inline bool EnableBitmaskOperators(EnumT)
+constexpr inline bool EnableBitmaskOperators(EnumT /* enum */)
 {
     return false;
 }

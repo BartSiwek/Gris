@@ -80,7 +80,7 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
                                  auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
                                  windowPtr->OnMouseMoveEvent(static_cast<float>(x), static_cast<float>(y));
                              });
-    glfwSetScrollCallback(m_window, [](GLFWwindow * window, double /* xoffset */, double yoffset)
+    glfwSetScrollCallback(m_window, [](GLFWwindow * window, double /* xOffset */, double yOffset)
                           {
                               auto * windowPtr = static_cast<WindowMixin *>(glfwGetWindowUserPointer(window));
 
@@ -88,7 +88,7 @@ Gris::Graphics::Glfw::WindowMixin::WindowMixin(const uint32_t width, const uint3
                               double y = 0.0;
                               glfwGetCursorPos(window, &x, &y);
 
-                              windowPtr->OnMouseWheelEvent(static_cast<float>(x), static_cast<float>(y), static_cast<float>(yoffset));
+                              windowPtr->OnMouseWheelEvent(static_cast<float>(x), static_cast<float>(y), static_cast<float>(yOffset));
                           });
 }
 
@@ -129,14 +129,7 @@ Gris::Graphics::Glfw::WindowMixin::~WindowMixin()
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Glfw::WindowMixin::operator bool() const
-{
-    return IsValid();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] bool Gris::Graphics::Glfw::WindowMixin::IsValid() const
+[[nodiscard]] bool Gris::Graphics::Glfw::WindowMixin::IsWindowValid() const
 {
     return m_window != nullptr;
 }

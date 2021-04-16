@@ -2,8 +2,6 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
-#include <gris/assert.h>
-
 namespace Gris::Graphics::Vulkan
 {
 
@@ -20,9 +18,7 @@ public:
 
     virtual ~WindowMixin();
 
-    explicit operator bool() const;
-
-    [[nodiscard]] bool IsValid() const;
+    [[nodiscard]] bool IsWindowValid() const;
 
     [[nodiscard]] vk::SurfaceKHR SurfaceHandle() const
     {
@@ -36,7 +32,7 @@ protected:
 
     void SetSurfaceHandle(vk::SurfaceKHR surface)
     {
-        m_surface = std::move(surface);
+        m_surface = surface;
     }
 
 private:

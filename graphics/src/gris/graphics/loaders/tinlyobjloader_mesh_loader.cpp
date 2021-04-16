@@ -35,12 +35,12 @@ struct VertexComparator
 
 std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
 {
-    tinyobj::attrib_t attrib;
+    tinyobj::attrib_t attributes;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &err, path.string().c_str(), nullptr, false))
+    if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &err, path.string().c_str(), nullptr, false))
     {
         throw Gris::EngineException("Error loading model", err);
     }
@@ -56,14 +56,14 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoad
             auto vertex = Vertex{};
 
             vertex.Position = {
-                attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 0],
-                attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 1],
-                attrib.vertices[3 * static_cast<size_t>(index.vertex_index) + 2]
+                attributes.vertices[3 * static_cast<size_t>(index.vertex_index) + 0],
+                attributes.vertices[3 * static_cast<size_t>(index.vertex_index) + 1],
+                attributes.vertices[3 * static_cast<size_t>(index.vertex_index) + 2]
             };
 
             vertex.TextureCoords = {
-                attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 0],
-                1.0F - attrib.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 1]
+                attributes.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 0],
+                1.0F - attributes.texcoords[2 * static_cast<size_t>(index.texcoord_index) + 1]
             };
 
             vertex.Color = { 1.0F, 1.0F, 1.0F };

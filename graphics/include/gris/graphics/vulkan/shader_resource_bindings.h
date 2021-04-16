@@ -27,7 +27,7 @@ public:
     ShaderResourceBindings(ShaderResourceBindings &&) noexcept = default;
     ShaderResourceBindings & operator=(ShaderResourceBindings &&) noexcept = default;
 
-    virtual ~ShaderResourceBindings() = default;
+    ~ShaderResourceBindings() override = default;
 
     explicit operator bool() const;
 
@@ -36,7 +36,7 @@ public:
     [[nodiscard]] const vk::DescriptorSet & DescriptorSetHandle() const;
     [[nodiscard]] vk::DescriptorSet & DescriptorSetHandle();
 
-    void ForeceRebuild();
+    void ForceRebuild();
 
     void SetSampler(std::string_view semantic, const Sampler & sampler);
     void SetImageView(std::string_view semantic, const TextureView & textureView);

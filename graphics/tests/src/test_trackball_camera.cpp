@@ -41,6 +41,9 @@ private:
     MatrixT m_matrix;
 };
 
+template<typename MatrixT>
+GlmMatrixApprox(MatrixT) -> GlmMatrixApprox<MatrixT>;
+
 }  // namespace
 
 namespace Catch
@@ -118,7 +121,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
                                             const glm::vec2 prevPoint,
                                             const glm::vec2 currentPoint,
                                             const glm::vec3 center,
-                                            const glm::quat & rotationQuaterion,
+                                            const glm::quat & rotationQuaternion,
                                             const float radius,
                                             const float rotationSpeed,
                                             const float panningSpeed)
@@ -127,7 +130,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto inputPrevPoint = prevPoint;
         auto inputCurrentPoint = currentPoint;
         auto inputCenter = center;
-        auto inputRotationQuaterion = rotationQuaterion;
+        auto inputRotationQuaternion = rotationQuaternion;
         auto inputRadius = radius;
 
         glm::mat4 viewMatrix;
@@ -141,7 +144,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             &inputPrevPoint,
             &inputCurrentPoint,
             &inputCenter,
-            &inputRotationQuaterion,
+            &inputRotationQuaternion,
             &inputRadius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -151,8 +154,8 @@ TEST_CASE("Stationary state", "[trackball camera]")
         CHECK(inputCurrentPoint == currentPoint);
 
         CHECK(inputCenter == center);
-        CHECK(inputRotationQuaterion == rotationQuaterion);
-        CHECK(inputRadius == radius);
+        CHECK(inputRotationQuaternion == rotationQuaternion);
+        CHECK(inputRadius == Catch::Detail::Approx(radius));
 
         return std::make_tuple(viewMatrix, viewMatrixInverseTranspose);
     };
@@ -166,7 +169,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = glm::vec3(0, 0, 0);
-        auto rotationQuaterion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
+        auto rotationQuaternion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
         auto radius = 0.0F;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -178,7 +181,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -198,7 +201,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = glm::vec3(0, 0, 0);
-        auto rotationQuaterion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
+        auto rotationQuaternion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
         auto radius = RADIUS;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -210,7 +213,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -231,7 +234,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = glm::vec3(0, 0, 0);
-        auto rotationQuaterion = ROTATION_QUATERNION;
+        auto rotationQuaternion = ROTATION_QUATERNION;
         auto radius = 0.0F;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -243,7 +246,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -265,7 +268,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = glm::vec3(0, 0, 0);
-        auto rotationQuaterion = ROTATION_QUATERNION;
+        auto rotationQuaternion = ROTATION_QUATERNION;
         auto radius = 0.0F;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -277,7 +280,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -299,7 +302,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = glm::vec3(0, 0, 0);
-        auto rotationQuaterion = ROTATION_QUATERNION;
+        auto rotationQuaternion = ROTATION_QUATERNION;
         auto radius = 0.0F;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -311,7 +314,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -335,7 +338,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = glm::vec3(0, 0, 0);
-        auto rotationQuaterion = ROTATION_QUATERNION;
+        auto rotationQuaternion = ROTATION_QUATERNION;
         auto radius = 0.0F;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -347,7 +350,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -368,7 +371,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
         auto currentPoint = glm::vec2(1.0F, 0.0F);
 
         auto center = CENTER;
-        auto rotationQuaterion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
+        auto rotationQuaternion = glm::quat(1.0F, 0.0F, 0.0F, 0.0F);
         auto radius = 0.0F;
 
         auto rotationSpeed = glm::half_pi<float>();
@@ -380,7 +383,7 @@ TEST_CASE("Stationary state", "[trackball camera]")
             prevPoint,
             currentPoint,
             center,
-            rotationQuaterion,
+            rotationQuaternion,
             radius,
             rotationSpeed,
             panningSpeed);
@@ -401,7 +404,7 @@ TEST_CASE("Panning", "[trackball camera]")
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
-    auto rotationQuaterion = IDENTITY_QUATERNION;
+    auto rotationQuaternion = IDENTITY_QUATERNION;
     auto radius = 0.0F;
 
     auto rotationSpeed = glm::half_pi<float>();
@@ -424,7 +427,7 @@ TEST_CASE("Panning", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -434,7 +437,7 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(CURRENT_DELTA, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(TRANSLATION_DELTA, 0.0F, 0.0F)));
@@ -458,7 +461,7 @@ TEST_CASE("Panning", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -468,7 +471,7 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(CURRENT_DELTA, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(TRANSLATION_DELTA, 0.0F, 0.0F)));
@@ -492,7 +495,7 @@ TEST_CASE("Panning", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -502,7 +505,7 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(CURRENT_DELTA, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(TRANSLATION_DELTA, 0.0F, 0.0F)));
@@ -526,7 +529,7 @@ TEST_CASE("Panning", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -536,7 +539,7 @@ TEST_CASE("Panning", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, 0.0F));
 
         CHECK(center == glm::vec3(-TRANSLATION_DELTA, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(TRANSLATION_DELTA, 0.0F, 0.0F)));
@@ -556,7 +559,7 @@ TEST_CASE("Rotating", "[trackball camera]")
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
-    auto rotationQuaterion = IDENTITY_QUATERNION;
+    auto rotationQuaternion = IDENTITY_QUATERNION;
     auto radius = 0.0F;
 
     auto rotationSpeed = glm::half_pi<float>();
@@ -578,7 +581,7 @@ TEST_CASE("Rotating", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -588,7 +591,7 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(CURRENT_DELTA, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         CHECK(viewMatrix == glm::mat4(1.0));
@@ -612,7 +615,7 @@ TEST_CASE("Rotating", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -622,7 +625,7 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(CURRENT_DELTA, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         auto expectedViewMatrix = glm::rotate(ROTATION_SPEED_FRACTION * rotationSpeed, ROTATION_AXIS);
@@ -647,7 +650,7 @@ TEST_CASE("Rotating", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -657,7 +660,7 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(CURRENT_DELTA, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 0.0F);
 
         auto expectedViewMatrix = glm::rotate(ROTATION_SPEED_FRACTION * rotationSpeed, ROTATION_AXIS);
@@ -682,7 +685,7 @@ TEST_CASE("Rotating", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -692,7 +695,7 @@ TEST_CASE("Rotating", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == glm::angleAxis(ROTATION_SPEED_FRACTION * rotationSpeed, ROTATION_AXIS));
+        CHECK(rotationQuaternion == glm::angleAxis(ROTATION_SPEED_FRACTION * rotationSpeed, ROTATION_AXIS));
         CHECK(radius == 0.0F);
 
         auto expectedViewMatrix = glm::rotate(ROTATION_SPEED_FRACTION * rotationSpeed, ROTATION_AXIS);
@@ -712,7 +715,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
-    auto rotationQuaterion = IDENTITY_QUATERNION;
+    auto rotationQuaternion = IDENTITY_QUATERNION;
     auto radius = 1.0F;
 
     auto rotationSpeed = glm::half_pi<float>();
@@ -735,7 +738,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -745,7 +748,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, CURRENT_DELTA));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 1.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
@@ -769,7 +772,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -779,7 +782,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, CURRENT_DELTA));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 1.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
@@ -803,7 +806,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -813,7 +816,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, CURRENT_DELTA));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 1.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
@@ -837,7 +840,7 @@ TEST_CASE("Zooming out", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -847,8 +850,8 @@ TEST_CASE("Zooming out", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
-        CHECK(radius == TRANSLATION_FACTOR);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
+        CHECK(radius == Catch::Detail::Approx(TRANSLATION_FACTOR));
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
         CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(0.0F, 0.0F, -TRANSLATION_FACTOR))));
@@ -866,7 +869,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
     auto prevPoint = glm::vec2(0.0F, 0.0F);
 
     auto center = glm::vec3(0, 0, 0);
-    auto rotationQuaterion = IDENTITY_QUATERNION;
+    auto rotationQuaternion = IDENTITY_QUATERNION;
     auto radius = 1.0F;
 
     auto rotationSpeed = glm::half_pi<float>();
@@ -889,7 +892,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -899,7 +902,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, CURRENT_DELTA));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 1.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
@@ -923,7 +926,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -933,7 +936,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, CURRENT_DELTA));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 1.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
@@ -957,7 +960,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -967,7 +970,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, CURRENT_DELTA));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
         CHECK(radius == 1.0F);
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
@@ -991,7 +994,7 @@ TEST_CASE("Zooming in", "[trackball camera]")
             &prevPoint,
             &currentPoint,
             &center,
-            &rotationQuaterion,
+            &rotationQuaternion,
             &radius,
             &viewMatrix,
             &viewMatrixInverseTranspose);
@@ -1001,8 +1004,8 @@ TEST_CASE("Zooming in", "[trackball camera]")
         CHECK(currentPoint == glm::vec2(0.0F, 0.0F));
 
         CHECK(center == glm::vec3(0, 0, 0));
-        CHECK(rotationQuaterion == IDENTITY_QUATERNION);
-        CHECK(radius == TRANSLATION_FACTOR);
+        CHECK(rotationQuaternion == IDENTITY_QUATERNION);
+        CHECK(radius == Catch::Detail::Approx(TRANSLATION_FACTOR));
 
         CHECK(viewMatrix == glm::translate(glm::vec3(0.0F, 0.0F, TRANSLATION_FACTOR)));
         CHECK(viewMatrixInverseTranspose == glm::transpose(glm::translate(glm::vec3(0.0F, 0.0F, -TRANSLATION_FACTOR))));

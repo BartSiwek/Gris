@@ -37,7 +37,7 @@ private:
     void CreateInstance();
     void SetupDebugMessenger();
 
-    [[nodiscard]] bool CheckValidationLayerSupport();
+    [[nodiscard]] bool CheckValidationLayerSupport() const;
 
     void ReleaseResources();
 

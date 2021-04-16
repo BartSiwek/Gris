@@ -24,7 +24,7 @@ public:
     ImmediateContext(ImmediateContext && other) noexcept;
     ImmediateContext & operator=(ImmediateContext && other) noexcept;
 
-    virtual ~ImmediateContext();
+    ~ImmediateContext() override;
 
     explicit operator bool() const;
 

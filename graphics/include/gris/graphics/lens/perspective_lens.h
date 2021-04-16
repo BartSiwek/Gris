@@ -23,11 +23,11 @@ public:
     void SetFrustum(float nearPlane, float farPlane, float aspectRatio, float horizontalFov);
 
     void SetZoomFactor(float zoomFactor);
-    float GetZoomFactor() const;
+    [[nodiscard]] float GetZoomFactor() const;
 
     void UpdateMatrices(float aspectRatio);
 
-    const glm::mat4 & GetProjectionMatrix() const;
+    [[nodiscard]] const glm::mat4 & GetProjectionMatrix() const;
 
 private:
     constexpr static float DEFAULT_ZOOM_FACTOR = 1.0F;
