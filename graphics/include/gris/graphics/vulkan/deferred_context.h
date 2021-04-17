@@ -34,7 +34,7 @@ public:
 
     [[nodiscard]] vk::CommandBuffer & CommandBufferHandle();
 
-    void Begin();
+    void Begin(bool oneTimeUse);
     void BeginRenderPass(const RenderPass & renderPass, const Framebuffer & framebuffer, const vk::Extent2D & extent);
     void BindPipeline(const PipelineStateObject & pso);
     void BindVertexBuffer(const BufferView & bufferView);
@@ -43,6 +43,7 @@ public:
     void DrawIndexed(uint32_t indexCount);
     void EndRenderPass();
     void End();
+    void ResetContext(bool releaseResources);
 
     void Reset();
 

@@ -491,25 +491,9 @@ void ForwardRenderingApplication::CreateUniformBuffersAndBindings()
 
 void ForwardRenderingApplication::CreateCommandBuffers()
 {
-    // TODO: This can be recorded per frame
     m_commandBuffers.resize(m_swapChainFramebuffers.size());
     for (uint32_t i = 0; i < m_swapChainFramebuffers.size(); i++)
-    {
         m_commandBuffers[i] = m_device.CreateDeferredContext();
-        m_commandBuffers[i].Begin();
-        m_commandBuffers[i].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[i], m_swapChain.Extent());
-        m_commandBuffers[i].BindPipeline(m_pso);
-        m_commandBuffers[i].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[i]);
-        // TODO: Put this in a better data structure
-        for (size_t meshIndex = 0; meshIndex < m_meshes.size(); ++meshIndex)
-        {
-            m_commandBuffers[i].BindVertexBuffer(m_vertexBufferViews[meshIndex]);
-            m_commandBuffers[i].BindIndexBuffer(m_indexBufferViews[meshIndex]);
-            m_commandBuffers[i].DrawIndexed(static_cast<uint32_t>(m_meshes[meshIndex].Indices.size()));
-        }
-        m_commandBuffers[i].EndRenderPass();
-        m_commandBuffers[i].End();
-    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -544,6 +528,23 @@ void ForwardRenderingApplication::DrawFrame()
     }
 
     UpdateUniformBuffer(nextImageResult->SwapChainImageIndex);
+
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].ResetContext(false);
+
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].Begin(true);
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[nextImageResult->SwapChainImageIndex], m_swapChain.Extent());
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].BindPipeline(m_pso);
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[nextImageResult->SwapChainImageIndex]);
+
+    for (size_t meshIndex = 0; meshIndex < m_meshes.size(); ++meshIndex)
+    {
+        m_commandBuffers[nextImageResult->SwapChainImageIndex].BindVertexBuffer(m_vertexBufferViews[meshIndex]);
+        m_commandBuffers[nextImageResult->SwapChainImageIndex].BindIndexBuffer(m_indexBufferViews[meshIndex]);
+        m_commandBuffers[nextImageResult->SwapChainImageIndex].DrawIndexed(static_cast<uint32_t>(m_meshes[meshIndex].Indices.size()));
+    }
+
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].EndRenderPass();
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].End();
 
     auto const waitSemaphores = std::vector{ std::ref(m_swapChain.ImageAvailableSemaphore(*nextImageResult)) };
     auto const signalSemaphores = std::vector{ std::ref(m_swapChain.RenderingFinishedSemaphore(*nextImageResult)) };

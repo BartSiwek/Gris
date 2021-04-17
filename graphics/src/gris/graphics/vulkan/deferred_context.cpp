@@ -22,7 +22,8 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Devi
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
-    auto const poolInfo = vk::CommandPoolCreateInfo{}.setQueueFamilyIndex(graphicsQueueFamily);
+    auto const poolInfo = vk::CommandPoolCreateInfo{}
+                              .setQueueFamilyIndex(graphicsQueueFamily);
 
     auto const createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
     if (createCommandPoolResult.result != vk::Result::eSuccess)
@@ -102,9 +103,11 @@ Gris::Graphics::Vulkan::DeferredContext::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::DeferredContext::Begin()
+void Gris::Graphics::Vulkan::DeferredContext::Begin(bool oneTimeUse)
 {
-    auto const beginInfo = vk::CommandBufferBeginInfo{};
+    auto beginInfo = vk::CommandBufferBeginInfo{};
+    if (oneTimeUse)
+        beginInfo.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
 
     auto const beginResult = m_commandBuffer.begin(beginInfo, Dispatch());
     if (beginResult != vk::Result::eSuccess)
@@ -187,6 +190,16 @@ void Gris::Graphics::Vulkan::DeferredContext::End()
     {
         throw VulkanEngineException("Error ending command buffer", endResult);
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::ResetContext(bool releaseResources)
+{
+    vk::CommandPoolResetFlags flags = {};
+    if (releaseResources)
+        flags |= vk::CommandPoolResetFlagBits::eReleaseResources;
+    DeviceHandle().resetCommandPool(m_commandPool, flags, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
