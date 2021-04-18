@@ -41,6 +41,8 @@ public:
     void BindIndexBuffer(const BufferView & bufferView);
     void BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> shaderResourceBindings);
     void DrawIndexed(uint32_t indexCount);
+    void SetViewport(uint32_t width, uint32_t height);
+    void SetScissor(uint32_t width, uint32_t height);
     void EndRenderPass();
     void End();
     void ResetContext(bool releaseResources);

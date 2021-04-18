@@ -17,11 +17,11 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject() = default;
 
 Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
     const ParentObject<Device> & device,
-    uint32_t swapChainWidth,
-    uint32_t swapChainHeight,
+    std::optional<uint32_t> swapChainWidth,
+    std::optional<uint32_t> swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
+    Span<const ShaderResourceBindingsLayout> resourceLayouts,
     const Shader & vertexShader,
     const Shader & fragmentShader)
     : DeviceResource(device)
@@ -47,23 +47,35 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                    .setTopology(vk::PrimitiveTopology::eTriangleList)
                                    .setPrimitiveRestartEnable(static_cast<vk::Bool32>(false));
 
-    auto const viewports = std::array{
-        vk::Viewport{}
-            .setX(0.0F)
-            .setY(0.0F)
-            .setWidth(static_cast<float>(swapChainWidth))
-            .setHeight(static_cast<float>(swapChainHeight))
-            .setMinDepth(0.0F)
-            .setMaxDepth(1.0F)
-    };
-    auto const scissors = std::array{
-        vk::Rect2D{}
-            .setOffset({ 0, 0 })
-            .setExtent({ swapChainWidth, swapChainHeight })
-    };
-    auto const viewportState = vk::PipelineViewportStateCreateInfo{}
-                                   .setViewports(viewports)
-                                   .setScissors(scissors);
+    GRIS_ALWAYS_ASSERT((swapChainWidth && swapChainHeight) || (!swapChainWidth && !swapChainHeight), "Either both or neither of swapChainWidth and swapChainHeight should be provided");
+    auto viewportState = vk::PipelineViewportStateCreateInfo{};
+    if (swapChainWidth && swapChainHeight)
+    {
+        auto const viewports = std::array{
+            vk::Viewport{}
+                .setX(0.0F)
+                .setY(0.0F)
+                .setWidth(static_cast<float>(*swapChainWidth))
+                .setHeight(static_cast<float>(*swapChainHeight))
+                .setMinDepth(0.0F)
+                .setMaxDepth(1.0F)
+        };
+        auto const scissors = std::array{
+            vk::Rect2D{}
+                .setOffset({ 0, 0 })
+                .setExtent({ *swapChainWidth, *swapChainHeight })
+        };
+
+        viewportState
+            .setViewports(viewports)
+            .setScissors(scissors);
+    }
+    else
+    {
+        viewportState
+            .setViewportCount(1)
+            .setScissorCount(1);
+    }
 
     auto const rasterizer = vk::PipelineRasterizationStateCreateInfo{}
                                 .setDepthClampEnable(static_cast<vk::Bool32>(false))
@@ -105,6 +117,17 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                    .setAttachments(colorBlendAttachments)
                                    .setBlendConstants({ 0.0F, 0.0F, 0.0F, 0.0F });
 
+    auto dynamicState = vk::PipelineDynamicStateCreateInfo{};
+    if (!swapChainWidth && !swapChainHeight)
+    {
+        auto dynamicStates = std::array{
+            vk::DynamicState::eViewport,
+            vk::DynamicState::eScissor
+        };
+
+        dynamicState.setDynamicStates(dynamicStates);    
+    }
+    
     auto descriptorSetLayouts = MakeReservedVector<vk::DescriptorSetLayout>(resourceLayouts.size());
     std::transform(std::begin(resourceLayouts), std::end(resourceLayouts), std::back_inserter(descriptorSetLayouts), [](auto const & resourceLayout)
                    { return resourceLayout.DescriptorSetLayoutHandle(); });
@@ -128,7 +151,7 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
                                   .setPMultisampleState(&multisampleInfo)
                                   .setPDepthStencilState(&depthStencil)
                                   .setPColorBlendState(&colorBlending)
-                                  .setPDynamicState({})
+                                  .setPDynamicState(&dynamicState)
                                   .setLayout(m_pipelineLayout)
                                   .setRenderPass(renderPass.RenderPassHandle())
                                   .setSubpass(0);

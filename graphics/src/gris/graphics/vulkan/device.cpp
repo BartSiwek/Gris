@@ -261,11 +261,11 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::PipelineStateObject Gris::Graphics::Vulkan::Device::CreatePipelineStateObject(
-    uint32_t swapChainWidth,
-    uint32_t swapChainHeight,
+    std::optional<uint32_t> swapChainWidth,
+    std::optional<uint32_t> swapChainHeight,
     const RenderPass & renderPass,
     const InputLayout & inputLayout,
-    Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
+    Span<const ShaderResourceBindingsLayout> resourceLayouts,
     const Shader & vertexShader,
     const Shader & fragmentShader) const
 {

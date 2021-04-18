@@ -396,8 +396,8 @@ void HelloTriangleApplication::CreateCommandBuffers()
     m_commandBuffers.resize(m_swapChainFramebuffers.size());
     for (uint32_t i = 0; i < m_swapChainFramebuffers.size(); i++)
     {
-        m_commandBuffers[i] = m_device.CreateDeferredContext();
-        m_commandBuffers[i].Begin();
+        m_commandBuffers[i] = m_device.CreateDeferredContext(false);
+        m_commandBuffers[i].Begin(false);
         m_commandBuffers[i].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[i], m_swapChain.Extent());
         m_commandBuffers[i].BindPipeline(m_pso);
         m_commandBuffers[i].BindVertexBuffer(m_vertexBufferView);

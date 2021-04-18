@@ -180,7 +180,12 @@ void ForwardRenderingApplication::CreateVulkanObjects()
 
     CreateSwapChain();
     CreateRenderPass();
-    CreatePipelineStateObject();
+
+    if (!m_pso)
+    {
+        CreatePipelineStateObject();    
+    }
+    
     CreateFramebuffers();
     CreateShaderResourceBindingsPools();
 
@@ -416,7 +421,7 @@ void ForwardRenderingApplication::CreatePipelineStateObject()
     layout.AddAttributeDescription(1, 0, vk::Format::eR32G32B32Sfloat, offsetof(Gris::Graphics::Vertex, Color));
     layout.AddAttributeDescription(2, 0, vk::Format::eR32G32Sfloat, offsetof(Gris::Graphics::Vertex, TextureCoords));
 
-    m_pso = m_device.CreatePipelineStateObject(m_swapChain.Extent().width, m_swapChain.Extent().height, m_renderPass, layout, m_resourceLayouts, m_vertexShader, m_fragmentShader);
+    m_pso = m_device.CreatePipelineStateObject({}, {}, m_renderPass, layout, m_resourceLayouts, m_vertexShader, m_fragmentShader);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -527,6 +532,8 @@ void ForwardRenderingApplication::DrawFrame()
         return;
     }
 
+    auto const swapChainExtent = m_swapChain.Extent();
+
     UpdateUniformBuffer(nextImageResult->SwapChainImageIndex);
 
     m_commandBuffers[nextImageResult->SwapChainImageIndex].ResetContext(false);
@@ -534,6 +541,8 @@ void ForwardRenderingApplication::DrawFrame()
     m_commandBuffers[nextImageResult->SwapChainImageIndex].Begin(true);
     m_commandBuffers[nextImageResult->SwapChainImageIndex].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[nextImageResult->SwapChainImageIndex], m_swapChain.Extent());
     m_commandBuffers[nextImageResult->SwapChainImageIndex].BindPipeline(m_pso);
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].SetViewport(swapChainExtent.width, swapChainExtent.height);
+    m_commandBuffers[nextImageResult->SwapChainImageIndex].SetScissor(swapChainExtent.width, swapChainExtent.height);
     m_commandBuffers[nextImageResult->SwapChainImageIndex].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[nextImageResult->SwapChainImageIndex]);
 
     for (size_t meshIndex = 0; meshIndex < m_meshes.size(); ++meshIndex)

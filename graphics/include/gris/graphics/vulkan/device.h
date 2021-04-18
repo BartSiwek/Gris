@@ -95,11 +95,11 @@ public:
     [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod) const;
     [[nodiscard]] ShaderResourceBindingsLayout CreateShaderResourceBindingsLayout(const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindings) const;
     [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
-        uint32_t swapChainWidth,
-        uint32_t swapChainHeight,
+        std::optional<uint32_t> swapChainWidth,
+        std::optional<uint32_t> swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
+        Span<const ShaderResourceBindingsLayout> resourceLayouts,
         const Shader & vertexShader,
         const Shader & fragmentShader) const;
     [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout) const;

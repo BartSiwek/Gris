@@ -185,6 +185,36 @@ void Gris::Graphics::Vulkan::DeferredContext::DrawIndexed(uint32_t indexCount)
 
 // -------------------------------------------------------------------------------------------------
 
+void Gris::Graphics::Vulkan::DeferredContext::SetViewport(uint32_t width, uint32_t height)
+{
+    auto const viewports = std::array{
+        vk::Viewport{}
+            .setX(0.0F)
+            .setY(0.0F)
+            .setWidth(static_cast<float>(width))
+            .setHeight(static_cast<float>(height))
+            .setMinDepth(0.0F)
+            .setMaxDepth(1.0F)
+    };
+
+    m_commandBuffer.setViewport(0, viewports, Dispatch());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::SetScissor(uint32_t width, uint32_t height)
+{
+    auto const scissors = std::array{
+        vk::Rect2D{}
+            .setOffset({ 0, 0 })
+            .setExtent({ width, height })
+    };
+
+    m_commandBuffer.setScissor(0, scissors, Dispatch());
+}
+
+// -------------------------------------------------------------------------------------------------
+
 void Gris::Graphics::Vulkan::DeferredContext::EndRenderPass()
 {
     m_commandBuffer.endRenderPass(Dispatch());
