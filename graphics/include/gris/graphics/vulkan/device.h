@@ -79,7 +79,7 @@ public:
 
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount) const;
     [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain) const;
-    [[nodiscard]] DeferredContext CreateDeferredContext() const;
+    [[nodiscard]] DeferredContext CreateDeferredContext(bool transientCommandBuffers) const;
     [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint) const;
     [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties) const;
     [[nodiscard]] Texture CreateTexture(

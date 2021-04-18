@@ -18,7 +18,7 @@ class DeferredContext : public DeviceResource
 public:
     DeferredContext();
 
-    explicit DeferredContext(const ParentObject<Device> & device);
+    DeferredContext(const ParentObject<Device> & device, bool transientCommandBuffers);
 
     DeferredContext(const DeferredContext &) = delete;
     DeferredContext & operator=(const DeferredContext &) = delete;

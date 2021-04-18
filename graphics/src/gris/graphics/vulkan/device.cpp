@@ -202,9 +202,9 @@ vk::Device & Gris::Graphics::Vulkan::Device::DeviceHandle()
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::DeferredContext Gris::Graphics::Vulkan::Device::CreateDeferredContext() const
+[[nodiscard]] Gris::Graphics::Vulkan::DeferredContext Gris::Graphics::Vulkan::Device::CreateDeferredContext(bool transientCommandBuffers) const
 {
-    return DeferredContext(*this);
+    return DeferredContext(*this, transientCommandBuffers);
 }
 
 // -------------------------------------------------------------------------------------------------

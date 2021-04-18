@@ -493,7 +493,7 @@ void ForwardRenderingApplication::CreateCommandBuffers()
 {
     m_commandBuffers.resize(m_swapChainFramebuffers.size());
     for (uint32_t i = 0; i < m_swapChainFramebuffers.size(); i++)
-        m_commandBuffers[i] = m_device.CreateDeferredContext();
+        m_commandBuffers[i] = m_device.CreateDeferredContext(true);
 }
 
 // -------------------------------------------------------------------------------------------------

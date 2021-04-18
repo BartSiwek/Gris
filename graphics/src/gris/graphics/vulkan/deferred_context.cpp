@@ -16,13 +16,20 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Device> & device)
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Device> & device, bool transientCommandBuffers)
     : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
+    auto poolFlags = vk::CommandPoolCreateFlags{};
+    if (transientCommandBuffers)
+    {
+        poolFlags |= vk::CommandPoolCreateFlagBits::eTransient;
+    }
+
     auto const poolInfo = vk::CommandPoolCreateInfo{}
+                              .setFlags(poolFlags)
                               .setQueueFamilyIndex(graphicsQueueFamily);
 
     auto const createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
@@ -107,7 +114,9 @@ void Gris::Graphics::Vulkan::DeferredContext::Begin(bool oneTimeUse)
 {
     auto beginInfo = vk::CommandBufferBeginInfo{};
     if (oneTimeUse)
+    {
         beginInfo.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    }
 
     auto const beginResult = m_commandBuffer.begin(beginInfo, Dispatch());
     if (beginResult != vk::Result::eSuccess)
@@ -196,9 +205,12 @@ void Gris::Graphics::Vulkan::DeferredContext::End()
 
 void Gris::Graphics::Vulkan::DeferredContext::ResetContext(bool releaseResources)
 {
-    vk::CommandPoolResetFlags flags = {};
+    auto flags = vk::CommandPoolResetFlags{};
     if (releaseResources)
+    {
         flags |= vk::CommandPoolResetFlagBits::eReleaseResources;
+    }
+
     DeviceHandle().resetCommandPool(m_commandPool, flags, Dispatch());
 }
 
