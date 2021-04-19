@@ -61,7 +61,7 @@ private:
     void CreateUniformBuffersAndBindings();
     void CreateCommandBuffers();
 
-    void UpdateUniformBuffer(uint32_t currentImage);
+    void UpdateUniformBuffer(uint32_t currentVirtualFrameIndex);
     void DrawFrame();
 
     Gris::Graphics::Vulkan::Glfw::Window m_window = {};

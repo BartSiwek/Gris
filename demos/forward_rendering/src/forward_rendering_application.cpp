@@ -497,7 +497,9 @@ void ForwardRenderingApplication::CreateCommandBuffers()
 {
     m_commandBuffers.resize(m_swapChain.VirtualFrameCount());
     for (uint32_t i = 0; i < m_swapChain.VirtualFrameCount(); i++)
+    {
         m_commandBuffers[i] = m_device.CreateDeferredContext(true);
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
