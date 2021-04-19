@@ -178,7 +178,6 @@ void HelloTriangleApplication::WaitForDeviceToBeIdle() const
 void HelloTriangleApplication::CreateSwapChain()
 {
     m_swapChain = m_device.CreateSwapChain(m_window, m_window.Width(), m_window.Height(), MAX_FRAMES_IN_FLIGHT, std::move(m_swapChain));
-    m_virtualFrames.resize(MAX_FRAMES_IN_FLIGHT);
 }
 
 // -------------------------------------------------------------------------------------------------

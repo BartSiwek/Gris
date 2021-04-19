@@ -167,6 +167,13 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
+[[nodiscard]] uint32_t Gris::Graphics::Vulkan::SwapChain::VirtualFrameCount() const
+{
+    return m_virtualFrameCount;
+}
+
+// -------------------------------------------------------------------------------------------------
+
 [[nodiscard]] const Gris::Graphics::Vulkan::TextureView & Gris::Graphics::Vulkan::SwapChain::ImageView(const size_t index) const
 {
     GRIS_ALWAYS_ASSERT(index < m_swapChainImageViews.size(), "Swap chain index must be in range");

@@ -103,8 +103,6 @@ private:
 
     std::vector<Gris::Graphics::Vulkan::DeferredContext> m_commandBuffers = {};
 
-    std::vector<Gris::Graphics::Vulkan::VirtualFrame> m_virtualFrames = {};
-
     Gris::Graphics::Cameras::TrackballCamera m_camera = {};
     Gris::Graphics::Lens::PerspectiveLens m_lens = {};
 

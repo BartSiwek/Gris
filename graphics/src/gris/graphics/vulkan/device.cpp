@@ -155,7 +155,8 @@ void Gris::Graphics::Vulkan::Device::RegisterShaderResourceBindingsPoolCategory(
     const Backend::ShaderResourceBindingsPoolSizes & sizes)
 {
     GRIS_FAST_ASSERT(std::find_if(std::begin(m_poolManagers), std::end(m_poolManagers), [&category](const auto & entry)
-                                  { return entry.Category == category; }),
+                                  { return entry.Category == category; })
+                         == std::end(m_poolManagers),
                      "Registering an already registered pool category ");
     m_poolManagers.emplace_back(CategoryAndPoolManager{ category, { *this, category, sizes } });
 }

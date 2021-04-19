@@ -95,7 +95,5 @@ private:
 
     std::vector<Gris::Graphics::Vulkan::DeferredContext> m_commandBuffers = {};
 
-    std::vector<Gris::Graphics::Vulkan::VirtualFrame> m_virtualFrames = {};
-
     bool m_framebufferResized = false;
 };

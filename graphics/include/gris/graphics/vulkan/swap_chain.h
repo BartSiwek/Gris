@@ -52,6 +52,8 @@ public:
 
     [[nodiscard]] uint32_t ImageCount() const;
 
+    [[nodiscard]] uint32_t VirtualFrameCount() const;
+
     [[nodiscard]] const TextureView & ImageView(size_t index) const;
     [[nodiscard]] TextureView & ImageView(size_t index);
 

@@ -161,7 +161,7 @@ void ForwardRenderingApplication::MouseWheelEvent(float /* x */, float /* y */, 
 
 void ForwardRenderingApplication::InitWindow()
 {
-    m_window = Gris::Graphics::Vulkan::Glfw::Window(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Vulkan tutorial");
+    m_window = Gris::Graphics::Vulkan::Glfw::Window(INITIAL_WINDOW_WIDTH, INITIAL_WINDOW_HEIGHT, "Forward rendering demo");
     m_window.AddObserver(this);
 }
 
@@ -224,7 +224,7 @@ void ForwardRenderingApplication::MainLoop()
 
 void ForwardRenderingApplication::CreateDevice()
 {
-    m_device = Gris::Graphics::Vulkan::Device(Gris::Graphics::Vulkan::FindSuitablePhysicalDevice(m_window));
+    m_device = Gris::Graphics::Vulkan::Device(FindSuitablePhysicalDevice(m_window));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -239,7 +239,6 @@ void ForwardRenderingApplication::WaitForDeviceToBeIdle() const
 void ForwardRenderingApplication::CreateSwapChain()
 {
     m_swapChain = m_device.CreateSwapChain(m_window, m_window.Width(), m_window.Height(), MAX_FRAMES_IN_FLIGHT, std::move(m_swapChain));
-    m_virtualFrames.resize(MAX_FRAMES_IN_FLIGHT);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -450,9 +449,9 @@ void ForwardRenderingApplication::CreateFramebuffers()
 void ForwardRenderingApplication::CreateShaderResourceBindingsPools()
 {
     auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
-    sizes.ShaderResourceBindingsCount = m_swapChain.ImageCount();
-    sizes.CombinedImageSamplerCount = m_swapChain.ImageCount();
-    sizes.UniformBufferCount = m_swapChain.ImageCount();
+    sizes.ShaderResourceBindingsCount = m_swapChain.VirtualFrameCount();
+    sizes.CombinedImageSamplerCount = m_swapChain.VirtualFrameCount();
+    sizes.UniformBufferCount = m_swapChain.VirtualFrameCount();
 
     if (!m_shaderResourceBindingsPools)
     {
@@ -470,10 +469,10 @@ void ForwardRenderingApplication::CreateShaderResourceBindingsPools()
 
 void ForwardRenderingApplication::CreateUniformBuffersAndBindings()
 {
-    m_uniformBuffers.resize(m_swapChain.ImageCount());
-    m_uniformBufferViews.resize(m_swapChain.ImageCount());
-    m_shaderResourceBindings.resize(m_swapChain.ImageCount());
-    for (size_t i = 0; i < m_swapChain.ImageCount(); i++)
+    m_uniformBuffers.resize(m_swapChain.VirtualFrameCount());
+    m_uniformBufferViews.resize(m_swapChain.VirtualFrameCount());
+    m_shaderResourceBindings.resize(m_swapChain.VirtualFrameCount());
+    for (size_t i = 0; i < m_swapChain.VirtualFrameCount(); i++)
     {
         m_uniformBuffers[i] = m_device.CreateBuffer(sizeof(UniformBufferObject), vk::BufferUsageFlagBits::eUniformBuffer, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
         m_uniformBufferViews[i] = Gris::Graphics::Vulkan::BufferView(m_uniformBuffers[i], 0, static_cast<uint32_t>(sizeof(UniformBufferObject)));
@@ -496,14 +495,14 @@ void ForwardRenderingApplication::CreateUniformBuffersAndBindings()
 
 void ForwardRenderingApplication::CreateCommandBuffers()
 {
-    m_commandBuffers.resize(m_swapChainFramebuffers.size());
-    for (uint32_t i = 0; i < m_swapChainFramebuffers.size(); i++)
+    m_commandBuffers.resize(m_swapChain.VirtualFrameCount());
+    for (uint32_t i = 0; i < m_swapChain.VirtualFrameCount(); i++)
         m_commandBuffers[i] = m_device.CreateDeferredContext(true);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
+void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentVirtualFrameIndex)
 {
     auto const swapChainExtent = m_swapChain.Extent();
     auto const aspectRatio = static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
@@ -518,7 +517,7 @@ void ForwardRenderingApplication::UpdateUniformBuffer(uint32_t currentImage)
     };
     ubo.proj[1][1] *= -1;
 
-    m_uniformBuffers[currentImage].SetData(&ubo, sizeof(ubo));
+    m_uniformBuffers[currentVirtualFrameIndex].SetData(&ubo, sizeof(ubo));
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -534,30 +533,30 @@ void ForwardRenderingApplication::DrawFrame()
 
     auto const swapChainExtent = m_swapChain.Extent();
 
-    UpdateUniformBuffer(nextImageResult->SwapChainImageIndex);
+    UpdateUniformBuffer(nextImageResult->VirtualFrameIndex);
 
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].ResetContext(false);
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].ResetContext(false);
 
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].Begin(true);
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[nextImageResult->SwapChainImageIndex], m_swapChain.Extent());
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].BindPipeline(m_pso);
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].SetViewport(swapChainExtent.width, swapChainExtent.height);
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].SetScissor(swapChainExtent.width, swapChainExtent.height);
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[nextImageResult->SwapChainImageIndex]);
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].Begin(true);
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].BeginRenderPass(m_renderPass, m_swapChainFramebuffers[nextImageResult->SwapChainImageIndex], m_swapChain.Extent());
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].BindPipeline(m_pso);
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].SetViewport(swapChainExtent.width, swapChainExtent.height);
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].SetScissor(swapChainExtent.width, swapChainExtent.height);
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[nextImageResult->VirtualFrameIndex]);
 
     for (size_t meshIndex = 0; meshIndex < m_meshes.size(); ++meshIndex)
     {
-        m_commandBuffers[nextImageResult->SwapChainImageIndex].BindVertexBuffer(m_vertexBufferViews[meshIndex]);
-        m_commandBuffers[nextImageResult->SwapChainImageIndex].BindIndexBuffer(m_indexBufferViews[meshIndex]);
-        m_commandBuffers[nextImageResult->SwapChainImageIndex].DrawIndexed(static_cast<uint32_t>(m_meshes[meshIndex].Indices.size()));
+        m_commandBuffers[nextImageResult->VirtualFrameIndex].BindVertexBuffer(m_vertexBufferViews[meshIndex]);
+        m_commandBuffers[nextImageResult->VirtualFrameIndex].BindIndexBuffer(m_indexBufferViews[meshIndex]);
+        m_commandBuffers[nextImageResult->VirtualFrameIndex].DrawIndexed(static_cast<uint32_t>(m_meshes[meshIndex].Indices.size()));
     }
 
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].EndRenderPass();
-    m_commandBuffers[nextImageResult->SwapChainImageIndex].End();
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].EndRenderPass();
+    m_commandBuffers[nextImageResult->VirtualFrameIndex].End();
 
     auto const waitSemaphores = std::vector{ std::ref(m_swapChain.ImageAvailableSemaphore(*nextImageResult)) };
     auto const signalSemaphores = std::vector{ std::ref(m_swapChain.RenderingFinishedSemaphore(*nextImageResult)) };
-    m_device.Context().Submit(&m_commandBuffers[nextImageResult->SwapChainImageIndex], waitSemaphores, signalSemaphores, m_swapChain.RenderingFinishedFence(*nextImageResult));
+    m_device.Context().Submit(&m_commandBuffers[nextImageResult->VirtualFrameIndex], waitSemaphores, signalSemaphores, m_swapChain.RenderingFinishedFence(*nextImageResult));
 
     auto const presentResult = m_swapChain.Present(*nextImageResult);
     if (!presentResult || m_framebufferResized)
