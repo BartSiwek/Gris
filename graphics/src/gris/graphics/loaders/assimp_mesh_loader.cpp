@@ -14,11 +14,11 @@
 // -------------------------------------------------------------------------------------------------
 
 constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = static_cast<unsigned int>(aiProcess_Triangulate)
-                                                   | static_cast<unsigned int>(aiProcess_PreTransformVertices)
-                                                   | static_cast<unsigned int>(aiProcess_CalcTangentSpace)
-                                                   | static_cast<unsigned int>(aiProcess_GenSmoothNormals)
-                                                   | static_cast<unsigned int>(aiProcess_JoinIdenticalVertices)
-                                                   | static_cast<unsigned int>(aiProcess_FlipWindingOrder);
+                                                     | static_cast<unsigned int>(aiProcess_PreTransformVertices)
+                                                     | static_cast<unsigned int>(aiProcess_CalcTangentSpace)
+                                                     | static_cast<unsigned int>(aiProcess_GenSmoothNormals)
+                                                     | static_cast<unsigned int>(aiProcess_JoinIdenticalVertices)
+                                                     | static_cast<unsigned int>(aiProcess_FlipWindingOrder);
 
 // -------------------------------------------------------------------------------------------------
 

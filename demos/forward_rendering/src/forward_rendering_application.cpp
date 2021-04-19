@@ -183,9 +183,9 @@ void ForwardRenderingApplication::CreateVulkanObjects()
 
     if (!m_pso)
     {
-        CreatePipelineStateObject();    
+        CreatePipelineStateObject();
     }
-    
+
     CreateFramebuffers();
     CreateShaderResourceBindingsPools();
 

@@ -125,9 +125,9 @@ Gris::Graphics::Vulkan::PipelineStateObject::PipelineStateObject(
             vk::DynamicState::eScissor
         };
 
-        dynamicState.setDynamicStates(dynamicStates);    
+        dynamicState.setDynamicStates(dynamicStates);
     }
-    
+
     auto descriptorSetLayouts = MakeReservedVector<vk::DescriptorSetLayout>(resourceLayouts.size());
     std::transform(std::begin(resourceLayouts), std::end(resourceLayouts), std::back_inserter(descriptorSetLayouts), [](auto const & resourceLayout)
                    { return resourceLayout.DescriptorSetLayoutHandle(); });
