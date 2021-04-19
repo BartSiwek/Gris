@@ -18,14 +18,14 @@ public:
     Sampler(Sampler && other) noexcept;
     Sampler & operator=(Sampler && other) noexcept;
 
-    virtual ~Sampler();
+    ~Sampler() override;
 
     explicit operator bool() const;
 
     [[nodiscard]] bool IsValid() const;
 
-    const vk::Sampler & SamplerHandle() const;
-    vk::Sampler & SamplerHandle();
+    [[nodiscard]] const vk::Sampler & SamplerHandle() const;
+    [[nodiscard]] vk::Sampler & SamplerHandle();
 
     void Reset();
 

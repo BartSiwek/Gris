@@ -73,6 +73,8 @@ if(MSVC)
   target_compile_options(CONAN_PKG::glm INTERFACE "/wd4201")
 endif()
 
+target_compile_definitions(CONAN_PKG::glm INTERFACE GLM_ENABLE_EXPERIMENTAL)
+
 ########################################################################
 
 add_subdirectory(extern/vulkan)

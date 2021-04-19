@@ -1,13 +1,11 @@
+#pragma once
+
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/deferred_context.h>
 #include <gris/graphics/vulkan/device.h>
 #include <gris/graphics/vulkan/framebuffer.h>
 #include <gris/graphics/vulkan/glfw/window.h>
-#include <gris/graphics/vulkan/immediate_context.h>
-#include <gris/graphics/vulkan/input_layout.h>
-#include <gris/graphics/vulkan/instance.h>
-#include <gris/graphics/vulkan/physical_device_factory.h>
 #include <gris/graphics/vulkan/pipeline_state_object.h>
 #include <gris/graphics/vulkan/render_pass.h>
 #include <gris/graphics/vulkan/sampler.h>
@@ -20,10 +18,7 @@
 #include <gris/graphics/vulkan/texture_view.h>
 
 #include <gris/graphics/cameras/trackball_camera.h>
-#include <gris/graphics/image.h>
 #include <gris/graphics/lens/perspective_lens.h>
-#include <gris/graphics/loaders/stb_image_loader.h>
-#include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
 #include <gris/graphics/mesh.h>
 
 #include <cstdint>
@@ -52,7 +47,7 @@ private:
     void LoadScene();
     void MainLoop();
 
-    void WaitForDeviceToBeIdle();
+    void WaitForDeviceToBeIdle() const;
 
     void CreateDevice();
     void CreateSwapChain();
@@ -66,7 +61,7 @@ private:
     void CreateUniformBuffersAndBindings();
     void CreateCommandBuffers();
 
-    void UpdateUniformBuffer(uint32_t currentImage);
+    void UpdateUniformBuffer(uint32_t currentVirtualFrameIndex);
     void DrawFrame();
 
     Gris::Graphics::Vulkan::Glfw::Window m_window = {};
@@ -107,8 +102,6 @@ private:
     std::vector<Gris::Graphics::Vulkan::BufferView> m_uniformBufferViews = {};
 
     std::vector<Gris::Graphics::Vulkan::DeferredContext> m_commandBuffers = {};
-
-    std::vector<Gris::Graphics::Vulkan::VirtualFrame> m_virtualFrames = {};
 
     Gris::Graphics::Cameras::TrackballCamera m_camera = {};
     Gris::Graphics::Lens::PerspectiveLens m_lens = {};

@@ -22,7 +22,7 @@ Gris::Graphics::Vulkan::Framebuffer::Framebuffer(const ParentObject<Device> & de
                                      .setHeight(height)
                                      .setLayers(1);
 
-    auto createFramebufferResult = DeviceHandle().createFramebuffer(framebufferInfo, nullptr, Dispatch());
+    auto const createFramebufferResult = DeviceHandle().createFramebuffer(framebufferInfo, nullptr, Dispatch());
     if (createFramebufferResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating framebuffer", createFramebufferResult);
@@ -72,7 +72,7 @@ Gris::Graphics::Vulkan::Framebuffer::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Framebuffer::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_framebuffer);
+    return IsDeviceValid() && static_cast<bool>(m_framebuffer);
 }
 
 // -------------------------------------------------------------------------------------------------

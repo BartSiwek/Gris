@@ -2,8 +2,6 @@
 
 #include <gris/graphics/vulkan/device.h>
 
-#include <gris/assert.h>
-
 // -------------------------------------------------------------------------------------------------
 
 Gris::Graphics::Vulkan::DeviceResource::DeviceResource() = default;
@@ -17,16 +15,9 @@ Gris::Graphics::Vulkan::DeviceResource::DeviceResource(const ParentObject<Device
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeviceResource::operator bool() const
+[[nodiscard]] bool Gris::Graphics::Vulkan::DeviceResource::IsDeviceValid() const
 {
-    return IsValid();
-}
-
-// -------------------------------------------------------------------------------------------------
-
-[[nodiscard]] bool Gris::Graphics::Vulkan::DeviceResource::IsValid() const
-{
-    return ChildObject::IsValid();
+    return IsParentValid();
 }
 
 // -------------------------------------------------------------------------------------------------

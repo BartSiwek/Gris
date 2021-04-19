@@ -6,8 +6,6 @@
 
 #include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
 
-#include <optional>
-
 namespace Gris::Graphics::Vulkan
 {
 
@@ -16,7 +14,7 @@ class ShaderResourceBindingsPoolCollection : DeviceResource
 public:
     ShaderResourceBindingsPoolCollection();
 
-    ShaderResourceBindingsPoolCollection(const ParentObject<Device> & device);
+    explicit ShaderResourceBindingsPoolCollection(const ParentObject<Device> & device);
 
     ShaderResourceBindingsPoolCollection(const ShaderResourceBindingsPoolCollection &) = default;
     ShaderResourceBindingsPoolCollection & operator=(const ShaderResourceBindingsPoolCollection &) = default;
@@ -24,7 +22,7 @@ public:
     ShaderResourceBindingsPoolCollection(ShaderResourceBindingsPoolCollection && other) noexcept;
     ShaderResourceBindingsPoolCollection & operator=(ShaderResourceBindingsPoolCollection && other) noexcept;
 
-    virtual ~ShaderResourceBindingsPoolCollection();
+    ~ShaderResourceBindingsPoolCollection() override;
 
     explicit operator bool() const;
 

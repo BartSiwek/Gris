@@ -27,7 +27,7 @@ public:
     Texture(Texture && other) noexcept;
     Texture & operator=(Texture && other) noexcept;
 
-    virtual ~Texture();
+    ~Texture() override;
 
     explicit operator bool() const;
 

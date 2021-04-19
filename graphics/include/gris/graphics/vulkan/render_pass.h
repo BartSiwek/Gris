@@ -18,7 +18,7 @@ public:
     RenderPass(RenderPass && other) noexcept;
     RenderPass & operator=(RenderPass && other) noexcept;
 
-    virtual ~RenderPass();
+    ~RenderPass() override;
 
     explicit operator bool() const;
 

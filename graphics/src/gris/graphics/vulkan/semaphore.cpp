@@ -13,7 +13,7 @@ Gris::Graphics::Vulkan::Semaphore::Semaphore(const ParentObject<Device> & device
 {
     auto const semaphoreInfo = vk::SemaphoreCreateInfo{};
 
-    auto imageSemaphoreCreateResult = DeviceHandle().createSemaphore(semaphoreInfo, nullptr, Dispatch());
+    auto const imageSemaphoreCreateResult = DeviceHandle().createSemaphore(semaphoreInfo, nullptr, Dispatch());
     if (imageSemaphoreCreateResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating frame image available semaphore", imageSemaphoreCreateResult);
@@ -63,19 +63,19 @@ Gris::Graphics::Vulkan::Semaphore::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Semaphore::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_semaphore);
+    return IsDeviceValid() && static_cast<bool>(m_semaphore);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-const vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle() const
+[[nodiscard]] const vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle() const
 {
     return m_semaphore;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle()
+[[nodiscard]] vk::Semaphore & Gris::Graphics::Vulkan::Semaphore::SemaphoreHandle()
 {
     return m_semaphore;
 }

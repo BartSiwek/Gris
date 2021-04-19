@@ -18,7 +18,7 @@ public:
     Shader(Shader && other) noexcept;
     Shader & operator=(Shader && other) noexcept;
 
-    virtual ~Shader();
+    ~Shader() override;
 
     explicit operator bool() const;
 

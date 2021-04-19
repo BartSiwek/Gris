@@ -20,7 +20,7 @@ glm::vec3 GetCurrentTranslationVector(const glm::vec2 & prevPoint, const glm::ve
     return t;
 }
 
-glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::vec2 & currentPoint, const glm::quat & rotationQuaterion, float rotationSpeed)
+glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::vec2 & currentPoint, const glm::quat & rotationQuaternion, float rotationSpeed)
 {
     constexpr static float MOVE_AMOUNT_EPSILON = 1e-6F;
 
@@ -28,19 +28,19 @@ glm::quat GetCurrentRotationQuaternion(const glm::vec2 & prevPoint, const glm::v
     constexpr static glm::vec3 UP = glm::vec3(0.0F, 1.0F, 0.0F);
     constexpr static glm::vec3 EYE = glm::vec3(0.0F, 0.0F, -1.0F);
 
-    auto moveDirection = currentPoint - prevPoint;
-    auto moveAmount = glm::length(moveDirection);
+    auto const moveDirection = currentPoint - prevPoint;
+    auto const moveAmount = glm::length(moveDirection);
 
     if (moveAmount < MOVE_AMOUNT_EPSILON)
     {
-        return rotationQuaterion;
+        return rotationQuaternion;
     }
 
-    auto moveVector = moveDirection.x * RIGHT + moveDirection.y * UP;
-    auto rotationAxis = glm::normalize(glm::cross(EYE, moveVector));
+    auto const moveVector = moveDirection.x * RIGHT + moveDirection.y * UP;
+    auto const rotationAxis = glm::normalize(glm::cross(EYE, moveVector));
 
     auto q = glm::angleAxis(rotationSpeed * moveAmount, rotationAxis);
-    q = q * rotationQuaterion;
+    q = q * rotationQuaternion;
 
     return q;
 }
@@ -56,15 +56,15 @@ float GetCurrentRadius(const glm::vec2 & prevPoint, const glm::vec2 & currentPoi
     return delta * radius;
 }
 
-void UpdateViewMatrix(const glm::vec3 & center, const glm::quat & rotationQuaterion, float radius, glm::mat4 * viewMatrix, glm::mat4 * viewMatrixInverseTranspose)
+void UpdateViewMatrix(const glm::vec3 & center, const glm::quat & rotationQuaternion, float radius, glm::mat4 * viewMatrix, glm::mat4 * viewMatrixInverseTranspose)
 {
-    auto translation = glm::translate(glm::vec3(0.0F, 0.0F, radius));
-    auto translationInvTrans = glm::transpose(glm::translate(glm::vec3(0.0F, 0.0F, -radius)));
+    auto const translation = glm::translate(glm::vec3(0.0F, 0.0F, radius));
+    auto const translationInvTrans = glm::transpose(glm::translate(glm::vec3(0.0F, 0.0F, -radius)));
 
-    auto rotation = glm::mat4_cast(rotationQuaterion);
+    auto const rotation = glm::mat4_cast(rotationQuaternion);
 
-    auto centerTranslation = glm::translate(-center);
-    auto centerTranslationInvTrans = glm::transpose(glm::translate(center));
+    auto const centerTranslation = glm::translate(-center);
+    auto const centerTranslationInvTrans = glm::transpose(glm::translate(center));
 
     *viewMatrix = translation * rotation * centerTranslation;
     *viewMatrixInverseTranspose = translationInvTrans * rotation * centerTranslationInvTrans;
@@ -79,47 +79,47 @@ void EndOperation(Gris::Graphics::Cameras::TrackballCameraOperation * currentSta
 }
 
 /* STATE TRANSITION HANDLERS */
-void NullTransition(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * /* prevPoint */, glm::vec2 * /* endPcurrentPointoint */, glm::vec3 * /* center */, glm::quat * /* rotationQuaterion */, float * /* radius */, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaterion */, float * /* intermediateRadius */)
+void NullTransition(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * /* prevPoint */, glm::vec2 * /* currentPoint */, glm::vec3 * /* center */, glm::quat * /* rotationQuaternion */, float * /* radius */, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaternion */, float * /* intermediateRadius */)
 {
 }
 
 template<Gris::Graphics::Cameras::TrackballCameraOperation Operation>
-void StartOperationTransition(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaterion */, float * /* radius */, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaterion */, float * /* intermediateRadius */)
+void StartOperationTransition(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaternion */, float * /* radius */, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaternion */, float * /* intermediateRadius */)
 {
     *currentState = Operation;
     *prevPoint = *currentPoint;
 }
 
-void PanningUpdate(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaterion */, float * /* radius */, float /* rotationSpeed */, float panningSpeed, glm::vec3 * intermediateCenter, glm::quat * intermediateRotationQuaterion, float * /* intermediateRadius */)
+void PanningUpdate(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaternion */, float * /* radius */, float /* rotationSpeed */, float panningSpeed, glm::vec3 * intermediateCenter, glm::quat * intermediateRotationQuaternion, float * /* intermediateRadius */)
 {
-    *intermediateCenter = GetCurrentTranslationVector(*prevPoint, *currentPoint, *intermediateCenter, *intermediateRotationQuaterion, panningSpeed);
+    *intermediateCenter = GetCurrentTranslationVector(*prevPoint, *currentPoint, *intermediateCenter, *intermediateRotationQuaternion, panningSpeed);
 }
 
-void RotatingUpdate(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaterion */, float * /* radius */, float rotationSpeed, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * intermediateRotationQuaterion, float * /* intermediateRadius */)
+void RotatingUpdate(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaternion */, float * /* radius */, float rotationSpeed, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * intermediateRotationQuaternion, float * /* intermediateRadius */)
 {
-    *intermediateRotationQuaterion = GetCurrentRotationQuaternion(*prevPoint, *currentPoint, *intermediateRotationQuaterion, rotationSpeed);
+    *intermediateRotationQuaternion = GetCurrentRotationQuaternion(*prevPoint, *currentPoint, *intermediateRotationQuaternion, rotationSpeed);
 }
 
-void ZoomingUpdate(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaterion */, float * /* radius */, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaterion */, float * intermediateRadius)
+void ZoomingUpdate(Gris::Graphics::Cameras::TrackballCameraOperation * /* currentState */, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaternion */, float * /* radius */, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaternion */, float * intermediateRadius)
 {
     *intermediateRadius = GetCurrentRadius(*prevPoint, *currentPoint, *intermediateRadius);
 }
 
-void EndPanning(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * center, glm::quat * /* rotationQuaterion */, float * /* radius */, float /* rotationSpeed */, float panningSpeed, glm::vec3 * intermediateCenter, glm::quat * intermediateRotationQuaterion, float * /* radius */)
+void EndPanning(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * center, glm::quat * /* rotationQuaternion */, float * /* radius */, float /* rotationSpeed */, float panningSpeed, glm::vec3 * intermediateCenter, glm::quat * intermediateRotationQuaternion, float * /* radius */)
 {
-    *intermediateCenter = GetCurrentTranslationVector(*prevPoint, *currentPoint, *center, *intermediateRotationQuaterion, panningSpeed);
+    *intermediateCenter = GetCurrentTranslationVector(*prevPoint, *currentPoint, *center, *intermediateRotationQuaternion, panningSpeed);
     *center = *intermediateCenter;
     EndOperation(currentState, prevPoint, currentPoint);
 }
 
-void EndRotating(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * rotationQuaterion, float * /* radius */, float rotationSpeed, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * intermediateRotationQuaterion, float * /* intermediateRadius */)
+void EndRotating(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * rotationQuaternion, float * /* radius */, float rotationSpeed, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * intermediateRotationQuaternion, float * /* intermediateRadius */)
 {
-    *intermediateRotationQuaterion = GetCurrentRotationQuaternion(*prevPoint, *currentPoint, *rotationQuaterion, rotationSpeed);
-    *rotationQuaterion = *intermediateRotationQuaterion;
+    *intermediateRotationQuaternion = GetCurrentRotationQuaternion(*prevPoint, *currentPoint, *rotationQuaternion, rotationSpeed);
+    *rotationQuaternion = *intermediateRotationQuaternion;
     EndOperation(currentState, prevPoint, currentPoint);
 }
 
-void EndZooming(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaterion */, float * radius, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaterion */, float * intermediateRadius)
+void EndZooming(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * /* center */, glm::quat * /* rotationQuaternion */, float * radius, float /* rotationSpeed */, float /* panningSpeed */, glm::vec3 * /* intermediateCenter */, glm::quat * /* intermediateRotationQuaternion */, float * intermediateRadius)
 {
     *intermediateRadius = GetCurrentRadius(*prevPoint, *currentPoint, *radius);
     *radius = *intermediateRadius;
@@ -127,7 +127,7 @@ void EndZooming(Gris::Graphics::Cameras::TrackballCameraOperation * currentState
 }
 
 /* STATE TRANSITION HANDLER TABLE */
-using TransitionHandler = void (*)(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * center, glm::quat * rotationQuaterion, float * radius, float rotationSpeed, float panningSpeed, glm::vec3 * intermediateCenter, glm::quat * intermediateRotationQuaterion, float * intermediateRadius);
+using TransitionHandler = void (*)(Gris::Graphics::Cameras::TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * center, glm::quat * rotationQuaternion, float * radius, float rotationSpeed, float panningSpeed, glm::vec3 * intermediateCenter, glm::quat * intermediateRotationQuaternion, float * intermediateRadius);
 
 using TransitionHandlerTable = std::array<std::array<TransitionHandler, static_cast<size_t>(Gris::Graphics::Cameras::TrackballCameraOperation::MaxOperations)>, static_cast<size_t>(Gris::Graphics::Cameras::TrackballCameraOperation::MaxOperations)>;
 
@@ -182,34 +182,24 @@ constexpr TransitionHandlerTable g_transitionTable = { {
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Cameras::TrackballCameraUpdate(TrackballCameraOperation desiredState, float rotationSpeed, float panningSpeed, TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * center, glm::quat * rotationQuaterion, float * radius, glm::mat4 * viewMatrix, glm::mat4 * viewMatrixInverseTranspose)
+void Gris::Graphics::Cameras::TrackballCameraUpdate(TrackballCameraOperation desiredState, float rotationSpeed, float panningSpeed, TrackballCameraOperation * currentState, glm::vec2 * prevPoint, glm::vec2 * currentPoint, glm::vec3 * center, glm::quat * rotationQuaternion, float * radius, glm::mat4 * viewMatrix, glm::mat4 * viewMatrixInverseTranspose)
 {
     auto intermediateCenter = *center;
-    auto intermediateRotationQuaterion = *rotationQuaterion;
+    auto intermediateRotationQuaternion = *rotationQuaternion;
     auto intermediateRadius = *radius;
 
-    auto handler = g_transitionTable[static_cast<uint32_t>(*currentState)][static_cast<uint32_t>(desiredState)];
-    (*handler)(currentState, prevPoint, currentPoint, center, rotationQuaterion, radius, rotationSpeed, panningSpeed, &intermediateCenter, &intermediateRotationQuaterion, &intermediateRadius);
+    GRIS_ALWAYS_ASSERT(*currentState < TrackballCameraOperation::MaxOperations, "Value of current state exceeds TrackballCameraOperation::MaxOperations");
+    GRIS_ALWAYS_ASSERT(desiredState < TrackballCameraOperation::MaxOperations, "Value of current state exceeds TrackballCameraOperation::MaxOperations");
 
-    UpdateViewMatrix(intermediateCenter, intermediateRotationQuaterion, intermediateRadius, viewMatrix, viewMatrixInverseTranspose);
+    auto const handler = g_transitionTable[static_cast<uint32_t>(*currentState)][static_cast<uint32_t>(desiredState)];
+    (*handler)(currentState, prevPoint, currentPoint, center, rotationQuaternion, radius, rotationSpeed, panningSpeed, &intermediateCenter, &intermediateRotationQuaternion, &intermediateRadius);
+
+    UpdateViewMatrix(intermediateCenter, intermediateRotationQuaternion, intermediateRadius, viewMatrix, viewMatrixInverseTranspose);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Cameras::TrackballCamera::TrackballCamera()
-    : m_viewMatrix(glm::mat4(1.0F))
-    , m_viewMatrixInverseTranspose(glm::mat4(1.0F))
-    , m_center(0.0F, 0.0F, 0.0F)
-    , m_rotationQuaterion(1.0F, 0.0F, 0.0F, 0.0F)
-    , m_radius(1.0F)
-    , m_currentState(TrackballCameraOperation::None)
-    , m_prevPoint(0.0F, 0.0F)
-    , m_currentPoint(0.0F, 0.0F)
-    , m_desiredState(TrackballCameraOperation::None)
-    , m_rotationSpeed(glm::half_pi<float>())
-    , m_panningSpeed(1.0F)
-{
-}
+Gris::Graphics::Cameras::TrackballCamera::TrackballCamera() = default;
 
 // -------------------------------------------------------------------------------------------------
 
@@ -273,12 +263,12 @@ void Gris::Graphics::Cameras::TrackballCamera::LookAt(const glm::vec3 & from, co
 {
     constexpr static auto Z_AXIS = glm::vec3(0.0F, 0.0F, 1.0F);
 
-    auto view = glm::normalize(from - at);
-    auto axis = glm::cross(Z_AXIS, view);
-    auto angle = glm::acos(glm::dot(Z_AXIS, view));
+    auto const view = glm::normalize(from - at);
+    auto const axis = glm::cross(Z_AXIS, view);
+    auto const angle = glm::acos(glm::dot(Z_AXIS, view));
 
     m_center = at;
-    m_rotationQuaterion = glm::angleAxis(angle, axis);
+    m_rotationQuaternion = glm::angleAxis(angle, axis);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -299,7 +289,7 @@ void Gris::Graphics::Cameras::TrackballCamera::SetCurrentPoint(const glm::vec2 &
 
 void Gris::Graphics::Cameras::TrackballCamera::UpdateMatrices()
 {
-    TrackballCameraUpdate(m_desiredState, m_rotationSpeed, m_panningSpeed, &m_currentState, &m_prevPoint, &m_currentPoint, &m_center, &m_rotationQuaterion, &m_radius, &m_viewMatrix, &m_viewMatrixInverseTranspose);
+    TrackballCameraUpdate(m_desiredState, m_rotationSpeed, m_panningSpeed, &m_currentState, &m_prevPoint, &m_currentPoint, &m_center, &m_rotationQuaternion, &m_radius, &m_viewMatrix, &m_viewMatrixInverseTranspose);
 }
 
 // -------------------------------------------------------------------------------------------------

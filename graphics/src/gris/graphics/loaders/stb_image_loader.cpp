@@ -21,7 +21,7 @@ Gris::Graphics::Image Gris::Graphics::Loaders::StbImageLoader::Load(const std::f
     }
 
     auto const forcedChannelCount = 4;
-    auto dataSize = static_cast<size_t>(texWidth) * static_cast<size_t>(texHeight) * forcedChannelCount;
+    auto const dataSize = static_cast<size_t>(texWidth) * static_cast<size_t>(texHeight) * forcedChannelCount;
 
     Image result;
     result.PixelData.resize(dataSize);

@@ -16,15 +16,23 @@ Gris::Graphics::Vulkan::DeferredContext::DeferredContext() = default;
 
 // -------------------------------------------------------------------------------------------------
 
-Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Device> & device)
+Gris::Graphics::Vulkan::DeferredContext::DeferredContext(const ParentObject<Device> & device, bool transientCommandBuffers)
     : DeviceResource(device)
 {
     auto const queueFamilies = ParentDevice().QueueFamilies();
     auto const graphicsQueueFamily = queueFamilies.graphicsFamily.value();
 
-    auto const poolInfo = vk::CommandPoolCreateInfo{}.setQueueFamilyIndex(graphicsQueueFamily);
+    auto poolFlags = vk::CommandPoolCreateFlags{};
+    if (transientCommandBuffers)
+    {
+        poolFlags |= vk::CommandPoolCreateFlagBits::eTransient;
+    }
 
-    auto createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
+    auto const poolInfo = vk::CommandPoolCreateInfo{}
+                              .setFlags(poolFlags)
+                              .setQueueFamilyIndex(graphicsQueueFamily);
+
+    auto const createCommandPoolResult = DeviceHandle().createCommandPool(poolInfo, nullptr, Dispatch());
     if (createCommandPoolResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating command pool", createCommandPoolResult);
@@ -90,7 +98,7 @@ Gris::Graphics::Vulkan::DeferredContext::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::DeferredContext::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_commandPool);
+    return IsDeviceValid() && static_cast<bool>(m_commandPool);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -102,9 +110,13 @@ Gris::Graphics::Vulkan::DeferredContext::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::DeferredContext::Begin()
+void Gris::Graphics::Vulkan::DeferredContext::Begin(bool oneTimeUse)
 {
-    auto const beginInfo = vk::CommandBufferBeginInfo{};
+    auto beginInfo = vk::CommandBufferBeginInfo{};
+    if (oneTimeUse)
+    {
+        beginInfo.setFlags(vk::CommandBufferUsageFlagBits::eOneTimeSubmit);
+    }
 
     auto const beginResult = m_commandBuffer.begin(beginInfo, Dispatch());
     if (beginResult != vk::Result::eSuccess)
@@ -156,10 +168,10 @@ void Gris::Graphics::Vulkan::DeferredContext::BindIndexBuffer(const BufferView &
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> srbs)
+void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> shaderResourceBindings)
 {
-    auto descriptorSets = MakeReservedVector<vk::DescriptorSet>(srbs.size());
-    std::transform(std::begin(srbs), std::end(srbs), std::back_inserter(descriptorSets), [](auto const & srb)
+    auto descriptorSets = MakeReservedVector<vk::DescriptorSet>(shaderResourceBindings.size());
+    std::transform(std::begin(shaderResourceBindings), std::end(shaderResourceBindings), std::back_inserter(descriptorSets), [](auto const & srb)
                    { return srb.DescriptorSetHandle(); });
     m_commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, pso.PipelineLayoutHandle(), startSetIndex, descriptorSets, {}, Dispatch());
 }
@@ -169,6 +181,36 @@ void Gris::Graphics::Vulkan::DeferredContext::BindDescriptorSet(const PipelineSt
 void Gris::Graphics::Vulkan::DeferredContext::DrawIndexed(uint32_t indexCount)
 {
     m_commandBuffer.drawIndexed(indexCount, 1, 0, 0, 0, Dispatch());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::SetViewport(uint32_t width, uint32_t height)
+{
+    auto const viewports = std::array{
+        vk::Viewport{}
+            .setX(0.0F)
+            .setY(0.0F)
+            .setWidth(static_cast<float>(width))
+            .setHeight(static_cast<float>(height))
+            .setMinDepth(0.0F)
+            .setMaxDepth(1.0F)
+    };
+
+    m_commandBuffer.setViewport(0, viewports, Dispatch());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::SetScissor(uint32_t width, uint32_t height)
+{
+    auto const scissors = std::array{
+        vk::Rect2D{}
+            .setOffset({ 0, 0 })
+            .setExtent({ width, height })
+    };
+
+    m_commandBuffer.setScissor(0, scissors, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -187,6 +229,19 @@ void Gris::Graphics::Vulkan::DeferredContext::End()
     {
         throw VulkanEngineException("Error ending command buffer", endResult);
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void Gris::Graphics::Vulkan::DeferredContext::ResetContext(bool releaseResources)
+{
+    auto flags = vk::CommandPoolResetFlags{};
+    if (releaseResources)
+    {
+        flags |= vk::CommandPoolResetFlagBits::eReleaseResources;
+    }
+
+    DeviceHandle().resetCommandPool(m_commandPool, flags, Dispatch());
 }
 
 // -------------------------------------------------------------------------------------------------

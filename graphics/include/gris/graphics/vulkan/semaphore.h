@@ -20,14 +20,14 @@ public:
     Semaphore(Semaphore && other) noexcept;
     Semaphore & operator=(Semaphore && other) noexcept;
 
-    virtual ~Semaphore();
+    ~Semaphore() override;
 
     explicit operator bool() const;
 
     [[nodiscard]] bool IsValid() const;
 
-    const vk::Semaphore & SemaphoreHandle() const;
-    vk::Semaphore & SemaphoreHandle();
+    [[nodiscard]] const vk::Semaphore & SemaphoreHandle() const;
+    [[nodiscard]] vk::Semaphore & SemaphoreHandle();
 
     void Reset();
 

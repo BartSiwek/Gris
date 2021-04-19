@@ -24,7 +24,7 @@ public:
     ShaderResourceBindingsPoolManager(ShaderResourceBindingsPoolManager && other) noexcept;
     ShaderResourceBindingsPoolManager & operator=(ShaderResourceBindingsPoolManager && other) noexcept;
 
-    virtual ~ShaderResourceBindingsPoolManager();
+    ~ShaderResourceBindingsPoolManager() override;
 
     explicit operator bool() const;
 

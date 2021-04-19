@@ -44,13 +44,15 @@ public:
     SwapChain(SwapChain && other) noexcept;
     SwapChain & operator=(SwapChain && other) noexcept;
 
-    virtual ~SwapChain();
+    ~SwapChain() override;
 
     explicit operator bool() const;
 
     [[nodiscard]] bool IsValid() const;
 
     [[nodiscard]] uint32_t ImageCount() const;
+
+    [[nodiscard]] uint32_t VirtualFrameCount() const;
 
     [[nodiscard]] const TextureView & ImageView(size_t index) const;
     [[nodiscard]] TextureView & ImageView(size_t index);

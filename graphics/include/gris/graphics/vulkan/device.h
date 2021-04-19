@@ -53,7 +53,7 @@ public:
     Device(Device && other) noexcept;
     Device & operator=(Device && other) noexcept;
 
-    virtual ~Device();
+    ~Device() override;
 
     explicit operator bool() const;
 
@@ -68,7 +68,7 @@ public:
 
     [[nodiscard]] SwapChainSupportDetails SwapChainSupport(const WindowMixin & window) const;
 
-    void WaitIdle();
+    void WaitIdle() const;
 
     [[nodiscard]] vk::Format FindSupportedFormat(const std::vector<vk::Format> & candidates, const vk::ImageTiling & tiling, const vk::FormatFeatureFlags & features) const;
 
@@ -77,11 +77,11 @@ public:
     void RegisterShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
     void UpdateShaderResourceBindingsPoolCategory(Backend::ShaderResourceBindingsPoolCategory category, const Backend::ShaderResourceBindingsPoolSizes & sizes);
 
-    [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount);
-    [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain);
-    [[nodiscard]] DeferredContext CreateDeferredContext();
-    [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint);
-    [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties);
+    [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount) const;
+    [[nodiscard]] SwapChain CreateSwapChain(const WindowMixin & window, uint32_t width, uint32_t height, uint32_t virtualFrameCount, SwapChain oldSwapChain) const;
+    [[nodiscard]] DeferredContext CreateDeferredContext(bool transientCommandBuffers) const;
+    [[nodiscard]] Shader CreateShader(const std::vector<uint32_t> & code, std::string entryPoint) const;
+    [[nodiscard]] Buffer CreateBuffer(vk::DeviceSize size, const vk::BufferUsageFlags & usage, const vk::MemoryPropertyFlags & properties) const;
     [[nodiscard]] Texture CreateTexture(
         uint32_t width,
         uint32_t height,
@@ -90,32 +90,32 @@ public:
         vk::Format format,
         vk::ImageTiling tiling,
         const vk::ImageUsageFlags & usage,
-        const vk::MemoryPropertyFlags & properties);
-    [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
-    [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod);
-    [[nodiscard]] ShaderResourceBindingsLayout CreateShaderResourceBindingsLayout(const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindings);
+        const vk::MemoryPropertyFlags & properties) const;
+    [[nodiscard]] TextureView CreateTextureView(const Texture & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels) const;
+    [[nodiscard]] Sampler CreateSampler(float minLod, float maxLod) const;
+    [[nodiscard]] ShaderResourceBindingsLayout CreateShaderResourceBindingsLayout(const Gris::Graphics::Backend::ShaderResourceBindingsLayout & bindings) const;
     [[nodiscard]] PipelineStateObject CreatePipelineStateObject(
-        uint32_t swapChainWidth,
-        uint32_t swapChainHeight,
+        std::optional<uint32_t> swapChainWidth,
+        std::optional<uint32_t> swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
+        Span<const ShaderResourceBindingsLayout> resourceLayouts,
         const Shader & vertexShader,
-        const Shader & fragmentShader);
-    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout);
+        const Shader & fragmentShader) const;
+    [[nodiscard]] ShaderResourceBindings CreateShaderResourceBindings(const ParentObject<ShaderResourceBindingsLayout> & resourceLayout) const;
     [[nodiscard]] Framebuffer CreateFramebuffer(
         const TextureView & colorImageView,
         const TextureView & depthImageView,
         const TextureView & swapChainImageView,
         const RenderPass & renderPass,
         uint32_t width,
-        uint32_t height);
-    [[nodiscard]] Fence CreateFence(bool signaled);
-    [[nodiscard]] Semaphore CreateSemaphore();
-    [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat);
-    [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection();
-    [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels);
-    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory Category, vk::DescriptorPool pool);
+        uint32_t height) const;
+    [[nodiscard]] Fence CreateFence(bool signaled) const;
+    [[nodiscard]] Semaphore CreateSemaphore() const;
+    [[nodiscard]] RenderPass CreateRenderPass(vk::Format swapChainFormat, vk::Format depthFormat) const;
+    [[nodiscard]] ShaderResourceBindingsPoolCollection CreateShaderResourceBindingsPoolCollection() const;
+    [[nodiscard]] TextureView CreateTextureView(const vk::Image & image, vk::Format format, const vk::ImageAspectFlags & aspectFlags, uint32_t mipLevels) const;
+    [[nodiscard]] ShaderResourceBindingsPool CreateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category, vk::DescriptorPool pool) const;
 
     [[nodiscard]] ShaderResourceBindingsPool AllocateShaderResourceBindingsPool(Backend::ShaderResourceBindingsPoolCategory category);
     void DeallocateShaderResourceBindingsPool(ShaderResourceBindingsPool pool);

@@ -34,7 +34,7 @@ Gris::Graphics::Vulkan::Texture::Texture(const ParentObject<Device> & device,
                                .setQueueFamilyIndices({})
                                .setInitialLayout(vk::ImageLayout::eUndefined);
 
-    auto createImageResult = DeviceHandle().createImage(imageInfo, nullptr, Dispatch());
+    auto const createImageResult = DeviceHandle().createImage(imageInfo, nullptr, Dispatch());
     if (createImageResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating image", createImageResult);
@@ -100,7 +100,7 @@ Gris::Graphics::Vulkan::Texture::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Texture::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_image);
+    return IsDeviceValid() && static_cast<bool>(m_image);
 }
 
 // -------------------------------------------------------------------------------------------------

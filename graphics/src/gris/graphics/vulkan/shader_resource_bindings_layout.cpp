@@ -56,7 +56,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::ShaderResourceBindingsLayo
 
     auto const layoutInfo = vk::DescriptorSetLayoutCreateInfo{}.setBindings(bindings);
 
-    auto createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayout(layoutInfo, nullptr, Dispatch());
+    auto const createDescriptorSetLayoutResult = DeviceHandle().createDescriptorSetLayout(layoutInfo, nullptr, Dispatch());
     if (createDescriptorSetLayoutResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating descriptor set layout", createDescriptorSetLayoutResult);
@@ -108,7 +108,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_descriptorSetLayout);
+    return IsDeviceValid() && static_cast<bool>(m_descriptorSetLayout);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -127,10 +127,10 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-const vk::DescriptorSetLayoutBinding & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::NameToBinding(const std::string_view & name) const
+[[nodiscard]] const vk::DescriptorSetLayoutBinding & Gris::Graphics::Vulkan::ShaderResourceBindingsLayout::NameToBinding(const std::string_view & name) const
 {
-    auto it = std::find_if(std::begin(m_nameToBinding), std::end(m_nameToBinding), [&name](const auto & entry)
-                           { return entry.Name == name; });
+    auto const it = std::find_if(std::begin(m_nameToBinding), std::end(m_nameToBinding), [&name](const auto & entry)
+                                 { return entry.Name == name; });
     GRIS_ALWAYS_ASSERT(it != std::end(m_nameToBinding), "Request binding was not found in the layout");
     return it->Binding;
 }

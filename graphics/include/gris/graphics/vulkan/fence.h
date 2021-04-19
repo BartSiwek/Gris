@@ -18,7 +18,7 @@ public:
     Fence(Fence && other) noexcept;
     Fence & operator=(Fence && other) noexcept;
 
-    virtual ~Fence();
+    ~Fence() override;
 
     explicit operator bool() const;
 

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <gris/engine_exception.h>
+
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -31,10 +33,10 @@ template<typename T>
     auto file = std::ifstream(path, std::ios::ate | std::ios::binary);
     if (!file.is_open())
     {
-        throw Gris::EngineException("Failed to open file!");
+        throw EngineException("Failed to open file!");
     }
 
-    auto fileSize = file.tellg();
+    auto const fileSize = file.tellg();
     auto buffer = std::vector<char>(static_cast<size_t>(fileSize));
 
     file.seekg(0);

@@ -155,7 +155,7 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::SwapChain::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_swapChain);
+    return IsDeviceValid() && static_cast<bool>(m_swapChain);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -163,6 +163,13 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
 [[nodiscard]] uint32_t Gris::Graphics::Vulkan::SwapChain::ImageCount() const
 {
     return static_cast<uint32_t>(m_swapChainImages.size());
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] uint32_t Gris::Graphics::Vulkan::SwapChain::VirtualFrameCount() const
+{
+    return m_virtualFrameCount;
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -221,7 +228,7 @@ Gris::Graphics::Vulkan::SwapChain::operator bool() const
         throw VulkanEngineException("Failed to acquire swap chain image!", acquireResult);
     }
 
-    uint32_t imageIndex = acquireResult.value;
+    auto const imageIndex = acquireResult.value;
 
     ///
 

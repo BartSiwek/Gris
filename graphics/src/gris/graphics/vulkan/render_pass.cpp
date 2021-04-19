@@ -74,7 +74,7 @@ Gris::Graphics::Vulkan::RenderPass::RenderPass(const ParentObject<Device> & devi
                                     .setSubpasses(subpasses)
                                     .setDependencies(dependencies);
 
-    auto createRenderPassResult = DeviceHandle().createRenderPass(renderPassInfo, nullptr, Dispatch());
+    auto const createRenderPassResult = DeviceHandle().createRenderPass(renderPassInfo, nullptr, Dispatch());
     if (createRenderPassResult.result != vk::Result::eSuccess)
     {
         throw VulkanEngineException("Error creating render pass", createRenderPassResult);
@@ -124,7 +124,7 @@ Gris::Graphics::Vulkan::RenderPass::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::RenderPass::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_renderPass);
+    return IsDeviceValid() && static_cast<bool>(m_renderPass);
 }
 
 // -------------------------------------------------------------------------------------------------

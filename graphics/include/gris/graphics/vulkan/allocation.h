@@ -22,7 +22,7 @@ public:
     Allocation(Allocation && other) noexcept;
     Allocation & operator=(Allocation && other) noexcept;
 
-    virtual ~Allocation();
+    ~Allocation() override;
 
     explicit operator bool() const;
 
@@ -35,7 +35,7 @@ private:
 
     void ReleaseResources();
 
-    VmaAllocation m_allocation = VK_NULL_HANDLE;
+    VmaAllocation m_allocation = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

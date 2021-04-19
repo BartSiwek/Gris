@@ -63,7 +63,7 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::ShaderResourceBindingsPool::IsValid() const
 {
-    return DeviceResource::IsValid() && static_cast<bool>(m_pool);
+    return IsDeviceValid() && static_cast<bool>(m_pool);
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -78,10 +78,10 @@ Gris::Graphics::Vulkan::ShaderResourceBindingsPool::operator bool() const
 [[nodiscard]] std::optional<vk::DescriptorSet> Gris::Graphics::Vulkan::ShaderResourceBindingsPool::Allocate(const vk::DescriptorSetLayout & layout)
 {
     auto layouts = std::array{ layout };
-    auto allocInfo = vk::DescriptorSetAllocateInfo{}
-                         .setSetLayouts(layouts)
-                         .setDescriptorPool(m_pool)
-                         .setDescriptorSetCount(1);
+    auto const allocInfo = vk::DescriptorSetAllocateInfo{}
+                               .setSetLayouts(layouts)
+                               .setDescriptorPool(m_pool)
+                               .setDescriptorSetCount(1);
 
     auto allocateDescriptorSetsResult = DeviceHandle().allocateDescriptorSets(allocInfo, Dispatch());
 

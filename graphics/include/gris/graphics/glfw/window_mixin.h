@@ -25,9 +25,7 @@ public:
 
     virtual ~WindowMixin();
 
-    explicit operator bool() const;
-
-    [[nodiscard]] bool IsValid() const;
+    [[nodiscard]] bool IsWindowValid() const;
 
     [[nodiscard]] uint32_t Width() const;
     [[nodiscard]] uint32_t Height() const;

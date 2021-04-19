@@ -17,7 +17,7 @@ Gris::Graphics::Vulkan::Allocator::Allocator(VmaAllocator allocator)
 
 Gris::Graphics::Vulkan::Allocator::Allocator(Allocator && other) noexcept
     : ParentObject(std::move(other))
-    , m_allocator(std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE)))
+    , m_allocator(std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(nullptr)))
 {
 }
 
@@ -30,7 +30,7 @@ Gris::Graphics::Vulkan::Allocator & Gris::Graphics::Vulkan::Allocator::operator=
         ReleaseResources();
 
         ParentObject::operator=(std::move(static_cast<ParentObject &&>(other)));
-        m_allocator = std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(VK_NULL_HANDLE));
+        m_allocator = std::exchange(other.m_allocator, static_cast<decltype(m_allocator)>(nullptr));
     }
 
     return *this;
@@ -54,14 +54,14 @@ Gris::Graphics::Vulkan::Allocator::operator bool() const
 
 [[nodiscard]] bool Gris::Graphics::Vulkan::Allocator::IsValid() const
 {
-    return m_allocator != VK_NULL_HANDLE;
+    return m_allocator != nullptr;
 }
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::Allocation Gris::Graphics::Vulkan::Allocator::AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo)
+[[nodiscard]] Gris::Graphics::Vulkan::Allocation Gris::Graphics::Vulkan::Allocator::AllocateMemory(vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo) const
 {
-    VmaAllocation allocation = VK_NULL_HANDLE;
+    VmaAllocation allocation = nullptr;
     auto const createBufferResult = static_cast<vk::Result>(vmaAllocateMemoryForBuffer(m_allocator, static_cast<VkBuffer>(buffer), &allocationCreateInfo, &allocation, nullptr));
     if (createBufferResult != vk::Result::eSuccess)
     {
@@ -73,9 +73,9 @@ Gris::Graphics::Vulkan::Allocator::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-[[nodiscard]] Gris::Graphics::Vulkan::Allocation Gris::Graphics::Vulkan::Allocator::AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo)
+[[nodiscard]] Gris::Graphics::Vulkan::Allocation Gris::Graphics::Vulkan::Allocator::AllocateMemory(vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo) const
 {
-    VmaAllocation allocation = VK_NULL_HANDLE;
+    VmaAllocation allocation = nullptr;
     auto const createImageResult = static_cast<vk::Result>(vmaAllocateMemoryForImage(m_allocator, static_cast<VkImage>(image), &allocationCreateInfo, &allocation, nullptr));
     if (createImageResult != vk::Result::eSuccess)
     {
@@ -87,14 +87,14 @@ Gris::Graphics::Vulkan::Allocator::operator bool() const
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::Allocator::FreeMemory(const VmaAllocation & allocation)
+void Gris::Graphics::Vulkan::Allocator::FreeMemory(const VmaAllocation & allocation) const
 {
     vmaFreeMemory(m_allocator, allocation);
 }
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::Allocator::Bind(const vk::Buffer & buffer, const Allocation & allocation)
+void Gris::Graphics::Vulkan::Allocator::Bind(const vk::Buffer & buffer, const Allocation & allocation) const
 {
     auto const bindResult = static_cast<vk::Result>(vmaBindBufferMemory(m_allocator, allocation.m_allocation, static_cast<VkBuffer>(buffer)));
     if (bindResult != vk::Result::eSuccess)
@@ -105,7 +105,7 @@ void Gris::Graphics::Vulkan::Allocator::Bind(const vk::Buffer & buffer, const Al
 
 // -------------------------------------------------------------------------------------------------
 
-void Gris::Graphics::Vulkan::Allocator::Bind(const vk::Image & image, const Allocation & allocation)
+void Gris::Graphics::Vulkan::Allocator::Bind(const vk::Image & image, const Allocation & allocation) const
 {
     auto const bindResult = static_cast<vk::Result>(vmaBindImageMemory(m_allocator, allocation.m_allocation, static_cast<VkImage>(image)));
     if (bindResult != vk::Result::eSuccess)
@@ -146,9 +146,9 @@ void Gris::Graphics::Vulkan::Allocator::Reset()
 
 void Gris::Graphics::Vulkan::Allocator::ReleaseResources()
 {
-    if (m_allocator != VK_NULL_HANDLE)
+    if (m_allocator != nullptr)
     {
         vmaDestroyAllocator(m_allocator);
-        m_allocator = VK_NULL_HANDLE;
+        m_allocator = nullptr;
     }
 }

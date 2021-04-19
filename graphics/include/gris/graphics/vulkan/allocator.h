@@ -22,19 +22,19 @@ public:
     Allocator(Allocator && other) noexcept;
     Allocator & operator=(Allocator && other) noexcept;
 
-    virtual ~Allocator();
+    ~Allocator() override;
 
     explicit operator bool() const;
 
     [[nodiscard]] bool IsValid() const;
 
-    [[nodiscard]] Allocation AllocateMemory(const vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo);
-    [[nodiscard]] Allocation AllocateMemory(const vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo);
+    [[nodiscard]] Allocation AllocateMemory(vk::Buffer buffer, const VmaAllocationCreateInfo & allocationCreateInfo) const;
+    [[nodiscard]] Allocation AllocateMemory(vk::Image image, const VmaAllocationCreateInfo & allocationCreateInfo) const;
 
-    void FreeMemory(const VmaAllocation & allocation);
+    void FreeMemory(const VmaAllocation & allocation) const;
 
-    void Bind(const vk::Buffer & buffer, const Allocation & allocation);
-    void Bind(const vk::Image & image, const Allocation & allocation);
+    void Bind(const vk::Buffer & buffer, const Allocation & allocation) const;
+    void Bind(const vk::Image & image, const Allocation & allocation) const;
 
     [[nodiscard]] void * Map(const Allocation & allocation) const;
     void Unmap(const Allocation & allocation) const;
@@ -44,7 +44,7 @@ public:
 private:
     void ReleaseResources();
 
-    VmaAllocator m_allocator = VK_NULL_HANDLE;
+    VmaAllocator m_allocator = nullptr;
 };
 
 }  // namespace Gris::Graphics::Vulkan

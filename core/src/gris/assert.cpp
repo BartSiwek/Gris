@@ -4,7 +4,6 @@
 #include <gris/macros.h>
 
 #include <iostream>
-#include <memory>
 
 namespace Gris::Assert
 {
@@ -35,14 +34,14 @@ void NullLoggingCallback(const std::string & message)
 }
 
 // -------------------------------------------------------------------------------------------------
-void AbortHandler()
+[[noreturn]] void AbortHandler()
 {
     GRIS_DEBUGBREAK();
     abort();
 }
 
 // -------------------------------------------------------------------------------------------------
-void ThrowHandler()
+[[noreturn]] void ThrowHandler()
 {
     throw AssertionException();
 }
@@ -85,7 +84,7 @@ AssertLoggingCallback SetLoggingCallback(AssertLoggingCallback callback)
         abort();
     }
 
-    auto prev = Detail::sg_loggingCallback;
+    auto const prev = Detail::sg_loggingCallback;
     Detail::sg_loggingCallback = callback;
     return prev;
 }
@@ -98,7 +97,7 @@ AssertHandler SetFailureHandler(AssertHandler handler)
         abort();
     }
 
-    auto prev = Detail::sg_failureHandler;
+    auto const prev = Detail::sg_failureHandler;
     Detail::sg_failureHandler = handler;
     return prev;
 }

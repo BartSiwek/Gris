@@ -18,7 +18,7 @@ class DeferredContext : public DeviceResource
 public:
     DeferredContext();
 
-    explicit DeferredContext(const ParentObject<Device> & device);
+    DeferredContext(const ParentObject<Device> & device, bool transientCommandBuffers);
 
     DeferredContext(const DeferredContext &) = delete;
     DeferredContext & operator=(const DeferredContext &) = delete;
@@ -26,7 +26,7 @@ public:
     DeferredContext(DeferredContext && other) noexcept;
     DeferredContext & operator=(DeferredContext && other) noexcept;
 
-    virtual ~DeferredContext();
+    ~DeferredContext() override;
 
     explicit operator bool() const;
 
@@ -34,15 +34,18 @@ public:
 
     [[nodiscard]] vk::CommandBuffer & CommandBufferHandle();
 
-    void Begin();
+    void Begin(bool oneTimeUse);
     void BeginRenderPass(const RenderPass & renderPass, const Framebuffer & framebuffer, const vk::Extent2D & extent);
     void BindPipeline(const PipelineStateObject & pso);
     void BindVertexBuffer(const BufferView & bufferView);
     void BindIndexBuffer(const BufferView & bufferView);
-    void BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> srbs);
+    void BindDescriptorSet(const PipelineStateObject & pso, uint32_t startSetIndex, Span<const ShaderResourceBindings> shaderResourceBindings);
     void DrawIndexed(uint32_t indexCount);
+    void SetViewport(uint32_t width, uint32_t height);
+    void SetScissor(uint32_t width, uint32_t height);
     void EndRenderPass();
     void End();
+    void ResetContext(bool releaseResources);
 
     void Reset();
 

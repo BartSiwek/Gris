@@ -4,8 +4,6 @@
 
 #include <gris/graphics/backend/shader_resource_bindings_layout.h>
 
-#include <map>
-
 namespace Gris::Graphics::Vulkan
 {
 
@@ -22,7 +20,7 @@ public:
     ShaderResourceBindingsLayout(ShaderResourceBindingsLayout && other) noexcept;
     ShaderResourceBindingsLayout & operator=(ShaderResourceBindingsLayout && other) noexcept;
 
-    virtual ~ShaderResourceBindingsLayout();
+    ~ShaderResourceBindingsLayout() override;
 
     explicit operator bool() const;
 
@@ -31,7 +29,7 @@ public:
     [[nodiscard]] const vk::DescriptorSetLayout & DescriptorSetLayoutHandle() const;
     [[nodiscard]] vk::DescriptorSetLayout & DescriptorSetLayoutHandle();
 
-    const vk::DescriptorSetLayoutBinding & NameToBinding(const std::string_view & name) const;
+    [[nodiscard]] const vk::DescriptorSetLayoutBinding & NameToBinding(const std::string_view & name) const;
 
     void Reset();
 

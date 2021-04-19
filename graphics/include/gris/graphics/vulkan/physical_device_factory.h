@@ -1,9 +1,5 @@
 #pragma once
 
-#include <gris/graphics/vulkan/utils.h>
-
-#include <gris/graphics/vulkan/vulkan_headers.h>
-
 namespace Gris::Graphics::Vulkan
 {
 

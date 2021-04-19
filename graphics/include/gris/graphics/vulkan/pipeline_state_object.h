@@ -4,6 +4,8 @@
 
 #include <gris/span.h>
 
+#include <optional>
+
 namespace Gris::Graphics::Vulkan
 {
 
@@ -19,11 +21,11 @@ public:
 
     PipelineStateObject(
         const ParentObject<Device> & device,
-        uint32_t swapChainWidth,
-        uint32_t swapChainHeight,
+        std::optional<uint32_t> swapChainWidth,
+        std::optional<uint32_t> swapChainHeight,
         const RenderPass & renderPass,
         const InputLayout & inputLayout,
-        Gris::Span<const ShaderResourceBindingsLayout> resourceLayouts,
+        Span<const ShaderResourceBindingsLayout> resourceLayouts,
         const Shader & vertexShader,
         const Shader & fragmentShader);
 
@@ -33,7 +35,7 @@ public:
     PipelineStateObject(PipelineStateObject && other) noexcept;
     PipelineStateObject & operator=(PipelineStateObject && other) noexcept;
 
-    virtual ~PipelineStateObject();
+    ~PipelineStateObject() override;
 
     explicit operator bool() const;
 

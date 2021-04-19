@@ -25,7 +25,7 @@ public:
     ShaderResourceBindingsPool(ShaderResourceBindingsPool && other) noexcept;
     ShaderResourceBindingsPool & operator=(ShaderResourceBindingsPool && other) noexcept;
 
-    virtual ~ShaderResourceBindingsPool();
+    ~ShaderResourceBindingsPool() override;
 
     explicit operator bool() const;
 
