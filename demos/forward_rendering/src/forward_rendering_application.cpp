@@ -449,9 +449,9 @@ void ForwardRenderingApplication::CreateFramebuffers()
 void ForwardRenderingApplication::CreateShaderResourceBindingsPools()
 {
     auto sizes = Gris::Graphics::Backend::ShaderResourceBindingsPoolSizes{};
-    sizes.ShaderResourceBindingsCount = m_swapChain.VirtualFrameCount();
-    sizes.CombinedImageSamplerCount = m_swapChain.VirtualFrameCount();
-    sizes.UniformBufferCount = m_swapChain.VirtualFrameCount();
+    sizes.ShaderResourceBindingsCount = DESCRIPTOR_SET_COUNT * m_swapChain.VirtualFrameCount();
+    sizes.CombinedImageSamplerCount = DESCRIPTOR_SET_COUNT * m_swapChain.VirtualFrameCount();
+    sizes.UniformBufferCount = DESCRIPTOR_SET_COUNT * m_swapChain.VirtualFrameCount();
 
     if (!m_shaderResourceBindingsPools)
     {

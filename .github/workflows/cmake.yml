@@ -12,7 +12,7 @@ jobs:
     name: ${{ matrix.config.name }}
     runs-on: windows-latest
     env:
-      vulkan_version: "1.2.154.1"
+      vulkan_version: "1.2.170.0"
       vulkan_sdk_dir: "${{github.workspace}}/vulkan_sdk/"
     strategy:
       fail-fast: false
