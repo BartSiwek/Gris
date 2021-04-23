@@ -24,8 +24,8 @@ group_sources(Gris.Demos.ForwardRendering)
 
 ###############################################################################
 
-compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources/shaders/demos/forward_rendering/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>/vertex.spv")
-compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources/shaders/demos/forward_rendering/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>/fragment.spv")
+compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources" "shaders/demos/forward_rendering/shader.vert" "$<CONFIG>/vertex.spv")
+compile_shader_to_spirv(Gris.Demos.ForwardRendering "${PROJECT_SOURCE_DIR}/resources" "shaders/demos/forward_rendering/shader.frag" "$<CONFIG>/fragment.spv")
 
 # TODO: Replace this with a resource target(s)... (if that is possible)
 add_custom_command(TARGET Gris.Demos.ForwardRendering
@@ -42,5 +42,7 @@ add_custom_command(TARGET Gris.Demos.ForwardRendering
   "${PROJECT_SOURCE_DIR}/resources/models/sponza/sponza.dae"
   $<TARGET_FILE_DIR:Gris.Demos.ForwardRendering>
 )
+
+create_resource_target(Gris.Demos.ForwardRendering)
 
 ###############################################################################
