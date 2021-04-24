@@ -2,6 +2,7 @@
 
 #include <gris/graphics/mesh.h>
 
+#include <gris/directory_registry.h>
 #include <gris/engine_exception.h>
 #include <gris/log.h>
 #include <gris/span.h>
@@ -22,7 +23,7 @@ constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = static_cast<unsigned int>(a
 
 // -------------------------------------------------------------------------------------------------
 
-std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Load(const std::filesystem::path & path)
+std::tuple<std::vector<Gris::Graphics::Mesh>, std::vector<Gris::Graphics::MaterialBlueprint>> Gris::Graphics::Loaders::AssimpMeshLoader::Load(const std::filesystem::path & path)
 {
     static const aiVector3D ZERO_VECTOR(0.0F, 0.0F, 0.0F);
 
@@ -34,7 +35,7 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
         {
             stringMessage = stringMessage.substr(0, stringMessage.size() - 1);
         }
-        Gris::Log::Debug("[AssimpMeshLoader] {}", stringMessage);
+        Log::Debug("[AssimpMeshLoader] {}", stringMessage);
     };
 
     aiAttachLogStream(&grisLoggerStream);
@@ -43,11 +44,50 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
 
     if (scene == nullptr)
     {
-        throw Gris::EngineException("Error loading model", aiGetErrorString());
+        throw EngineException("Error loading model", aiGetErrorString());
     }
 
-    auto result = MakeReservedVector<Mesh>(scene->mNumMeshes);
+    auto resultMaterials = MakeReservedVector<MaterialBlueprint>(scene->mNumMaterials);
+    auto materials = Gris::Span<aiMaterial *>(scene->mMaterials, scene->mNumMaterials);
+    for (const auto & currentMaterial : materials)
+    {
+        MaterialBlueprint material;
 
+        auto diffuseTextureCount = currentMaterial->GetTextureCount(aiTextureType_DIFFUSE);
+        material.DiffuseTextures = MakeReservedVector<std::filesystem::path>(diffuseTextureCount);
+        for (unsigned textureIndex = 0; textureIndex < diffuseTextureCount; ++textureIndex)
+        {
+            auto assimpTexturePath = aiString{};
+            currentMaterial->GetTexture(aiTextureType_DIFFUSE, textureIndex, &assimpTexturePath);
+            material.DiffuseTextures.emplace_back(assimpTexturePath.C_Str());
+        }
+
+        auto specularTextureCount = currentMaterial->GetTextureCount(aiTextureType_SPECULAR);
+        material.SpecularTextures = MakeReservedVector<std::filesystem::path>(specularTextureCount);
+        for (unsigned textureIndex = 0; textureIndex < specularTextureCount; ++textureIndex)
+        {
+            auto assimpTexturePath = aiString{};
+            currentMaterial->GetTexture(aiTextureType_SPECULAR, textureIndex, &assimpTexturePath);
+            material.SpecularTextures.emplace_back(assimpTexturePath.C_Str());
+        }
+
+        auto normalTextureCount = currentMaterial->GetTextureCount(aiTextureType_NORMALS);
+        material.NormalTextures = MakeReservedVector<std::filesystem::path>(normalTextureCount);
+        for (unsigned textureIndex = 0; textureIndex < normalTextureCount; ++textureIndex)
+        {
+            auto assimpTexturePath = aiString{};
+            currentMaterial->GetTexture(aiTextureType_NORMALS, textureIndex, &assimpTexturePath);
+            material.NormalTextures.emplace_back(assimpTexturePath.C_Str());
+        }
+
+        aiString name;
+        currentMaterial->Get(AI_MATKEY_NAME, name);
+        material.Name = name.C_Str();
+
+        resultMaterials.emplace_back(std::move(material));
+    }
+
+    auto resultMeshes = MakeReservedVector<Mesh>(scene->mNumMeshes);
     auto meshes = Gris::Span<aiMesh *>(scene->mMeshes, scene->mNumMeshes);
     for (const auto & currentMesh : meshes)
     {
@@ -85,11 +125,13 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::AssimpMeshLoader::Loa
             mesh.Indices.emplace_back(indices[2]);
         }
 
-        result.emplace_back(std::move(mesh));
+        mesh.MaterialIndex = currentMesh->mMaterialIndex;
+
+        resultMeshes.emplace_back(std::move(mesh));
     }
 
     aiReleaseImport(scene);
     aiDetachLogStream(&grisLoggerStream);
 
-    return result;
+    return { resultMeshes, resultMaterials };
 }

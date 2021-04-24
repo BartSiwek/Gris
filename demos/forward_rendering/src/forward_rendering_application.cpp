@@ -198,7 +198,7 @@ void ForwardRenderingApplication::CreateVulkanObjects()
     CreateFramebuffers();
     CreateShaderResourceBindingsPools();
 
-    if (m_meshes.empty())
+    if (m_scene.Meshes.empty())
     {
         LoadScene();
     }
@@ -287,11 +287,12 @@ void ForwardRenderingApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    m_meshes = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
+    auto materialBlueprints = std::vector<Gris::Graphics::MaterialBlueprint>();
+    std::tie(m_scene.Meshes, materialBlueprints) = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
 
     ///
 
-    for (auto const & mesh : m_meshes)
+    for (auto const & mesh : m_scene.Meshes)
     {
         auto const vertexBufferSize = sizeof(mesh.Vertices[0]) * mesh.Vertices.size();
 
@@ -306,7 +307,7 @@ void ForwardRenderingApplication::CreateMesh()
 
     ///
 
-    for (auto const & mesh : m_meshes)
+    for (auto const & mesh : m_scene.Meshes)
     {
         auto const indexBufferSize = sizeof(mesh.Indices[0]) * mesh.Indices.size();
 
@@ -555,11 +556,11 @@ void ForwardRenderingApplication::DrawFrame()
     m_commandBuffers[nextImageResult->VirtualFrameIndex].SetScissor(swapChainExtent.width, swapChainExtent.height);
     m_commandBuffers[nextImageResult->VirtualFrameIndex].BindDescriptorSet(m_pso, 0, m_shaderResourceBindings[nextImageResult->VirtualFrameIndex]);
 
-    for (size_t meshIndex = 0; meshIndex < m_meshes.size(); ++meshIndex)
+    for (size_t meshIndex = 0; meshIndex < m_scene.Meshes.size(); ++meshIndex)
     {
         m_commandBuffers[nextImageResult->VirtualFrameIndex].BindVertexBuffer(m_vertexBufferViews[meshIndex]);
         m_commandBuffers[nextImageResult->VirtualFrameIndex].BindIndexBuffer(m_indexBufferViews[meshIndex]);
-        m_commandBuffers[nextImageResult->VirtualFrameIndex].DrawIndexed(static_cast<uint32_t>(m_meshes[meshIndex].Indices.size()));
+        m_commandBuffers[nextImageResult->VirtualFrameIndex].DrawIndexed(static_cast<uint32_t>(m_scene.Meshes[meshIndex].Indices.size()));
     }
 
     m_commandBuffers[nextImageResult->VirtualFrameIndex].EndRenderPass();

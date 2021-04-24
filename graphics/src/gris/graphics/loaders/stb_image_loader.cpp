@@ -27,7 +27,7 @@ Gris::Graphics::Image Gris::Graphics::Loaders::StbImageLoader::Load(const std::f
     result.PixelData.resize(dataSize);
     result.Width = static_cast<uint32_t>(texWidth);
     result.Height = static_cast<uint32_t>(texHeight);
-    result.Channels = forcedChannelCount;
+    result.Format = ImageFormat::R8G8B8A8SRGB;
 
     std::memcpy(result.PixelData.data(), pixels, dataSize);
 

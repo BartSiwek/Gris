@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
 #include <gris/graphics/vulkan/deferred_context.h>

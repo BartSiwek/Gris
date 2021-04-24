@@ -6,6 +6,7 @@
 namespace Gris::Graphics
 {
 struct Mesh;
+struct MaterialBlueprint;
 }
 
 namespace Gris::Graphics::Loaders
@@ -16,7 +17,7 @@ class TinyObjLoaderMeshLoader
 public:
     TinyObjLoaderMeshLoader() = default;
 
-    static std::vector<Mesh> Load(const std::filesystem::path & path);
+    static std::tuple<std::vector<Mesh>, std::vector<MaterialBlueprint>> Load(const std::filesystem::path & path);
 };
 
 }  // namespace Gris::Graphics::Loaders
