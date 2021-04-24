@@ -19,7 +19,7 @@
 
 #include <gris/graphics/cameras/trackball_camera.h>
 #include <gris/graphics/lens/perspective_lens.h>
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <cstdint>
 #include <vector>
@@ -90,7 +90,7 @@ private:
     Gris::Graphics::Vulkan::Texture m_depthImage = {};
     Gris::Graphics::Vulkan::TextureView m_depthImageView = {};
 
-    std::vector<Gris::Graphics::Mesh> m_meshes;
+    Gris::Graphics::Scene m_scene;
     std::vector<Gris::Graphics::Vulkan::Buffer> m_vertexBuffers = {};
     std::vector<Gris::Graphics::Vulkan::BufferView> m_vertexBufferViews = {};
     std::vector<Gris::Graphics::Vulkan::Buffer> m_indexBuffers = {};

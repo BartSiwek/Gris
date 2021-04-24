@@ -3,7 +3,7 @@
 #include <gris/graphics/image.h>
 #include <gris/graphics/loaders/stb_image_loader.h>
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>
@@ -206,10 +206,14 @@ void HelloTriangleApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    auto meshes = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(*modelPath);
+    auto [meshes, materialBlueprints] = Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(*modelPath);
     if (meshes.size() != 1)
     {
         throw Gris::EngineException("Error loading sample mesh - expected a single mesh");
+    }
+    if (!materialBlueprints.empty())
+    {
+        throw Gris::EngineException("Error loading sample mesh - expected no materials ");
     }
 
     m_mesh = meshes.front();

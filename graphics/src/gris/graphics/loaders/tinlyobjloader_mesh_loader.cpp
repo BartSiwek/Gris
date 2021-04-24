@@ -1,6 +1,6 @@
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
 
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <gris/engine_exception.h>
 #include <gris/utils.h>
@@ -33,24 +33,25 @@ struct VertexComparator
 
 // -------------------------------------------------------------------------------------------------
 
-std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
+std::tuple<std::vector<Gris::Graphics::Mesh>, std::vector<Gris::Graphics::MaterialBlueprint>> Gris::Graphics::Loaders::TinyObjLoaderMeshLoader::Load(const std::filesystem::path & path)
 {
     tinyobj::attrib_t attributes;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string err;
 
-    if (!tinyobj::LoadObj(&attributes, &shapes, &materials, &err, path.string().c_str(), nullptr, false))
+    if (!LoadObj(&attributes, &shapes, &materials, &err, path.string().c_str(), nullptr, false))
     {
-        throw Gris::EngineException("Error loading model", err);
+        throw EngineException("Error loading model", err);
     }
 
-    auto uniqueVertices = std::unordered_map<Vertex, uint32_t, VertexHash, VertexComparator>{};
-
-    auto result = Mesh{};
+    auto resultMeshes = MakeReservedVector<Mesh>(shapes.size());
 
     for (auto const & shape : shapes)
     {
+        auto uniqueVertices = std::unordered_map<Vertex, uint32_t, VertexHash, VertexComparator>{};
+        auto currentMesh = Mesh{};
+
         for (auto const & index : shape.mesh.indices)
         {
             auto vertex = Vertex{};
@@ -70,13 +71,15 @@ std::vector<Gris::Graphics::Mesh> Gris::Graphics::Loaders::TinyObjLoaderMeshLoad
 
             if (uniqueVertices.count(vertex) == 0)
             {
-                uniqueVertices[vertex] = static_cast<uint32_t>(result.Vertices.size());
-                result.Vertices.push_back(vertex);
+                uniqueVertices[vertex] = static_cast<uint32_t>(currentMesh.Vertices.size());
+                currentMesh.Vertices.push_back(vertex);
             }
 
-            result.Indices.push_back(uniqueVertices[vertex]);
+            currentMesh.Indices.push_back(uniqueVertices[vertex]);
         }
+
+        resultMeshes.emplace_back(std::move(currentMesh));
     }
 
-    return { result };
+    return { resultMeshes, {} };
 }
