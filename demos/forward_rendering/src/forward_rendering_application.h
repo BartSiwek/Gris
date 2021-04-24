@@ -35,6 +35,8 @@ private:
     constexpr static uint32_t PER_DRAW_DESCRIPTOR_SET_INDEX = 2;
     constexpr static uint32_t DESCRIPTOR_SET_COUNT = 3;
 
+    static void SetupAssetDirectory();
+
     [[nodiscard]] vk::Format FindDepthFormat() const;
 
     void WindowResized(uint32_t width, uint32_t height) override;
@@ -42,7 +44,6 @@ private:
     void MouseMoveEvent(float x, float y) override;
     void MouseWheelEvent(float x, float y, float delta) override;
 
-    void AddAssetDirectory();
     void InitWindow();
     void CreateVulkanObjects();
     void LoadScene();
