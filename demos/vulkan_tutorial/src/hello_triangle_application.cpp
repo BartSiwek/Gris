@@ -67,6 +67,7 @@ struct UniformBufferObject
 
 void HelloTriangleApplication::Run()
 {
+    SetupAssetDirectory();
     InitWindow();
     CreateVulkanObjects();
     MainLoop();
@@ -105,6 +106,14 @@ void HelloTriangleApplication::MouseMoveEvent(float /* x */, float /* y */)
 
 void HelloTriangleApplication::MouseWheelEvent(float /* x */, float /* y */, float /* delta */)
 {
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void HelloTriangleApplication::SetupAssetDirectory()
+{
+    static const std::filesystem::path ASSET_DIRECTORY = "vulkan_tutorial/assets";
+    Gris::DirectoryRegistry::AddResolvePath(Gris::DirectoryRegistry::ExecutableLocation() / ASSET_DIRECTORY);
 }
 
 // -------------------------------------------------------------------------------------------------

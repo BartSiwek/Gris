@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.17.0)
+cmake_policy(SET CMP0112 NEW)
 
 ########################################################################
 
@@ -25,23 +26,26 @@ group_sources(Gris.Demos.VulkanTutorial)
 
 ###############################################################################
 
-compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/vertex.spv")
-compile_shader_to_spirv(Gris.Demos.VulkanTutorial "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag" "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/fragment.spv")
+set(assets_dir "$<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>/vulkan_tutorial/assets")
 
-# TODO: Replace this with a resource target(s)... (if that is possible)
-add_custom_command(TARGET Gris.Demos.VulkanTutorial
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+# TODO: Revise this code when https://gitlab.kitware.com/cmake/cmake/-/issues/12877 is fixed
+add_custom_target(Gris.Demos.VulkanTutorial.Resources
+  COMMAND ${CMAKE_COMMAND} -E make_directory  "${assets_dir}"
+  COMMAND $<TARGET_FILE:Gris.Dependencies.glslc> -o "${assets_dir}/vertex.spv" "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert"
+  COMMAND $<TARGET_FILE:Gris.Dependencies.glslc> -o "${assets_dir}/fragment.spv" "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.png" "${assets_dir}/viking_room.png"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.obj" "${assets_dir}/viking_room.obj"
+)
+
+target_sources(Gris.Demos.VulkanTutorial.Resources PRIVATE
+  "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.vert"
+  "${PROJECT_SOURCE_DIR}/resources/shaders/demos/vulkan_tutorial/shader.frag"
   "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.png"
-  $<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>
+  "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.obj"
 )
 
-# TODO: Replace this with a resource target(s)... (if that is possible)
-add_custom_command(TARGET Gris.Demos.VulkanTutorial
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.obj"
-  $<TARGET_FILE_DIR:Gris.Demos.VulkanTutorial>
-)
+group_sources_with_base(Gris.Demos.VulkanTutorial.Resources "${PROJECT_SOURCE_DIR}/resources")
+
+add_dependencies(Gris.Demos.VulkanTutorial Gris.Demos.VulkanTutorial.Resources)
 
 ###############################################################################

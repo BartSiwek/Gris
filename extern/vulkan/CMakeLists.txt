@@ -1,12 +1,5 @@
 cmake_minimum_required(VERSION 3.17.0)
 
-macro(compile_shader_to_spirv target input_file output_file)
-  add_custom_command(TARGET ${target}
-    POST_BUILD
-    COMMAND $<TARGET_FILE:Gris.Dependencies.glslc> ${input_file} -o "${output_file}"
-  )
-endmacro()
-
 find_package(Vulkan REQUIRED)
 
 # Propagate the Vulkan library
