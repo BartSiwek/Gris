@@ -3,7 +3,7 @@
 #include <gris/graphics/image.h>
 #include <gris/graphics/loaders/assimp_mesh_loader.h>
 #include <gris/graphics/loaders/stb_image_loader.h>
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <gris/graphics/vulkan/buffer.h>
 #include <gris/graphics/vulkan/buffer_view.h>

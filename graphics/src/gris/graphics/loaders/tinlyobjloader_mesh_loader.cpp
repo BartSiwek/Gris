@@ -1,6 +1,6 @@
 #include <gris/graphics/loaders/tinlyobjloader_mesh_loader.h>
 
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <gris/engine_exception.h>
 #include <gris/utils.h>

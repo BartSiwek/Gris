@@ -19,7 +19,7 @@
 
 #include <gris/graphics/cameras/trackball_camera.h>
 #include <gris/graphics/lens/perspective_lens.h>
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <cstdint>
 #include <vector>

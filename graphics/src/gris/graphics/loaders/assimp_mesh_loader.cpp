@@ -1,6 +1,6 @@
 #include <gris/graphics/loaders/assimp_mesh_loader.h>
 
-#include <gris/graphics/mesh.h>
+#include <gris/graphics/scene.h>
 
 #include <gris/directory_registry.h>
 #include <gris/engine_exception.h>
