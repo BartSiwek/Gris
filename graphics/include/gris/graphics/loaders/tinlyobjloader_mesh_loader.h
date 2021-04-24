@@ -7,7 +7,7 @@ namespace Gris::Graphics
 {
 struct Mesh;
 struct MaterialBlueprint;
-}
+}  // namespace Gris::Graphics
 
 namespace Gris::Graphics::Loaders
 {
