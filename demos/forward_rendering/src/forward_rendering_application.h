@@ -42,6 +42,7 @@ private:
     void MouseMoveEvent(float x, float y) override;
     void MouseWheelEvent(float x, float y, float delta) override;
 
+    void AddAssetDirectory();
     void InitWindow();
     void CreateVulkanObjects();
     void LoadScene();

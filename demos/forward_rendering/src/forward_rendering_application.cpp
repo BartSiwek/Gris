@@ -79,6 +79,7 @@ inline glm::vec2 GetNormalizedScreenCoordinates(float width, float height, float
 
 void ForwardRenderingApplication::Run()
 {
+    AddAssetDirectory();
     InitWindow();
     CreateVulkanObjects();
     MainLoop();
@@ -155,6 +156,14 @@ void ForwardRenderingApplication::MouseWheelEvent(float /* x */, float /* y */, 
     {
         m_lens.SetZoomFactor(ZOOM_OUT_FACTOR * m_lens.GetZoomFactor());
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+
+void ForwardRenderingApplication::AddAssetDirectory()
+{
+    static const std::filesystem::path ASSET_DIRECTORY = "forward_rendering/assets";
+    Gris::DirectoryRegistry::AddResolvePath(Gris::DirectoryRegistry::ExecutableLocation() / ASSET_DIRECTORY);
 }
 
 // -------------------------------------------------------------------------------------------------

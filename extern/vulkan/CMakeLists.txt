@@ -1,35 +1,5 @@
 cmake_minimum_required(VERSION 3.17.0)
 
-function(get_resource_target_name target result)
-  set(${result} "${target}.Resources" PARENT_SCOPE)
-endfunction()
-
-function(compile_shader_to_spirv target input_base_path input_suffix_path output_path)
-  set(input_path "${input_base_path}/${input_suffix_path}")
-
-  add_custom_command(
-    OUTPUT ${output_path}
-    COMMAND $<TARGET_FILE:Gris.Dependencies.glslc> -o ${output_path} ${input_path}
-    DEPENDS ${input_path}
-    IMPLICIT_DEPENDS CXX ${input_path}
-    VERBATIM
-  )
-
-  set_property(TARGET ${target}
-    APPEND PROPERTY GRIS_RESOURCE_OUTPUT_FILES ${output_path}
-  )
-
-  target_sources(${target} PRIVATE ${input_path})
-  source_group(TREE ${input_base_path} PREFIX resources FILES ${input_path})
-endfunction()
-
-function(create_resource_target target)
-  get_resource_target_name(${target} resource_target)
-  get_target_property(resource_output_files ${target} GRIS_RESOURCE_OUTPUT_FILES)
-  add_custom_target(${resource_target} DEPENDS ${resource_output_files})
-  add_dependencies(${target} ${resource_target})
-endfunction()
-
 find_package(Vulkan REQUIRED)
 
 # Propagate the Vulkan library
