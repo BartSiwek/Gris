@@ -44,7 +44,7 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/vulkan/vma_implementation.cpp"
   "src/gris/graphics/vulkan/window_mixin.cpp"
   "include/gris/graphics/image.h"
-  "include/gris/graphics/mesh.h"
+  "include/gris/graphics/scene.h"
   "include/gris/graphics/window_observer.h"
   "include/gris/graphics/backend/shader_resource_bindings_pool_sizes.h"
   "include/gris/graphics/backend/shader_resource_bindings_layout.h"
