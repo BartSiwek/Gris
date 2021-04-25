@@ -96,6 +96,7 @@ target_link_libraries(Gris.Graphics PUBLIC
   CONAN_PKG::vulkan-headers
   CONAN_PKG::glfw
   CONAN_PKG::glm
+  gli
 )
 
 target_link_libraries(Gris.Graphics PRIVATE

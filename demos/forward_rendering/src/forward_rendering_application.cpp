@@ -39,6 +39,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <gli/gli.hpp>
+
 // -------------------------------------------------------------------------------------------------
 
 constexpr static uint32_t INITIAL_WINDOW_WIDTH = 800;
