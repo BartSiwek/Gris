@@ -11,6 +11,6 @@ FetchContent_Declare(
 FetchContent_GetProperties(gli)
 if(NOT gli_POPULATED)
   FetchContent_Populate(gli)
-  set(GLI_TEST_ENABLE  OFF)
+  set(GLI_TEST_ENABLE OFF CACHE INTERNAL "Build unit tests")
   add_subdirectory(${gli_SOURCE_DIR} ${gli_BINARY_DIR})
 endif()
