@@ -78,6 +78,7 @@ target_compile_definitions(CONAN_PKG::glm INTERFACE GLM_ENABLE_EXPERIMENTAL)
 ########################################################################
 
 add_subdirectory(extern/vulkan)
+add_subdirectory(extern/ddsKtx)
 
 ########################################################################
 

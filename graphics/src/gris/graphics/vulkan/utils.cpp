@@ -3,6 +3,8 @@
 #include <gris/graphics/vulkan/instance.h>
 #include <gris/graphics/vulkan/vulkan_engine_exception.h>
 
+#include <gris/casts.h>
+
 // -------------------------------------------------------------------------------------------------
 
 [[nodiscard]] Gris::Graphics::Vulkan::SwapChainSupportDetails Gris::Graphics::Vulkan::QuerySwapChainSupport(const vk::PhysicalDevice & physicalDevice,
@@ -31,4 +33,17 @@
     return SwapChainSupportDetails{ surfaceCapabilitiesResult.value,
                                     surfaceFormatsResult.value,
                                     surfacePresentModesResult.value };
+}
+
+// -------------------------------------------------------------------------------------------------
+
+[[nodiscard]] vk::Format Gris::Graphics::Vulkan::ToVulkanFormat(ImageFormat format)
+{
+    constexpr static vk::Format LookUpTable[] = {
+        vk::Format::eUndefined,
+        vk::Format::eBc2UnormBlock,
+        vk::Format::eR8G8B8A8Srgb,
+    };
+    static_assert(std::size(LookUpTable) == UnderlyingCast(ImageFormat::FormatCount), "LookUpTable must have the same number of elements as ImageFormat entries");
+    return LookUpTable[UnderlyingCast(format)];
 }

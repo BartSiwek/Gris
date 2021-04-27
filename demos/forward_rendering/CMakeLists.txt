@@ -35,6 +35,7 @@ add_custom_target(${resource_target}
   COMMAND $<TARGET_FILE:Gris.Dependencies.glslc> -o "${assets_dir}/fragment.spv" "${PROJECT_SOURCE_DIR}/resources/shaders/demos/forward_rendering/shader.frag"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/resources/models/viking_room/viking_room.png" "${assets_dir}/viking_room.png"
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/resources/models/sponza/sponza.dae" "${assets_dir}/sponza.dae"
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "${PROJECT_SOURCE_DIR}/resources/models/sponza/sponza/lion.dds" "${assets_dir}/sponza/lion.dds"
 )
 
 target_sources(${resource_target} PRIVATE

@@ -2,7 +2,7 @@
 
 #include <gris/graphics/image.h>
 #include <gris/graphics/loaders/assimp_mesh_loader.h>
-#include <gris/graphics/loaders/stb_image_loader.h>
+#include <gris/graphics/loaders/dds_ktx_image_loader.h>
 #include <gris/graphics/scene.h>
 
 #include <gris/graphics/vulkan/buffer.h>
@@ -24,6 +24,7 @@
 #include <gris/graphics/vulkan/swap_chain.h>
 #include <gris/graphics/vulkan/texture.h>
 #include <gris/graphics/vulkan/texture_view.h>
+#include <gris/graphics/vulkan/utils.h>
 
 #include <gris/graphics/glfw/instance.h>
 
@@ -164,6 +165,7 @@ void ForwardRenderingApplication::SetupAssetDirectory()
 {
     static const std::filesystem::path ASSET_DIRECTORY = "forward_rendering/assets";
     Gris::DirectoryRegistry::AddResolvePath(Gris::DirectoryRegistry::ExecutableLocation() / ASSET_DIRECTORY);
+    Gris::DirectoryRegistry::AddResolvePath(Gris::DirectoryRegistry::ExecutableLocation() / ASSET_DIRECTORY / "sponza");
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -287,8 +289,7 @@ void ForwardRenderingApplication::CreateMesh()
         throw Gris::EngineException("Error resolving model path - file not found", MODEL_PATH);
     }
 
-    auto materialBlueprints = std::vector<Gris::Graphics::MaterialBlueprint>();
-    std::tie(m_scene.Meshes, materialBlueprints) = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
+    std::tie(m_scene.Meshes, m_materialBlueprints) = Gris::Graphics::Loaders::AssimpMeshLoader::Load(*modelPath);
 
     ///
 
@@ -325,18 +326,27 @@ void ForwardRenderingApplication::CreateMesh()
 
 void ForwardRenderingApplication::CreateMeshTexture()
 {
-    auto const texturePath = Gris::DirectoryRegistry::TryResolvePath(TEXTURE_PATH);
+    GRIS_ALWAYS_ASSERT(!m_materialBlueprints.empty(), "Must have at least one material");
+    GRIS_ALWAYS_ASSERT(!m_materialBlueprints.front().DiffuseTextures.empty(), "Must have at least one material with diffuse texture");
+
+    auto const & diffuseTexturePath = m_materialBlueprints.front().DiffuseTextures.front();
+    auto const texturePath = Gris::DirectoryRegistry::TryResolvePath(diffuseTexturePath);
     if (!texturePath)
     {
-        throw Gris::EngineException("Failed to resolve texture image path", TEXTURE_PATH);
+        throw Gris::EngineException("Failed to resolve texture image path", diffuseTexturePath.string());
     }
 
-    auto image = Gris::Graphics::Loaders::StbImageLoader::Load(*texturePath);
+    auto image = Gris::Graphics::Loaders::DdsKtxImageLoader::Load(*texturePath);
+
+    GRIS_ALWAYS_ASSERT(image.Format == Gris::Graphics::ImageFormat::BC2, "Expected BC2 texture format");
+
+    auto const format = Gris::Graphics::Vulkan::ToVulkanFormat(image.Format);
 
     ///
 
-    auto const mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(image.Width, image.Height)))) + 1;
-    m_meshTextureImage = m_device.CreateTexture(image.Width, image.Height, mipLevels, vk::SampleCountFlagBits::e1, vk::Format::eR8G8B8A8Srgb, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
+    // TODO: Get mips from image and translate format
+    // auto const mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(image.Width, image.Height)))) + 1;
+    m_meshTextureImage = m_device.CreateTexture(image.Width, image.Height, 1, vk::SampleCountFlagBits::e1, format, vk::ImageTiling::eOptimal, vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled, vk::MemoryPropertyFlagBits::eDeviceLocal);
 
     ///
 
@@ -344,14 +354,11 @@ void ForwardRenderingApplication::CreateMeshTexture()
     auto stagingBuffer = m_device.CreateBuffer(image.PixelData.size(), vk::BufferUsageFlagBits::eTransferSrc, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);
     stagingBuffer.SetData(image.PixelData.data(), image.PixelData.size());
     m_device.Context().CopyBufferToImage(stagingBuffer, m_meshTextureImage, image.Width, image.Height);
+    m_device.Context().TransitionImageLayout(m_meshTextureImage, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal);
 
     ///
 
-    m_device.Context().GenerateMipmaps(m_meshTextureImage, vk::Format::eR8G8B8A8Srgb, image.Width, image.Height);
-
-    ///
-
-    m_meshTextureImageView = m_device.CreateTextureView(m_meshTextureImage, vk::Format::eR8G8B8A8Srgb, vk::ImageAspectFlagBits::eColor, m_meshTextureImage.MipLevels());
+    m_meshTextureImageView = m_device.CreateTextureView(m_meshTextureImage, format, vk::ImageAspectFlagBits::eColor, m_meshTextureImage.MipLevels());
     m_meshTextureSampler = m_device.CreateSampler(0.0F, static_cast<float>(m_meshTextureImage.MipLevels()));
 }
 
