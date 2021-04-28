@@ -46,7 +46,6 @@ constexpr static uint32_t INITIAL_WINDOW_WIDTH = 800;
 constexpr static uint32_t INITIAL_WINDOW_HEIGHT = 600;
 
 const char * const MODEL_PATH = "sponza.dae";
-const char * const TEXTURE_PATH = "viking_room.png";
 const char * const VERTEX_SHADER_PATH = "vertex.spv";
 const char * const FRAGMENT_SHADER_PATH = "fragment.spv";
 
