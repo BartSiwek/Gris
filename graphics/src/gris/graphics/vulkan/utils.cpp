@@ -44,6 +44,7 @@
         vk::Format::eBc2UnormBlock,
         vk::Format::eR8G8B8A8Srgb,
     };
-    static_assert(std::size(LookUpTable) == UnderlyingCast(ImageFormat::FormatCount), "LookUpTable must have the same number of elements as ImageFormat entries");
+    static_assert(UnderlyingCast(ImageFormat::FormatCount) == std::size(LookUpTable), "LookUpTable must have the same number of elements as ImageFormat entries");
+    GRIS_ALWAYS_ASSERT(UnderlyingCast(format) < std::size(LookUpTable), "Value of current state exceeds TrackballCameraOperation::MaxOperations");
     return LookUpTable[UnderlyingCast(format)];
 }
