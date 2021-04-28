@@ -5,6 +5,7 @@
 #pragma once
 
 #include <gris/engine_exception.h>
+#include <gris/assert.h>
 
 #include <cstring>
 #include <filesystem>

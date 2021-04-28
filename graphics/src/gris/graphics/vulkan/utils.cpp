@@ -45,6 +45,8 @@
         vk::Format::eR8G8B8A8Srgb,
     };
     static_assert(UnderlyingCast(ImageFormat::FormatCount) == std::size(LookUpTable), "LookUpTable must have the same number of elements as ImageFormat entries");
-    GRIS_ALWAYS_ASSERT(UnderlyingCast(format) < std::size(LookUpTable), "Value of current state exceeds TrackballCameraOperation::MaxOperations");
+
+    GRIS_ALWAYS_ASSERT(UnderlyingCast(format) < std::size(LookUpTable), "Value of current format exceeds LookUpTable size");
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-constant-array-index)
     return LookUpTable[UnderlyingCast(format)];
 }
