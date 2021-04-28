@@ -38,6 +38,7 @@ jobs:
           clang-tidy \
           curl \
           cmake \
+          git \
           libgl1-mesa-dev \
           libx11-dev \
           libx11-xcb-dev \
