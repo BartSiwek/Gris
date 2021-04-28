@@ -6,9 +6,9 @@
 namespace Gris::Graphics
 {
 
-enum class ImageFormat
+enum class ImageFormat : uint32_t
 {
-    Undefined,
+    Undefined = 0,
 
     // Compressed formats
     BC2,
