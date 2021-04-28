@@ -20,7 +20,7 @@ Gris::Graphics::Image Gris::Graphics::Loaders::DdsKtxImageLoader::Load(const std
     auto err = ddsktx_error{};
     if (!ddsktx_parse(&tc, fileContents.data(), static_cast<int>(fileContents.size()), &err))
     {
-        throw EngineException("Failed to load DDS texture image " + path.string(), err.msg);
+        throw EngineException("Failed to load DDS texture image", path.string(), static_cast<const char *>(err.msg));
     }
 
     // TODO: Make this a lot more flexible and so
