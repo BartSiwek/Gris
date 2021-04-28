@@ -39,7 +39,7 @@
 
 [[nodiscard]] vk::Format Gris::Graphics::Vulkan::ToVulkanFormat(ImageFormat format)
 {
-    constexpr static vk::Format LookUpTable[] = {
+    constexpr static std::array LookUpTable = {
         vk::Format::eUndefined,
         vk::Format::eBc2UnormBlock,
         vk::Format::eR8G8B8A8Srgb,
