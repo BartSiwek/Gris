@@ -3,8 +3,8 @@
 #include <gris/engine_exception.h>
 #include <gris/graphics/image.h>
 
-#include <gris/utils.h>
 #include <gris/assert.h>
+#include <gris/utils.h>
 
 #include <dds-ktx.h>
 
