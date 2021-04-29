@@ -9,6 +9,8 @@ target_sources(Gris.Graphics PRIVATE
   "src/gris/graphics/cameras/trackball_camera.cpp"
   "src/gris/graphics/lens/perspective_lens.cpp"
   "src/gris/graphics/loaders/assimp_mesh_loader.cpp"
+  "src/gris/graphics/loaders/dds_ktx_image_loader.cpp"
+  "src/gris/graphics/loaders/dds_ktx_implementation.cpp"
   "src/gris/graphics/loaders/stb_image_loader.cpp"
   "src/gris/graphics/loaders/stb_implementation.cpp"
   "src/gris/graphics/loaders/tinlyobjloader_mesh_loader.cpp"
@@ -51,6 +53,7 @@ target_sources(Gris.Graphics PRIVATE
   "include/gris/graphics/cameras/trackball_camera.h"
   "include/gris/graphics/lens/perspective_lens.h"
   "include/gris/graphics/loaders/assimp_mesh_loader.h"
+  "include/gris/graphics/loaders/dds_ktx_image_loader.h"
   "include/gris/graphics/loaders/stb_image_loader.h"
   "include/gris/graphics/loaders/tinlyobjloader_mesh_loader.h"
   "include/gris/graphics/vulkan/allocation.h"
@@ -96,6 +99,7 @@ target_link_libraries(Gris.Graphics PUBLIC
   CONAN_PKG::vulkan-headers
   CONAN_PKG::glfw
   CONAN_PKG::glm
+  Gris.Dependencies.Dds-Ktx
 )
 
 target_link_libraries(Gris.Graphics PRIVATE

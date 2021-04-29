@@ -2,6 +2,8 @@
 
 #include <gris/graphics/vulkan/vulkan_headers.h>
 
+#include <gris/graphics/image.h>
+
 #include <optional>
 
 namespace Gris::Graphics::Vulkan
@@ -27,5 +29,7 @@ struct SwapChainSupportDetails
 
 [[nodiscard]] SwapChainSupportDetails QuerySwapChainSupport(const vk::PhysicalDevice & physicalDevice,
                                                             const vk::SurfaceKHR & surface);
+
+[[nodiscard]] vk::Format ToVulkanFormat(ImageFormat format);
 
 }  // namespace Gris::Graphics::Vulkan

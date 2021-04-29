@@ -19,7 +19,19 @@ constexpr static unsigned int DEFAULT_ASSIMP_FLAGS = static_cast<unsigned int>(a
                                                      | static_cast<unsigned int>(aiProcess_CalcTangentSpace)
                                                      | static_cast<unsigned int>(aiProcess_GenSmoothNormals)
                                                      | static_cast<unsigned int>(aiProcess_JoinIdenticalVertices)
-                                                     | static_cast<unsigned int>(aiProcess_FlipWindingOrder);
+                                                     | static_cast<unsigned int>(aiProcess_FlipWindingOrder)
+                                                     | static_cast<unsigned int>(aiProcess_ImproveCacheLocality);
+
+
+namespace
+{
+
+std::filesystem::path SanitizePath(const std::filesystem::path & path)
+{
+    return path.relative_path();
+}
+
+}  // namespace
 
 // -------------------------------------------------------------------------------------------------
 
@@ -59,7 +71,7 @@ std::tuple<std::vector<Gris::Graphics::Mesh>, std::vector<Gris::Graphics::Materi
         {
             auto assimpTexturePath = aiString{};
             currentMaterial->GetTexture(aiTextureType_DIFFUSE, textureIndex, &assimpTexturePath);
-            material.DiffuseTextures.emplace_back(assimpTexturePath.C_Str());
+            material.DiffuseTextures.emplace_back(SanitizePath(assimpTexturePath.C_Str()));
         }
 
         auto specularTextureCount = currentMaterial->GetTextureCount(aiTextureType_SPECULAR);
@@ -68,7 +80,7 @@ std::tuple<std::vector<Gris::Graphics::Mesh>, std::vector<Gris::Graphics::Materi
         {
             auto assimpTexturePath = aiString{};
             currentMaterial->GetTexture(aiTextureType_SPECULAR, textureIndex, &assimpTexturePath);
-            material.SpecularTextures.emplace_back(assimpTexturePath.C_Str());
+            material.SpecularTextures.emplace_back(SanitizePath(assimpTexturePath.C_Str()));
         }
 
         auto normalTextureCount = currentMaterial->GetTextureCount(aiTextureType_NORMALS);
@@ -77,7 +89,7 @@ std::tuple<std::vector<Gris::Graphics::Mesh>, std::vector<Gris::Graphics::Materi
         {
             auto assimpTexturePath = aiString{};
             currentMaterial->GetTexture(aiTextureType_NORMALS, textureIndex, &assimpTexturePath);
-            material.NormalTextures.emplace_back(assimpTexturePath.C_Str());
+            material.NormalTextures.emplace_back(SanitizePath(assimpTexturePath.C_Str()));
         }
 
         aiString name;

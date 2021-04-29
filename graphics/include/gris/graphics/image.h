@@ -6,10 +6,18 @@
 namespace Gris::Graphics
 {
 
-enum class ImageFormat
+enum class ImageFormat : uint32_t
 {
-    Undefined,
+    Undefined = 0,
+
+    // Compressed formats
+    BC2,
+
+    // Regular formats
     R8G8B8A8SRGB,
+
+    // Count - must be last
+    FormatCount,
 };
 
 struct Image

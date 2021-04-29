@@ -91,6 +91,8 @@ private:
     Gris::Graphics::Vulkan::TextureView m_depthImageView = {};
 
     Gris::Graphics::Scene m_scene;
+    std::vector<Gris::Graphics::MaterialBlueprint> m_materialBlueprints;
+
     std::vector<Gris::Graphics::Vulkan::Buffer> m_vertexBuffers = {};
     std::vector<Gris::Graphics::Vulkan::BufferView> m_vertexBufferViews = {};
     std::vector<Gris::Graphics::Vulkan::Buffer> m_indexBuffers = {};

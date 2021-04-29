@@ -15,7 +15,12 @@ public:
     }
 
     EngineException(const std::string & message, const std::string & details)
-        : runtime_error(details.empty() ? message : message + " [" + details + "]")
+        : runtime_error(message + (details.empty() ? "" : " [" + details + "]"))
+    {
+    }
+
+    EngineException(const std::string & message, const std::string & details, const std::string & moreDetails)
+        : runtime_error(message + (details.empty() ? "" : " [" + details + "]") + (moreDetails.empty() ? "" : " [" + moreDetails + "]"))
     {
     }
 };
