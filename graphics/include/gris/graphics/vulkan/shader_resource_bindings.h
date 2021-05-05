@@ -4,6 +4,8 @@
 
 #include <gris/graphics/backend/shader_resource_bindings_pool_sizes.h>
 
+#include <unordered_map>
+
 namespace Gris::Graphics::Vulkan
 {
 

@@ -49,3 +49,11 @@ group_sources_with_base(Gris.Demos.VulkanTutorial.Resources "${PROJECT_SOURCE_DI
 add_dependencies(Gris.Demos.VulkanTutorial Gris.Demos.VulkanTutorial.Resources)
 
 ###############################################################################
+
+if(DEFINED ENV{VULKAN_SDK})
+  set_target_properties(Gris.Demos.VulkanTutorial PROPERTIES
+    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "$ENV{VULKAN_SDK}/lib"
+  )
+endif()
+
+###############################################################################

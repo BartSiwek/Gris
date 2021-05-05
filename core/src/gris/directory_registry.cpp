@@ -2,9 +2,11 @@
 
 #include <gris/engine_exception.h>
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #include <Windows.h>
 #include <comdef.h>
+#elif __APPLE__
+#include <mach-o/dyld.h>
 #else
 #include <cerrno>
 #include <cstring>
@@ -103,7 +105,7 @@ void Gris::DirectoryRegistry::AddResolvePath(std::filesystem::path path)
 
 Gris::DirectoryRegistry::DirectoryRegistry()
 {
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
     auto buffer = std::vector<char>(MAX_PATH, '\0');
 
     auto resolved = false;
@@ -123,6 +125,23 @@ Gris::DirectoryRegistry::DirectoryRegistry()
         {
             resolved = true;
         }
+    }
+
+    m_executableLocation = std::filesystem::path(std::string(buffer.data()));
+    m_executableLocation.remove_filename();
+#elif __APPLE__
+    auto bufferSize = uint32_t{ 0 };
+    auto const bufferSizeCalculationResult = _NSGetExecutablePath(nullptr, &bufferSize);
+    if (bufferSizeCalculationResult != -1)
+    {
+        throw EngineException("Error calculating executable location buffer size", std::to_string(bufferSizeCalculationResult));
+    }
+
+    auto buffer = std::vector<char>(bufferSize, '\0');
+    auto const executablePathResult = _NSGetExecutablePath(buffer.data(), &bufferSize);
+    if (executablePathResult != 0)
+    {
+        throw EngineException("Error resolving executable location", std::to_string(executablePathResult));
     }
 
     m_executableLocation = std::filesystem::path(std::string(buffer.data()));
