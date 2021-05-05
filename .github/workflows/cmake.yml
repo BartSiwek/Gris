@@ -234,7 +234,7 @@ jobs:
 
   macos:
     name: ${{ matrix.config.name }}
-    runs-on: macos-10.15
+    runs-on: macos-11.0
     env:
       VULKAN_VERSION: "1.2.170.0"
       VULKAN_SDK_DIR: "$GITHUB_WORKSPACE/vulkan_sdk/"
@@ -247,14 +247,14 @@ jobs:
             artifact: "macos-debug.tar.gz",
             cmake_build_type: "Debug",
             cmake_configure_options: '',
-            conan_profile_update: "conan profile update settings.compiler=apple-clang default; conan profile update settings.os=Macos default; conan profile update settings.os.version=10.15 default",
+            conan_profile_update: "conan profile update settings.compiler=apple-clang default; conan profile update settings.os=Macos default; conan profile update settings.os.version=11.0 default",
           }
           - {
             name: "macOS Release",
             artifact: "macos-release.tar.gz",
             cmake_build_type: "Release",
             cmake_configure_options: '',
-            conan_profile_update: "conan profile update settings.compiler=apple-clang default; conan profile update settings.os=Macos default; conan profile update settings.os.version=10.15 default",
+            conan_profile_update: "conan profile update settings.compiler=apple-clang default; conan profile update settings.os=Macos default; conan profile update settings.os.version=11.0 default",
           }
 
     steps:
