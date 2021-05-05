@@ -279,6 +279,7 @@ jobs:
           echo "==================================="
           ls /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
           echo "==================================="
+          echo "${{ env.VULKAN_SDK_DIR }}"
           cp -a "/Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}" "${{ env.VULKAN_SDK_DIR }}"
           echo "==================================="
           ls "${{ env.VULKAN_SDK_DIR }}"
