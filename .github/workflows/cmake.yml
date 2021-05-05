@@ -295,7 +295,7 @@ jobs:
 
           # Configure cmake
           cmake .. \
-            -A x64 \
+            -GXcode \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} \
             -DCMAKE_PREFIX_PATH="$VULKAN_SDK_DIR" \
             -DGRIS_ASSERT_COMPILATION_TESTS=ON \
