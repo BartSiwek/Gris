@@ -295,7 +295,7 @@ jobs:
         shell: bash
         working-directory: build
         run: |
-          source ${{ env.VULKAN_SDK_DIR }}/${{ env.VULKAN_VERSION }}/setup-env.sh
+          source ${{ env.VULKAN_SDK_DIR }}/setup-env.sh
 
           conan profile new default --detect
           ${{ matrix.config.conan_profile_update }}
