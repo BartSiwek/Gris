@@ -274,6 +274,8 @@ jobs:
             https://sdk.lunarg.com/sdk/download/${{ env.VULKAN_VERSION }}/mac/vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
           hdiutil attach vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
           mkdir -p "${{ env.VULKAN_SDK_DIR }}"
+          ls /Volumes
+          ls /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
           cp -rf "/Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}/*" "${{ env.VULKAN_SDK_DIR }}"
           hdiutil detach /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
           rm vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
