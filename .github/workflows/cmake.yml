@@ -231,3 +231,89 @@ jobs:
         with:
           path: ${{ matrix.config.artifact }}
           name: ${{ matrix.config.artifact }}
+
+  macos:
+    name: ${{ matrix.config.name }}
+    runs-on: macos-latest
+    env:
+      VULKAN_VERSION: "1.2.170.0"
+      VULKAN_SDK_DIR: "$GITHUB_WORKSPACE/vulkan_sdk/"
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+            name: "macOS Debug",
+            artifact: "macos-debug.tar.gz",
+            cmake_build_type: "Debug",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler=apple-clang default; conan profile update settings.os=Macos default; conan profile update settings.os.version=10.15 default",
+          }
+          - {
+            name: "macOS Release",
+            artifact: "macos-release.tar.gz",
+            cmake_build_type: "Release",
+            cmake_configure_options: '',
+            conan_profile_update: "conan profile update settings.compiler=apple-clang default; conan profile update settings.os=Macos default; conan profile update settings.os.version=10.15 default",
+          }
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Update environment
+        shell: bash
+        run: |
+          pip3 install wheel setuptools
+          pip3 install conan
+
+      - name: Install Vulkan SDK
+        shell: bash
+        run: |
+          curl -LS -o vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg \
+            https://sdk.lunarg.com/sdk/download/${{ env.VULKAN_VERSION }}/mac/vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
+          hdiutil attach vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
+          mkdir -p ${{ env.VULKAN_SDK_DIR }}
+          cp -rf /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}/* ${{ env.VULKAN_SDK_DIR }}
+          hdiutil detach /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
+          rm vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
+
+      - name: Create Build Directory
+        run: |
+          cmake -E make_directory $GITHUB_WORKSPACE/build
+
+      - name: Configure CMake
+        shell: bash
+        working-directory: build
+        run: |
+          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+
+          source ${{ env.VULKAN_SDK_DIR }}/setup-env.sh
+
+          conan profile new default --detect
+          ${{ matrix.config.conan_profile_update }}
+
+          # Configure cmake
+          cmake .. \
+            -GXcode \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.cmake_build_type }} \
+            -DCMAKE_PREFIX_PATH="$VULKAN_SDK_DIR" \
+            -DGRIS_ASSERT_COMPILATION_TESTS=ON \
+            ${{ matrix.config.cmake_configure_options }}
+
+      - name: Build
+        shell: bash
+        working-directory: build
+        run: |
+          cmake --build . --config ${{ matrix.config.cmake_build_type }}
+
+      - name: Prepare upload
+        shell: bash
+        run: |
+          tar cfzv ${{ matrix.config.artifact }} build/bin
+
+      - name: Upload
+        uses: actions/upload-artifact@v1
+        with:
+          path: ${{ matrix.config.artifact }}
+          name: ${{ matrix.config.artifact }}
