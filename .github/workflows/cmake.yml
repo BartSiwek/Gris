@@ -270,13 +270,13 @@ jobs:
       - name: Install Vulkan SDK
         shell: bash
         run: |
-          curl -LS -o vulkansdk.dmg \
+          curl -LS -o vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg \
             https://sdk.lunarg.com/sdk/download/${{ env.VULKAN_VERSION }}/mac/vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
-          hdiutil attach vulkansdk.dmg
+          hdiutil attach vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
           mkdir -p "${{ env.VULKAN_SDK_DIR }}"
-          cp -rf "/Volumes/vulkansdk/*" "${{ env.VULKAN_SDK_DIR }}"
-          hdiutil detach /Volumes/vulkansdk
-          rm vulkansdk.dmg
+          cp -rf "/Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}/*" "${{ env.VULKAN_SDK_DIR }}"
+          hdiutil detach /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
+          rm vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
 
       - name: Create Build Directory
         run: |
