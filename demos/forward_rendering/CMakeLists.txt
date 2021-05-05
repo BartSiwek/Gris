@@ -50,3 +50,11 @@ group_sources_with_base(${resource_target} "${PROJECT_SOURCE_DIR}/resources")
 add_dependencies(Gris.Demos.ForwardRendering ${resource_target})
 
 ###############################################################################
+
+if(DEFINED ENV{VULKAN_SDK})
+  set_target_properties(Gris.Demos.ForwardRendering PROPERTIES
+    XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "$ENV{VULKAN_SDK}/lib"
+  )
+endif()
+
+###############################################################################

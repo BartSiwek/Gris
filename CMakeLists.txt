@@ -39,7 +39,7 @@ set_project_warnings(Gris.ProjectWarnings)
 ########################################################################
 
 set(CONAN_REQUIRES
-  fmt/7.1.2
+  fmt/7.1.3
   spdlog/1.8.2
   catch2/2.13.2
   span-lite/0.9.0
