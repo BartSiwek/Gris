@@ -130,20 +130,20 @@ Gris::DirectoryRegistry::DirectoryRegistry()
     m_executableLocation = std::filesystem::path(std::string(buffer.data()));
     m_executableLocation.remove_filename();
 #elif __APPLE__
-    auto bufferSize = uint32_t{0};
+    auto bufferSize = uint32_t{ 0 };
     auto const bufferSizeCalculationResult = _NSGetExecutablePath(nullptr, &bufferSize);
     if (bufferSizeCalculationResult != -1)
     {
         throw EngineException("Error calculating executable location buffer size", std::to_string(bufferSizeCalculationResult));
     }
-    
+
     auto buffer = std::vector<char>(bufferSize, '\0');
     auto const executablePathResult = _NSGetExecutablePath(buffer.data(), &bufferSize);
     if (executablePathResult != 0)
     {
         throw EngineException("Error resolving executable location", std::to_string(executablePathResult));
     }
-    
+
     m_executableLocation = std::filesystem::path(std::string(buffer.data()));
     m_executableLocation.remove_filename();
 #else
