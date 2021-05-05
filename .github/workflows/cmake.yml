@@ -276,7 +276,8 @@ jobs:
           mkdir -p "${{ env.VULKAN_SDK_DIR }}"
           ls /Volumes
           ls /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
-          cp -rf "/Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}/*" "${{ env.VULKAN_SDK_DIR }}"
+          cp -rf "/Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}" "${{ env.VULKAN_SDK_DIR }}"
+          ls "${{ env.VULKAN_SDK_DIR }}"
           hdiutil detach /Volumes/vulkansdk-macos-${{ env.VULKAN_VERSION }}
           rm vulkansdk-macos-${{ env.VULKAN_VERSION }}.dmg
 
